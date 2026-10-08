@@ -8,7 +8,8 @@ pre {
 .example {
   display: grid;
   margin: 0;
-  border-radius: var(--wa-border-radius-l);
+  border-radius: var(--wa-panel-border-radius);
+  box-shadow: var(--wa-shadow-s);
   overflow: hidden;
 }
 .example pre {
@@ -17,8 +18,8 @@ pre {
   border-start-end-radius: 0;
 }
 .example-preview {
-  padding: var(--space-group);
-  border: var(--wa-border-width-s) solid var(--paper-edge);
+  padding: var(--wa-space-l);
+  border: var(--wa-panel-border-width) var(--wa-panel-border-style) var(--paper-edge);
   background: var(--paper);
   color: var(--ink);
 }
@@ -40,12 +41,14 @@ pre {
   align-items: center;
   justify-content: space-between;
   gap: var(--wa-space-s) var(--wa-space-m);
-  padding: var(--wa-space-s) var(--space-group);
-  border: var(--wa-border-width-s) solid var(--paper-edge);
+  margin: 0;
+  padding: calc(var(--wa-space-l) * 0.75) var(--wa-space-l);
+  border: var(--wa-panel-border-width) var(--wa-panel-border-style) var(--paper-edge);
   border-block-start-style: dashed;
   background: var(--paper);
   color: var(--muted);
   font-size: var(--wa-font-size-s);
+  line-height: inherit;
 }
 .example > .example-preview:has(+ .example-bar),
 .example > .example-bar:has(+ pre) {
