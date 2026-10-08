@@ -18,8 +18,9 @@ const TYPES = {
 const port = Number(process.argv[2] || 4173);
 
 createServer((req, res) => {
-  /* /tiny-tells/ is the site as GitHub Pages serves it, so the 404's absolute paths resolve. */
-  const path = decodeURIComponent(new URL(req.url, 'http://x').pathname).replace(/^\/tiny-tells(?=\/)/, '/site');
+  /* The built site answers at / as it does on tinytells.dev, so the 404's absolute paths resolve. Test pages and bundles keep their repo paths. */
+  const url = decodeURIComponent(new URL(req.url, 'http://x').pathname);
+  const path = /^\/(tests|dist|src)\//.test(url) ? url : `/site${url}`;
   let file = normalize(join(ROOT, path));
   if (!file.startsWith(ROOT)) return res.writeHead(403).end();
   try {
@@ -30,4 +31,4 @@ createServer((req, res) => {
   }
   res.writeHead(200, { 'Content-Type': TYPES[extname(file)] || 'application/octet-stream' });
   createReadStream(file).pipe(res);
-}).listen(port, '127.0.0.1', () => console.log(`http://127.0.0.1:${port}/tiny-tells/`));
+}).listen(port, '127.0.0.1', () => console.log(`http://127.0.0.1:${port}/`));
