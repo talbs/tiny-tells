@@ -1,0 +1,37 @@
+name: Bug
+description: A tell draws, moves, or behaves wrong.
+labels: [bug]
+body:
+  - type: dropdown
+    id: tell
+    attributes:
+      label: Tell
+      options: [Drones, Flipdot, Eyes, Blot, Dekatron, Lens, More than one, Not sure]
+    validations:
+      required: true
+  - type: dropdown
+    id: state
+    attributes:
+      label: State
+      options: [working, done, error, warning, idle, A change between states, Not sure]
+    validations:
+      required: true
+  - type: input
+    id: browser
+    attributes:
+      label: Browser and version
+      placeholder: Safari 18.4 on macOS
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Tiny Tells version
+      placeholder: 0.1.0
+  - type: textarea
+    id: saw
+    attributes:
+      label: What you saw
+      description: What happened, and what you expected instead. A screen recording helps a lot.
+    validations:
+      required: true

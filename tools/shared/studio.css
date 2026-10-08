@@ -1,0 +1,106 @@
+/* Studio pieces for the site: proof stage, ship strip, exposure sheet, spec notes. */
+.field {
+  background: var(--field);
+  border-radius: var(--wa-border-radius-m);
+  display: grid;
+  place-items: center;
+}
+.big {
+  aspect-ratio: 1;
+}
+.big tiny-tell {
+  --tell-size: 74%;
+}
+.sheet {
+  position: relative;
+  aspect-ratio: 1;
+  background: var(--paper);
+  border: var(--wa-border-width-s) solid var(--paper-edge);
+  border-radius: var(--wa-border-radius-s);
+  overflow: hidden;
+}
+.stage,
+.onion {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+}
+.onion {
+  inline-size: 74%;
+  block-size: 74%;
+  inset: 13%;
+}
+.stage tiny-tell {
+  --tell-size: 74%;
+}
+.guide {
+  position: absolute;
+  inset: calc(13% + 74% * 0.08);
+  border: var(--wa-border-width-s) dashed color-mix(in oklab, var(--guide) 40%, transparent);
+  border-radius: 4px;
+  pointer-events: none;
+}
+.guide::before,
+.guide::after {
+  content: '';
+  position: absolute;
+  background: color-mix(in oklab, var(--guide) 25%, transparent);
+}
+.guide::before {
+  inset-inline: -6%;
+  inset-block-start: 50%;
+  block-size: 1px;
+}
+.guide::after {
+  inset-block: -6%;
+  inset-inline-start: 50%;
+  inline-size: 1px;
+}
+.model {
+  padding-block: 6px var(--wa-space-3xs);
+}
+.ship-strip {
+  margin: 0;
+  display: grid;
+  gap: var(--wa-space-s);
+  padding: 20px var(--wa-space-m) var(--wa-space-s);
+  background: var(--paper);
+  border: var(--wa-border-width-s) solid var(--paper-edge);
+  border-radius: var(--wa-border-radius-s);
+}
+.model figure {
+  display: grid;
+  justify-items: center;
+  gap: var(--wa-space-xs);
+}
+.model figcaption {
+  font: var(--wa-font-weight-normal) var(--wa-font-size-3xs)/1 var(--font-mono);
+  color: var(--guide-ink);
+  border-top: var(--wa-border-width-s) solid color-mix(in oklab, var(--guide) 45%, transparent);
+  padding-top: 5px;
+  min-inline-size: 24px;
+  text-align: center;
+}
+.studio.is-bare .guide {
+  display: none;
+}
+@media (max-width: 520px) {
+  .notes > div {
+    grid-template-columns: 1fr;
+    gap: var(--wa-space-2xs);
+  }
+}
+.any-size {
+  display: grid;
+  grid-template-columns: 1fr 76px;
+  align-items: center;
+  gap: var(--wa-space-m);
+  padding-block-start: var(--wa-space-s);
+  border-block-start: var(--wa-border-width-s) dashed color-mix(in oklab, var(--guide) 35%, transparent);
+}
+.any-size-tell {
+  display: grid;
+  place-items: center;
+  block-size: 76px;
+}

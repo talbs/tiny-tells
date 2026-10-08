@@ -1,0 +1,101 @@
+{
+  "tag": "tiny-tell",
+  "class": "TinyTell",
+  "description": "A tiny animated status mark. Six tells, five states, one 0.8s beat.",
+  "attributes": [
+    {
+      "name": "skin",
+      "default": "drones",
+      "description": "Which tell to draw.",
+      "values": {
+        "drones": "A squad of four drones running drills, keen and prone to pile-ups. Their shadows are the floor.",
+        "flipdot": "A 5×5 flip-disc board, like the ones on old bus signs. Every disc clacks over and wobbles before it settles. All business.",
+        "eyes": "Two eyes on a dark visor, and the most human of the six. The eyes dart first, the head catches up, and every mood morphs into the next.",
+        "blot": "A drop of cartoon liquid that reaches, drips, splats, and pulls itself back together, with real gravity and generous squash and stretch.",
+        "dekatron": "A 1950s counting tube. One glow hops around a ring of ten. Precise and steady, right up until it jams.",
+        "lens": "One calm, watchful eye behind smoky glass in a metal bezel. The iris does all the talking."
+      }
+    },
+    {
+      "name": "state",
+      "default": "working",
+      "description": "What the tell is reporting. Changing it plays a handoff into the new state.",
+      "values": {
+        "working": "Busy and making progress.",
+        "done": "Finished, and it worked.",
+        "error": "Failed.",
+        "warning": "Stuck until a person acts.",
+        "idle": "Nothing in progress."
+      }
+    },
+    {
+      "name": "color",
+      "default": "state",
+      "description": "Where the color comes from.",
+      "values": {
+        "state": "The state colors.",
+        "current": "The surrounding text color, including inside other components' slots."
+      }
+    },
+    {
+      "name": "scheme",
+      "default": "auto",
+      "description": "Light or dark drawing.",
+      "values": {
+        "auto": "Reads the color-scheme around the tell.",
+        "light": "Always light.",
+        "dark": "Always dark.",
+        "invert": "The opposite of the color-scheme around the tell."
+      }
+    },
+    {
+      "name": "label",
+      "type": "string",
+      "default": null,
+      "description": "Accessible name. Defaults to the state. Set it to an empty string when nearby text already says the state."
+    },
+    {
+      "name": "paused",
+      "type": "boolean",
+      "default": false,
+      "description": "Holds the current frame."
+    }
+  ],
+  "events": [
+    {
+      "name": "tell-dance",
+      "class": "TellDanceEvent",
+      "bundle": "play",
+      "cancelable": true,
+      "description": "Fires before a tell dances. Call preventDefault() to keep it still."
+    },
+    {
+      "name": "tell-after-dance",
+      "class": "TellAfterDanceEvent",
+      "bundle": "play",
+      "cancelable": false,
+      "description": "Fires when a dance ends, or when a state or skin change cuts it short."
+    }
+  ],
+  "statics": [
+    { "name": "version", "type": "string", "readonly": true, "description": "The version that’s loaded." },
+    {
+      "name": "timeScale",
+      "type": "number",
+      "description": "Experimental. Multiplies every tell’s clock: 1 is normal, 0.5 is half speed, 2 is double. 0, a negative, or anything that isn’t a number stops them."
+    }
+  ],
+  "cssProperties": [
+    {
+      "name": "--tell-size",
+      "default": "clamp(20px, 1.43em, 48px)",
+      "description": "Width and height. Tuned for 20 to 48px."
+    },
+    { "name": "--tell-color-working", "description": "Working color. Any CSS color, including light-dark()." },
+    { "name": "--tell-color-done", "description": "Done color. Any CSS color, including light-dark()." },
+    { "name": "--tell-color-error", "description": "Error color. Any CSS color, including light-dark()." },
+    { "name": "--tell-color-warning", "description": "Warning color. Any CSS color, including light-dark()." },
+    { "name": "--tell-color-idle", "description": "Idle color. Any CSS color, including light-dark()." }
+  ],
+  "cssParts": [{ "name": "tell", "description": "The canvas." }]
+}

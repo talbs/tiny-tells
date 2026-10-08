@@ -1,0 +1,1284 @@
+<wa-page mobile-breakpoint="860">
+  <wa-button
+    slot="navigation-toggle"
+    class="nav-toggle"
+    size="s"
+    appearance="plain"
+    ><span class="swap-icons"
+      ><wa-icon
+        family="sharp"
+        variant="regular"
+        name="bars"
+        label="Open Navigation"
+      ></wa-icon
+      ><wa-icon
+        family="sharp"
+        variant="regular"
+        name="burger"
+      ></wa-icon></span
+  ></wa-button>
+  {{header}}
+  <div
+    slot="navigation-header"
+    class="wa-stack wa-gap-xl"
+  >
+    <fieldset class="examples-panel wa-stack wa-gap-s">
+      <legend class="label">Preview with</legend>
+      <wa-select
+        id="page-tell"
+        class="wa-visually-hidden-label"
+        label="Tell to preview with"
+        size="s"
+        value="eyes"
+        ><tiny-tell
+          slot="start"
+          class="select-tell"
+          data-follow
+          label=""
+        ></tiny-tell
+      ></wa-select>
+      <wa-select
+        id="examples-palette"
+        class="wa-visually-hidden-label"
+        label="Colors to preview with"
+        size="s"
+      >
+        <wa-icon
+          slot="start"
+          family="sharp"
+          variant="regular"
+          name="palette"
+        ></wa-icon>
+      </wa-select>
+      <div class="examples-bundle wa-cluster wa-gap-xs wa-flex-nowrap">
+        <wa-radio-group
+          id="examples-play"
+          class="wa-visually-hidden-label"
+          label="Bundle to preview with"
+          orientation="horizontal"
+          size="s"
+          value="core"
+        >
+          <wa-radio
+            appearance="button"
+            value="core"
+            >Core</wa-radio
+          >
+          <wa-radio
+            appearance="button"
+            value="play"
+            >Play</wa-radio
+          >
+        </wa-radio-group>
+        <a
+          class="info-link"
+          href="#play"
+          ><wa-icon
+            family="sharp"
+            variant="regular"
+            name="circle-info"
+            label="What’s the play bundle?"
+          ></wa-icon
+        ></a>
+      </div>
+    </fieldset>
+    <wa-divider></wa-divider>
+  </div>
+  <header
+    slot="main-header"
+    class="wa-stack wa-gap-m"
+  >
+    <div class="docs-title wa-flank:end wa-gap-m">
+      <h1 class="section-title">Tiny Tells Docs</h1>
+      <wa-badge
+        class="wa-font-size-2xs"
+        variant="neutral"
+        appearance="filled"
+        pill
+        >v{{version}}</wa-badge
+      >
+    </div>
+    <p class="wa-body-l">
+      Tiny Tells is one custom element, <code>&lt;tiny-tell&gt;</code>, that shows what your app is up to with a small
+      animated character. Pick one of <a href="#tells">six tells</a> with the <code>skin</code> attribute and one of
+      <a href="#states">five states</a> with the <code>state</code> attribute. Change the state and the tell
+      <a href="#handoffs">springs into the new one</a>.
+    </p>
+  </header>
+  <nav
+    slot="navigation"
+    class="docs-index wa-stack wa-gap-xl"
+    aria-label="Docs"
+  >
+    <div class="wa-stack wa-gap-0">
+      <p class="label">Start</p>
+      <a href="#get-started">Get Started</a>
+      <a href="#play">Play Bundle</a>
+    </div>
+    <div class="wa-stack wa-gap-0">
+      <p class="label">Use</p>
+      <a href="#tells">Tells</a>
+      <a href="#states">States</a>
+      <a href="#accessibility">Accessibility</a>
+    </div>
+    <div class="wa-stack wa-gap-0">
+      <p class="label">Customize</p>
+      <a href="#size">Size</a>
+      <a href="#color">Color</a>
+      <a href="#styling">Styling</a>
+    </div>
+    <div class="wa-stack wa-gap-0">
+      <p class="label">Integrate</p>
+      <a href="#frameworks-and-editors">Frameworks and Editors</a>
+      <a href="#testing">Testing Your App</a>
+      <a href="#before-it-loads">Before It Loads</a>
+    </div>
+    <div class="wa-stack wa-gap-0">
+      <p class="label">Reference</p>
+      <a href="#api">API</a>
+      <a href="#browser-support">Browser Support</a>
+      <a href="#how-it-works">How It Works</a>
+    </div>
+  </nav>
+  <main>
+    <article class="wa-prose">
+      <p class="label">Start</p>
+      <section
+        id="get-started"
+        aria-labelledby="get-started-title"
+      >
+        <h2 id="get-started-title">Get Started</h2>
+        <p>Three steps: load it, add a tell, and change its state.</p>
+        <h3 id="load">1. Load It</h3>
+        <p>
+          Tiny Tells loads three ways, and each one defines the same <code>&lt;tiny-tell&gt;</code> element, so pick
+          whichever matches how you build your site. Turn on <a href="#play">Play bundle</a> if you want the version
+          where tells glance at the pointer and dance.
+        </p>
+        <div class="install-head">
+          <wa-switch
+            id="docs-bundle"
+            class="bundle-switch"
+            size="s"
+            >Play bundle</wa-switch
+          >
+          <wa-tab-group
+            id="docs-install"
+            active="npm"
+          >
+            <wa-tab
+              slot="nav"
+              panel="npm"
+              >npm</wa-tab
+            >
+            <wa-tab
+              slot="nav"
+              panel="cdn"
+              >CDN</wa-tab
+            >
+            <wa-tab
+              slot="nav"
+              panel="self"
+              >Self-Host</wa-tab
+            >
+            <wa-tab-panel name="npm">
+              <p>If your app uses a bundler, install the package and import it once, anywhere in your code:</p>
+              <pre data-copy><code class="language-bash">npm i tiny-tells</code></pre>
+              <pre data-copy><code
+              class="language-javascript"
+              data-bundle
+            >import 'tiny-tells';</code></pre>
+              <p>
+                The import registers the element as soon as it runs, and the package ships with TypeScript types. If you
+                need the class itself, import it by name with
+                <code data-bundle>import { TinyTell } from 'tiny-tells'</code>.
+              </p>
+            </wa-tab-panel>
+            <wa-tab-panel name="cdn">
+              <p>If you’d rather skip the build step, add this script tag to your page:</p>
+              <pre data-copy><code
+              class="language-html"
+              data-bundle
+            >&lt;script type="module" src="https://cdn.jsdelivr.net/npm/tiny-tells@{{version}}/dist/tiny-tells.min.js"&gt;&lt;/script&gt;</code></pre>
+              <wa-callout
+                class="note"
+                variant="neutral"
+                appearance="outlined"
+                size="small"
+              >
+                <wa-icon
+                  slot="icon"
+                  family="sharp"
+                  variant="regular"
+                  name="thumbtack"
+                ></wa-icon>
+                <strong>Keep the version in the URL until 1.0.</strong>
+                <span>That way a breaking change can’t reach your site until you choose to update.</span>
+              </wa-callout>
+            </wa-tab-panel>
+            <wa-tab-panel name="self">
+              <p>
+                To serve the file yourself, copy <code data-bundle>dist/tiny-tells.min.js</code> from the package into
+                your site and load it like any other module. The package also includes
+                <code data-bundle>dist/tiny-tells.js</code>, the same code unminified, if you want to read or debug it:
+              </p>
+              <pre data-copy><code
+              class="language-html"
+              data-bundle
+            >&lt;script type="module" src="/js/tiny-tells.min.js"&gt;&lt;/script&gt;</code></pre>
+            </wa-tab-panel>
+          </wa-tab-group>
+        </div>
+        <h3 id="add">2. Add a Tell</h3>
+        <p>
+          Put it next to the words it describes. <code>label=""</code> keeps screen readers from saying the state twice,
+          and <code>role="status"</code> announces the words when they change.
+          <a href="#accessibility">More on accessibility</a>.
+        </p>
+        <figure class="example wa-not-prose">
+          <div class="example-preview studio wa-cluster">
+            <p>
+              <tiny-tell
+                skin="dekatron"
+                data-follow
+                state="working"
+                label=""
+              ></tiny-tell>
+              <span>Syncing 3 files…</span>
+            </p>
+          </div>
+          <pre data-copy><code
+            class="language-html"
+            data-skin-code
+          >&lt;p&gt;
+  &lt;tiny-tell skin="dekatron" state="working" label=""&gt;&lt;/tiny-tell&gt;
+  &lt;span role="status"&gt;Syncing 3 files…&lt;/span&gt;
+&lt;/p&gt;</code></pre>
+        </figure>
+        <h3 id="change">3. Change Its State</h3>
+        <p>Set <code>state</code> from your code and update the words with it. The tell springs into the new state.</p>
+        <figure class="example wa-not-prose">
+          <div class="example-preview studio wa-stack wa-gap-l is-centered">
+            <p>
+              <tiny-tell
+                id="start-tell"
+                skin="dekatron"
+                data-follow
+                state="working"
+                label=""
+              ></tiny-tell>
+              <span
+                id="start-status"
+                role="status"
+                >Syncing 3 files…</span
+              >
+            </p>
+            <wa-button
+              id="start-run"
+              size="s"
+              appearance="outlined"
+              >Run It</wa-button
+            >
+          </div>
+          <pre data-copy><code class="language-javascript">const tell = document.querySelector('tiny-tell');
+const words = document.querySelector('[role="status"]');
+
+tell.state = 'done';
+words.textContent = 'Synced 3 files.';</code></pre>
+        </figure>
+      </section>
+      <section
+        id="play"
+        aria-labelledby="play-title"
+      >
+        <h2 id="play-title">Play</h2>
+        <p>
+          Play is an optional second bundle, <code>tiny-tells/play</code>. It’s the same element with the same states,
+          colors, and API. It adds two things that only happen when someone’s there to see them: a tell glances toward a
+          nearby pointer, and five quick taps make it dance.
+        </p>
+        <p>
+          The core bundle is for status and nothing else. Play is for when you want the tells to feel alive. It costs
+          under 1 KB more, gzipped. Reduced motion and <code>paused</code> turn it off.
+        </p>
+        <figure class="example wa-not-prose">
+          <div class="example-preview studio wa-grid wa-gap-l compare">
+            <div class="wa-stack wa-gap-s wa-align-items-center">
+              <tiny-tell
+                class="is-core"
+                skin="eyes"
+                data-follow
+              ></tiny-tell>
+              <p class="wa-caption-s">Core: keeps to itself</p>
+            </div>
+            <div class="wa-stack wa-gap-s wa-align-items-center">
+              <tiny-tell
+                id="play-tell"
+                skin="eyes"
+                data-follow
+              ></tiny-tell>
+              <p class="wa-caption-s">Play: looks your way</p>
+            </div>
+          </div>
+          <div class="example-bar studio">
+            <span>Move your pointer between them, or tap the play one five times.</span>
+            <wa-button
+              id="dance"
+              size="s"
+              appearance="outlined"
+              >Or Press This</wa-button
+            >
+          </div>
+        </figure>
+        <p>Load it in place of the core bundle:</p>
+        <wa-tab-group
+          id="play-install"
+          active="npm"
+        >
+          <wa-tab
+            slot="nav"
+            panel="npm"
+            >npm</wa-tab
+          >
+          <wa-tab
+            slot="nav"
+            panel="cdn"
+            >CDN</wa-tab
+          >
+          <wa-tab
+            slot="nav"
+            panel="self"
+            >Self-Host</wa-tab
+          >
+          <wa-tab-panel name="npm">
+            <pre data-copy><code class="language-javascript">import 'tiny-tells/play';</code></pre>
+          </wa-tab-panel>
+          <wa-tab-panel name="cdn">
+            <pre
+              data-copy
+            ><code class="language-html">&lt;script type="module" src="https://cdn.jsdelivr.net/npm/tiny-tells@{{version}}/dist/tiny-tells-play.min.js"&gt;&lt;/script&gt;</code></pre>
+          </wa-tab-panel>
+          <wa-tab-panel name="self">
+            <pre
+              data-copy
+            ><code class="language-html">&lt;script type="module" src="/js/tiny-tells-play.min.js"&gt;&lt;/script&gt;</code></pre>
+          </wa-tab-panel>
+        </wa-tab-group>
+        <wa-callout
+          class="note"
+          variant="neutral"
+          appearance="outlined"
+          size="small"
+        >
+          <wa-icon
+            slot="icon"
+            family="sharp"
+            variant="regular"
+            name="thumbtack"
+          ></wa-icon>
+          <strong>From a CDN, load one bundle, not both.</strong>
+          <span
+            >The two CDN files each carry the whole element, so if both load, the first one wins and the console says
+            so. From npm, importing both is fine, since they share one element.</span
+          >
+        </wa-callout>
+      </section>
+
+      <p class="label">Use</p>
+      <section
+        id="tells"
+        aria-labelledby="tells-title"
+      >
+        <h2 id="tells-title">Tells</h2>
+        <p>Pick one with the <code>skin</code> attribute. An unknown name logs a warning and falls back to Drones.</p>
+        <wa-scroller orientation="horizontal"
+          ><table>
+            <thead>
+              <tr>
+                <th scope="col"><span class="wa-visually-hidden">Tell</span></th>
+                <th scope="col"><code>skin</code></th>
+                <th scope="col">Who It Is</th>
+              </tr>
+            </thead>
+            <tbody id="tell-rows"></tbody></table
+        ></wa-scroller>
+      </section>
+      <section
+        id="states"
+        aria-labelledby="states-title"
+      >
+        <h2 id="states-title">States</h2>
+        <p>Set one with the <code>state</code> attribute. An unknown name logs a warning and falls back to working.</p>
+        <wa-scroller orientation="horizontal"
+          ><table>
+            <thead>
+              <tr>
+                <th scope="col"><span class="wa-visually-hidden">Tell</span></th>
+                <th scope="col"><code>state</code></th>
+                <th scope="col">Means</th>
+                <th scope="col">Use It</th>
+              </tr>
+            </thead>
+            <tbody id="state-rows"></tbody></table
+        ></wa-scroller>
+        <p>
+          Warning means a person has to act, while idle means nobody’s waiting. Whatever the state, pair the tell with
+          words, and put them in a
+          <code>role="status"</code> region when the state matters, so screen readers announce the change:
+        </p>
+        <figure class="example wa-not-prose">
+          <div class="example-preview studio wa-stack wa-gap-xs">
+            <p>
+              <tiny-tell
+                data-follow
+                state="warning"
+                label=""
+              ></tiny-tell>
+              <span role="status">Waiting for your approval to deploy.</span>
+            </p>
+            <p>
+              <tiny-tell
+                data-follow
+                state="idle"
+                label=""
+              ></tiny-tell>
+              <span role="status">Deploy queued.</span>
+            </p>
+          </div>
+          <pre data-copy><code class="language-html">&lt;p&gt;
+  &lt;tiny-tell state="warning" label=""&gt;&lt;/tiny-tell&gt;
+  &lt;span role="status"&gt;Waiting for your approval to deploy.&lt;/span&gt;
+&lt;/p&gt;
+&lt;p&gt;
+  &lt;tiny-tell state="idle" label=""&gt;&lt;/tiny-tell&gt;
+  &lt;span role="status"&gt;Deploy queued.&lt;/span&gt;
+&lt;/p&gt;</code></pre>
+        </figure>
+      </section>
+      <section
+        id="accessibility"
+        aria-labelledby="a11y-title"
+      >
+        <h2 id="a11y-title">Accessibility</h2>
+        <p>
+          A tell is a hint, never the message. The words beside it carry the status, and the tell adds something you can
+          catch at a glance. So Tiny Tells handles everything it can on its own (motion, contrast, high contrast,
+          flashing) and leaves you the one thing it can’t know: what’s happening, in words.
+        </p>
+        <h3 id="your-part">Your Part</h3>
+        <ol>
+          <li><strong>Put words beside it.</strong> A tell is never the only signal.</li>
+          <li>
+            <strong>Hide its name when the words already say it</strong> with <code>label=""</code>. It works like
+            <code>alt=""</code> on a decorative image. <a href="#labels">Try it</a>.
+          </li>
+          <li>
+            <strong>If the status changes while someone’s on the page,</strong> put the words in a
+            <code>role="status"</code> region so screen readers announce it. <a href="#states">See how</a>.
+          </li>
+          <li>
+            <strong>If you change the colors,</strong> keep 3:1 against the surface. <a href="#color">Check yours</a>.
+          </li>
+          <li>
+            <strong>If it moves for more than five seconds,</strong> give people a pause button.
+            <a href="#pause-demo">Copy one</a>.
+          </li>
+        </ol>
+        <h3 id="handled-for-you">Handled for You</h3>
+        <ul id="a11y"></ul>
+        <h3 id="labels">Labels</h3>
+        <p>
+          Screen readers announce a tell as an image named after its state, like “Working”. Set <code>label</code> to
+          say something more specific, or set <code>label=""</code> to hide the tell from screen readers when the words
+          beside it already say the state.
+        </p>
+        <figure class="example wa-not-prose">
+          <div class="example-preview studio wa-cluster">
+            <table class="label-cases">
+              <thead>
+                <tr>
+                  <th scope="col"><span class="wa-visually-hidden">Tell</span></th>
+                  <th scope="col">Markup</th>
+                  <th scope="col">Screen readers hear</th>
+                </tr>
+              </thead>
+              <tbody id="label-cases"></tbody>
+            </table>
+          </div>
+          <pre data-copy><code class="language-html">&lt;tiny-tell state="working"&gt;&lt;/tiny-tell&gt;
+&lt;tiny-tell state="working" label="Uploading photos"&gt;&lt;/tiny-tell&gt;
+&lt;tiny-tell state="working" label=""&gt;&lt;/tiny-tell&gt;</code></pre>
+        </figure>
+        <h3 id="pausing">Pausing</h3>
+        <p>Set the <code>paused</code> attribute to hold a tell on its current frame.</p>
+        <figure class="example wa-not-prose">
+          <div class="example-preview studio wa-stack wa-gap-l is-centered">
+            <tiny-tell
+              id="paused-tell"
+              skin="blot"
+              data-follow
+            ></tiny-tell>
+            <wa-switch
+              id="paused-switch"
+              size="s"
+              >paused</wa-switch
+            >
+          </div>
+        </figure>
+        <wa-callout
+          class="note"
+          variant="neutral"
+          appearance="outlined"
+          size="small"
+        >
+          <wa-icon
+            slot="icon"
+            family="sharp"
+            variant="regular"
+            name="thumbtack"
+          ></wa-icon>
+          <strong>Moving for more than five seconds? Add a pause.</strong>
+          <span>If tells on your page keep moving that long, WCAG asks you to give people a way to stop them.</span>
+        </wa-callout>
+        <p>A button that pauses every tell on the page:</p>
+        <figure class="example wa-not-prose">
+          <div
+            class="example-preview studio wa-stack wa-gap-l is-centered"
+            id="pause-demo"
+          >
+            <p>
+              <tiny-tell
+                data-follow
+                label=""
+              ></tiny-tell>
+              <tiny-tell
+                data-follow
+                state="done"
+                label=""
+              ></tiny-tell>
+              <tiny-tell
+                data-follow
+                state="warning"
+                label=""
+              ></tiny-tell>
+            </p>
+            <wa-button
+              id="pause-demo-button"
+              size="s"
+              appearance="outlined"
+              aria-pressed="false"
+              >Pause Animations</wa-button
+            >
+          </div>
+          <pre
+            data-copy
+          ><code class="language-html">&lt;button type="button" id="pause-tells" aria-pressed="false"&gt;Pause animations&lt;/button&gt;
+
+&lt;script&gt;
+  document.getElementById('pause-tells').addEventListener('click', event =&gt; {
+    const isPaused = event.currentTarget.getAttribute('aria-pressed') !== 'true';
+    event.currentTarget.setAttribute('aria-pressed', isPaused);
+    document.querySelectorAll('tiny-tell').forEach(tell =&gt; (tell.paused = isPaused));
+  });
+&lt;/script&gt;</code></pre>
+        </figure>
+      </section>
+
+      <p class="label">Customize</p>
+      <section
+        id="size"
+        aria-labelledby="size-title"
+      >
+        <h2 id="size-title">Size</h2>
+        <p>
+          You usually don’t set one. A tell sizes itself to the text beside it, about 1.4 times the font size, and stays
+          between 20 and 48px.
+        </p>
+        <h3 id="follow-the-text">Follow the Text</h3>
+        <p>
+          Leave the size alone and the tell matches whatever text it sits in. Under the hood, that’s
+          <code>clamp(20px, 1.43em, 48px)</code>.
+        </p>
+        <figure class="example wa-not-prose">
+          <div class="example-preview studio text-sizes wa-stack wa-gap-s">
+            <p style="font-size: 14px">
+              Syncing your files
+              <tiny-tell
+                data-follow
+                label=""
+              ></tiny-tell>
+              <span
+                class="wa-caption-s"
+                data-measure
+              ></span>
+            </p>
+            <p style="font-size: 18px">
+              Syncing your files
+              <tiny-tell
+                data-follow
+                label=""
+              ></tiny-tell>
+              <span
+                class="wa-caption-s"
+                data-measure
+              ></span>
+            </p>
+            <p style="font-size: 24px">
+              Syncing your files
+              <tiny-tell
+                data-follow
+                label=""
+              ></tiny-tell>
+              <span
+                class="wa-caption-s"
+                data-measure
+              ></span>
+            </p>
+          </div>
+          <pre
+            data-copy
+          ><code class="language-html">&lt;p&gt;Syncing your files &lt;tiny-tell&gt;&lt;/tiny-tell&gt;&lt;/p&gt;</code></pre>
+        </figure>
+        <h3 id="pin-a-size">Pin a Size</h3>
+        <p>
+          Set <code>--tell-size</code> when the tell should stay one size no matter the text, like in a toolbar. It
+          inherits, so set it on the tell or on any container:
+        </p>
+        <figure class="example wa-not-prose">
+          <div class="example-preview studio wa-cluster">
+            <div class="toolbar wa-cluster wa-gap-s">
+              <span>Draft</span>
+              <span>1,204 words</span>
+              <tiny-tell
+                data-follow
+                state="done"
+                label=""
+              ></tiny-tell>
+              <span>Saved</span>
+            </div>
+          </div>
+          <pre data-copy><code class="language-css">.toolbar { --tell-size: 1.5rem; }</code></pre>
+        </figure>
+        <h3 id="pick-a-value">Pick a Value</h3>
+        <p>Any CSS length works. Tells are drawn for 20 to 48px and look their best in that range:</p>
+        <figure class="example wa-not-prose">
+          <div class="example-preview studio wa-stack wa-gap-l is-centered">
+            <div
+              class="any-size-stage wa-cluster wa-gap-s wa-justify-content-center"
+              id="any-size-stage"
+            ></div>
+            <wa-slider
+              id="any-size"
+              class="wa-visually-hidden-label"
+              label="--tell-size"
+              min="12"
+              max="72"
+              step="1"
+              value="32"
+            ></wa-slider>
+          </div>
+          <pre data-copy><code
+            class="language-css"
+            id="any-size-css"
+          >tiny-tell { --tell-size: 2rem; }</code></pre>
+        </figure>
+      </section>
+      <section
+        id="color"
+        aria-labelledby="color-title"
+      >
+        <h2 id="color-title">Color</h2>
+        <p>
+          Set the palette with inherited custom properties, on <code>:root</code> or any container. Any CSS color works,
+          including <code>light-dark()</code>. Tokens you don’t set keep the built-in palette. Keep 3:1 contrast against
+          the surface the tell sits on. The built-in palette clears it in light and dark, and the chips below check
+          yours.
+        </p>
+        <div class="wa-not-prose wa-stack wa-gap-m">
+          <wa-select
+            id="palette-preset"
+            label="Palette"
+            size="s"
+            value="default"
+          >
+            <wa-icon
+              slot="start"
+              family="sharp"
+              variant="regular"
+              name="palette"
+            ></wa-icon>
+          </wa-select>
+          <div
+            class="swatch-sheet studio"
+            id="palette"
+            role="table"
+            aria-label="Palette contrast by state"
+          ></div>
+        </div>
+        <p>Here’s the CSS for the palette you picked:</p>
+        <pre data-copy><code
+            class="language-css"
+            id="palette-css"
+          ></code></pre>
+        <h3 id="other-systems">Using Another System’s Colors</h3>
+        <p>
+          Declare the tokens on the same selectors your system uses to switch theme. The names below are stand-ins for
+          your system’s own:
+        </p>
+        <figure class="example wa-not-prose">
+          <div class="example-preview studio wa-grid wa-gap-s system-colors">
+            <div class="wa-stack wa-gap-s wa-align-items-center">
+              <div
+                class="wa-light system-well wa-cluster wa-gap-s wa-justify-content-center"
+                data-theme="light"
+              ></div>
+              <p class="wa-caption-s"><code>data-theme="light"</code></p>
+            </div>
+            <div class="wa-stack wa-gap-s wa-align-items-center">
+              <div
+                class="wa-dark system-well wa-cluster wa-gap-s wa-justify-content-center"
+                data-theme="dark"
+              ></div>
+              <p class="wa-caption-s"><code>data-theme="dark"</code></p>
+            </div>
+          </div>
+          <pre data-copy><code class="language-css">:root,
+[data-theme] {
+  --tell-color-working: var(--color-accent);
+  --tell-color-done: var(--color-success);
+  --tell-color-error: var(--color-danger);
+  --tell-color-warning: var(--color-warning);
+  --tell-color-idle: var(--color-neutral);
+}</code></pre>
+        </figure>
+        <wa-callout
+          class="note"
+          variant="neutral"
+          appearance="outlined"
+          size="small"
+        >
+          <wa-icon
+            slot="icon"
+            family="sharp"
+            variant="regular"
+            name="thumbtack"
+          ></wa-icon>
+          <strong>Set the tokens where the theme switches.</strong>
+          <span
+            >A <code>var()</code> resolves where the token is declared, so a token set only on <code>:root</code> keeps
+            its light value inside a dark region.</span
+          >
+        </wa-callout>
+        <h3 id="match-text">Match the Text Color</h3>
+        <p>
+          Set <code>color="current"</code> and the tell draws in the text color around it instead of the state colors,
+          even inside another component’s slot. Reach for it on a filled button or a badge, where state colors would
+          clash.
+        </p>
+        <figure class="example wa-not-prose">
+          <div class="example-preview studio wa-grid wa-gap-l compare">
+            <div class="wa-stack wa-gap-s wa-align-items-center">
+              <span class="ink-demo wa-font-weight-semibold"
+                >Syncing
+                <tiny-tell
+                  skin="drones"
+                  data-follow
+                ></tiny-tell
+              ></span>
+              <p class="wa-caption-s">Default: state colors</p>
+            </div>
+            <div class="wa-stack wa-gap-s wa-align-items-center">
+              <span class="ink-demo is-tinted wa-font-weight-semibold"
+                >Syncing
+                <tiny-tell
+                  skin="drones"
+                  color="current"
+                  data-follow
+                ></tiny-tell
+              ></span>
+              <p class="wa-caption-s"><code>color="current"</code>: follows the text</p>
+            </div>
+          </div>
+          <pre data-copy><code class="language-html">&lt;tiny-tell&gt;&lt;/tiny-tell&gt;
+&lt;tiny-tell color="current"&gt;&lt;/tiny-tell&gt;</code></pre>
+        </figure>
+        <h3 id="match-scheme">Match Light or Dark</h3>
+        <p>
+          A tell draws for light or dark surfaces. The <code>scheme</code> attribute picks which: <code>auto</code> (the
+          default) reads the <code>color-scheme</code> around it, <code>light</code> and <code>dark</code> force one,
+          and <code>invert</code> flips it for a tell on a badge or a filled button.
+        </p>
+        <figure class="example wa-not-prose">
+          <div
+            class="example-preview studio wa-grid wa-gap-s"
+            style="--min-column-size: 260px"
+            id="schemes"
+          ></div>
+          <pre data-copy><code class="language-html">&lt;tiny-tell scheme="auto"&gt;&lt;/tiny-tell&gt;
+&lt;tiny-tell scheme="light"&gt;&lt;/tiny-tell&gt;
+&lt;tiny-tell scheme="dark"&gt;&lt;/tiny-tell&gt;
+&lt;tiny-tell scheme="invert"&gt;&lt;/tiny-tell&gt;</code></pre>
+        </figure>
+      </section>
+      <section
+        id="styling"
+        aria-labelledby="styling-title"
+      >
+        <h2 id="styling-title">Styling</h2>
+        <ul>
+          <li>The <code>tell</code> CSS part, <code>::part(tell)</code>, is the canvas.</li>
+          <li>
+            The custom states <code>:state(working)</code>, <code>:state(done)</code>, and so on match the current
+            state. They need Chrome 125, Firefox 126, or Safari 17.4. For older browsers, match the attribute instead,
+            like <code>tiny-tell[state="error"]</code>. A tell with no <code>state</code> attribute is
+            <code>working</code>, so match that one with <code>tiny-tell:not([state])</code> too.
+          </li>
+        </ul>
+        <figure class="example wa-not-prose">
+          <div class="example-preview studio wa-cluster styling-state">
+            <p>
+              <tiny-tell
+                data-follow
+                state="error"
+                label=""
+              ></tiny-tell>
+              <span class="message">Upload failed.</span>
+            </p>
+            <p>
+              <tiny-tell
+                data-follow
+                state="working"
+                label=""
+              ></tiny-tell>
+              <span class="message">Uploading…</span>
+            </p>
+          </div>
+          <pre
+            data-copy
+          ><code class="language-css">tiny-tell:state(error) + .message { color: var(--danger); }</code></pre>
+        </figure>
+        <figure class="example wa-not-prose">
+          <div class="example-preview studio wa-grid wa-gap-l compare">
+            <div class="wa-stack wa-gap-s wa-align-items-center">
+              <tiny-tell
+                data-follow
+                label=""
+              ></tiny-tell>
+              <p class="wa-caption-s">Default: full strength</p>
+            </div>
+            <div class="muted wa-stack wa-gap-s wa-align-items-center">
+              <tiny-tell
+                data-follow
+                label=""
+              ></tiny-tell>
+              <p class="wa-caption-s"><code>.muted</code>: steps back</p>
+            </div>
+          </div>
+          <pre data-copy><code class="language-css">.muted tiny-tell::part(tell) { opacity: 0.6; }</code></pre>
+        </figure>
+      </section>
+
+      <p class="label">Integrate</p>
+      <section
+        id="frameworks-and-editors"
+        aria-labelledby="frameworks-and-editors-title"
+      >
+        <h2 id="frameworks-and-editors-title">Frameworks and Editors</h2>
+        <p>
+          A tell is a plain custom element, so any framework that renders HTML can render one. The package also ships
+          files that describe it to your editor and tools.
+        </p>
+        <ul>
+          <li>
+            <strong>TypeScript:</strong> <code>dist/tiny-tells.d.ts</code> types the element and exports
+            <code>TinyTell</code>, <code>TinyTellAttributes</code>, <code>TellSkin</code>, <code>TellState</code>,
+            <code>TellColor</code>, and <code>TellScheme</code>. The play bundle&rsquo;s types add the
+            <a href="#events">dance events</a> to <code>addEventListener</code>.
+          </li>
+          <li>
+            <strong>Custom Elements Manifest:</strong> <code>dist/custom-elements.json</code> describes the element for
+            tools that read the manifest, like Storybook, docs generators, and agents. The package points to it, so most
+            tools find it on their own.
+          </li>
+          <li>
+            <strong>VS Code:</strong> add the custom data file to the <code>html.customData</code> setting to get
+            attribute autocomplete in HTML files. On the CDN or self-hosting, download
+            <a href="https://cdn.jsdelivr.net/npm/tiny-tells@{{version}}/dist/vscode.html-custom-data.json"
+              >the same file</a
+            >
+            into your project and point the setting at it.
+          </li>
+        </ul>
+        <pre data-copy><code class="language-json">{
+  "html.customData": ["./node_modules/tiny-tells/dist/vscode.html-custom-data.json"]
+}</code></pre>
+        <h3 id="react">React</h3>
+        <p>
+          React 19 handles boolean attributes, so <code>paused={false}</code> leaves the tell running. React 18 writes
+          every value as an attribute string instead, which turns <code>paused={false}</code> into
+          <code>paused="false"</code> and pauses the tell anyway. In React 18, leave <code>paused</code> out rather than
+          setting it to <code>false</code>.
+        </p>
+        <p>
+          With TypeScript, add this to any <code>.d.ts</code> file so <code>&lt;tiny-tell&gt;</code> type-checks in JSX.
+          It works with the types for React 18 and 19:
+        </p>
+        <pre data-copy><code class="language-typescript">import type { DetailedHTMLProps, HTMLAttributes } from 'react';
+import type { TinyTell, TinyTellAttributes } from 'tiny-tells';
+
+declare module 'react' {
+  namespace JSX {
+    interface IntrinsicElements {
+      'tiny-tell': DetailedHTMLProps&lt;HTMLAttributes&lt;TinyTell&gt;, TinyTell&gt; &amp; TinyTellAttributes;
+    }
+  }
+}</code></pre>
+      </section>
+      <section
+        id="testing"
+        aria-labelledby="testing-title"
+      >
+        <h2 id="testing-title">Testing Your App</h2>
+        <ul>
+          <li>
+            <strong>Test DOMs</strong> (jsdom, happy-dom): tells render inert. Attributes and properties work, nothing
+            draws, and nothing logs, so Jest and Vitest runs stay clean.
+          </li>
+          <li>
+            <strong>Screenshot tests:</strong> emulate reduced motion. Every state then holds one fixed pose, so frames
+            match run to run.
+          </li>
+        </ul>
+        <pre
+          data-copy
+        ><code class="language-javascript">await page.emulateMedia({ reducedMotion: 'reduce' });</code></pre>
+      </section>
+      <section
+        id="before-it-loads"
+        aria-labelledby="before-title"
+      >
+        <h2 id="before-title">Before It Loads</h2>
+        <p>
+          Tiny Tells needs JavaScript, and until the script runs, <code>&lt;tiny-tell&gt;</code> is an empty inline
+          element. When it loads, the tell appears and can push the words beside it over. The words carry the status, so
+          a late tell only costs some charm. The shift is the part worth fixing.
+        </p>
+        <h3 id="reserve">Hold Its Space</h3>
+        <p>
+          Load <code>reserve.css</code> before the script. It gives every tell the exact box it will have once it loads,
+          so nothing moves when it arrives:
+        </p>
+        <wa-tab-group
+          id="reserve-install"
+          active="npm"
+        >
+          <wa-tab
+            slot="nav"
+            panel="npm"
+            >npm</wa-tab
+          >
+          <wa-tab
+            slot="nav"
+            panel="cdn"
+            >CDN</wa-tab
+          >
+          <wa-tab
+            slot="nav"
+            panel="self"
+            >Self-Host</wa-tab
+          >
+          <wa-tab-panel name="npm">
+            <pre data-copy><code class="language-javascript">import 'tiny-tells/reserve.css';</code></pre>
+          </wa-tab-panel>
+          <wa-tab-panel name="cdn">
+            <pre
+              data-copy
+            ><code class="language-html">&lt;link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tiny-tells@{{version}}/dist/reserve.css"&gt;</code></pre>
+          </wa-tab-panel>
+          <wa-tab-panel name="self">
+            <pre
+              data-copy
+            ><code class="language-html">&lt;link rel="stylesheet" href="/css/reserve.css"&gt;</code></pre>
+          </wa-tab-panel>
+        </wa-tab-group>
+        <h3 id="stand-in">Show a Stand-In</h3>
+        <p>
+          If the script might never arrive, draw something in the reserved space. The <code>state</code> attribute is
+          already there, so plain CSS can follow it:
+        </p>
+        <figure class="example wa-not-prose">
+          <div class="example-preview studio wa-cluster">
+            <span class="label">Without the script</span>
+            <span><span aria-hidden="true">•</span> working</span>
+            <span><span aria-hidden="true">✓</span> done</span>
+            <span><span aria-hidden="true">✕</span> error</span>
+            <span><span aria-hidden="true">!</span> warning</span>
+          </div>
+          <pre
+            data-copy
+          ><code class="language-css">tiny-tell:not(:defined) { display: inline-grid; place-items: center; }
+tiny-tell:not(:defined)::before { content: "•"; }
+tiny-tell:not(:defined)[state="done"]::before { content: "✓"; }
+tiny-tell:not(:defined)[state="error"]::before { content: "✕"; }
+tiny-tell:not(:defined)[state="warning"]::before { content: "!"; }</code></pre>
+        </figure>
+        <p>
+          Anything you put inside the tag also shows until the element loads, then hides. With
+          <code>reserve.css</code> it’s clipped to the tell’s box, so keep it to a short word or an icon.
+        </p>
+        <p>To check from script whether it loaded: <code>await customElements.whenDefined('tiny-tell')</code>.</p>
+      </section>
+
+      <p class="label">Reference</p>
+      <section
+        id="api"
+        aria-labelledby="attributes-title"
+      >
+        <h2 id="attributes-title">API</h2>
+        <p>
+          Every attribute is also a property (<code>el.state = 'error'</code>), and unknown values fall back to their
+          defaults. An unknown skin or state also logs a warning.
+        </p>
+        <wa-scroller orientation="horizontal"
+          ><table>
+            <thead>
+              <tr>
+                <th scope="col">Attribute</th>
+                <th scope="col">Values</th>
+                <th scope="col">Default</th>
+              </tr>
+            </thead>
+            <tbody id="attr-rows"></tbody></table
+        ></wa-scroller>
+        <h3 id="events">Events</h3>
+        <p>
+          The core fires no events, since it only shows the state you set. The play bundle fires two around a dance,
+          because a dance is the one change your code doesn’t make. Both bubble and cross shadow roots, so you can
+          listen on the tell or on any element above it.
+        </p>
+        <wa-scroller orientation="horizontal"
+          ><table>
+            <thead>
+              <tr>
+                <th scope="col">Event</th>
+                <th scope="col">Cancelable</th>
+                <th scope="col">Fires</th>
+              </tr>
+            </thead>
+            <tbody id="event-rows"></tbody></table
+        ></wa-scroller>
+        <p>
+          A dance lasts two loops, about 6.4 seconds. <code>tell-dance</code> doesn’t fire while a tell is paused, while
+          reduced motion is on, or while the tell is already dancing. Pausing mid-dance holds it, and
+          <code>tell-after-dance</code> fires once it finishes after you unpause. A canceled dance never started, so it
+          gets no <code>tell-after-dance</code>.
+        </p>
+        <figure
+          class="example wa-not-prose"
+          id="events-demo"
+        >
+          <div class="example-preview studio wa-stack wa-gap-s wa-align-items-center is-centered">
+            <tiny-tell
+              id="events-tell"
+              skin="eyes"
+              data-follow
+            ></tiny-tell>
+            <p
+              class="wa-caption-s"
+              id="events-status"
+              aria-live="polite"
+            >
+              Tap it five times, or press Dance.
+            </p>
+          </div>
+          <div class="example-bar studio">
+            <wa-switch
+              id="events-hold"
+              size="s"
+              >Hold Still</wa-switch
+            >
+            <wa-button
+              id="events-dance"
+              size="s"
+              appearance="outlined"
+              >Dance</wa-button
+            >
+          </div>
+          <pre data-copy><code class="language-js">const tell = document.querySelector('tiny-tell');
+const status = document.querySelector('#status');
+const holdStill = document.querySelector('#hold-still');
+
+tell.addEventListener('tell-dance', event => {
+  if (holdStill.checked) {
+    event.preventDefault();
+    status.textContent = 'Asked to dance, and held still.';
+  } else {
+    status.textContent = 'Dancing…';
+  }
+});
+
+tell.addEventListener('tell-after-dance', event => {
+  status.textContent = `Back to ${event.target.state}.`;
+});</code></pre>
+        </figure>
+        <h3 id="statics">Statics</h3>
+        <wa-scroller orientation="horizontal"
+          ><table>
+            <thead>
+              <tr>
+                <th scope="col">Static</th>
+                <th scope="col">Type</th>
+                <th scope="col">Does</th>
+              </tr>
+            </thead>
+            <tbody id="static-rows"></tbody></table
+        ></wa-scroller>
+        <p>Custom tells aren’t supported yet, because the internals will keep changing.</p>
+      </section>
+      <section
+        id="browser-support"
+        aria-labelledby="browser-title"
+      >
+        <h2 id="browser-title">Browser Support</h2>
+        <p>Tiny Tells works in Chrome 99+, Firefox 112+, and Safari 16.4+.</p>
+        <wa-callout
+          class="note"
+          variant="neutral"
+          appearance="outlined"
+          size="small"
+        >
+          <wa-icon
+            slot="icon"
+            family="sharp"
+            variant="regular"
+            name="thumbtack"
+          ></wa-icon>
+          <strong>Two extras need newer browsers.</strong>
+          <span
+            ><code>:state()</code> selectors, and <code>scheme="auto"</code> following a container’s
+            <code>color-scheme</code>, need Chrome 125, Firefox 126, or Safari 17.5. Older browsers skip
+            <code>:state()</code> and follow the system’s light or dark setting instead.</span
+          >
+        </wa-callout>
+      </section>
+      <section
+        id="how-it-works"
+        aria-labelledby="how-title"
+      >
+        <h2 id="how-title">How It Works</h2>
+        <p>
+          Each tell is animated like a character rather than swapped like an icon, and all six follow the same few
+          rules.
+        </p>
+        <h3 id="one-beat">One Beat, One Clock</h3>
+        <p>
+          Everything runs on a 0.8s beat. Each loop is four beats, and idle takes six. Every tell on a page shares one
+          clock, so a row of them stays in time, and each one lands its hardest moves on the beat.
+        </p>
+        <figure class="example wa-not-prose">
+          <div class="example-preview studio wa-stack wa-gap-m">
+            <div
+              class="beat-row"
+              id="beat-row"
+            ></div>
+            <ol
+              class="beat-bar wa-list-plain"
+              id="beat-bar"
+              aria-hidden="true"
+            >
+              <li>1</li>
+              <li>2</li>
+              <li>3</li>
+              <li>4</li>
+            </ol>
+          </div>
+          <div class="example-bar studio">
+            <span id="beat-note">All six tells, one clock. The bar steps once a beat.</span>
+            <wa-button
+              id="beat-restart"
+              size="s"
+              appearance="outlined"
+              >Start Over</wa-button
+            >
+          </div>
+        </figure>
+        <h3 id="handoffs">Handoffs</h3>
+        <p>
+          When the state changes, the tell doesn’t cut to the next loop. It springs from its current pose into the new
+          one and keeps its speed, so switching halfway through a move still looks deliberate.
+        </p>
+        <figure class="example wa-not-prose">
+          <div class="example-preview studio wa-grid wa-gap-l compare handoff-compare">
+            <div class="wa-stack wa-gap-s wa-align-items-center">
+              <span id="cut-slot"></span>
+              <p class="wa-caption-s">Cut: starts the new loop cold</p>
+            </div>
+            <div class="wa-stack wa-gap-s wa-align-items-center">
+              <tiny-tell
+                id="handoff-tell"
+                data-follow
+                label=""
+              ></tiny-tell>
+              <p class="wa-caption-s">Handoff: springs from where it is</p>
+            </div>
+          </div>
+          <div class="example-bar studio">
+            <span>Switch mid-move and watch the right one.</span>
+            <wa-radio-group
+              id="handoff-state"
+              class="wa-visually-hidden-label"
+              label="State for both tells"
+              orientation="horizontal"
+              size="s"
+              value="working"
+            ></wa-radio-group>
+          </div>
+        </figure>
+        <h3 id="small-on-purpose">Small on Purpose</h3>
+        <p>
+          Tells drop detail as they shrink. Eyes loses its glow at 32px and under, and Dekatron’s ten cathodes merge
+          into one ring, so each one still reads at 20px.
+        </p>
+        <figure class="example wa-not-prose">
+          <div
+            class="example-preview studio wa-stack"
+            id="size-ladder"
+          ></div>
+          <div class="example-bar studio">
+            At 32px and under, five of the six switch to a simpler drawing. Flipdot’s grid already reads small.
+          </div>
+        </figure>
+        <h3 id="drawing">Drawing</h3>
+        <p>
+          Each tell is one canvas, drawn at your screen’s full resolution. Off-screen tells stop drawing. On a recent
+          laptop, 100 on screen run well past 60 fps, and a CPU four times slower still gets about 40. Measure it on
+          yours:
+        </p>
+        <figure class="example wa-not-prose">
+          <div
+            class="example-preview studio stress-grid"
+            id="stress-grid"
+          ></div>
+          <div class="example-bar studio">
+            <span id="stress-fps">Held still for now.</span>
+            <wa-button
+              id="stress-run"
+              size="s"
+              appearance="outlined"
+              >Run All 100</wa-button
+            >
+          </div>
+        </figure>
+        <h3 id="tested">Tested</h3>
+        <p>Every change runs in Chromium, Firefox, and WebKit. Each tell has to:</p>
+        <ul>
+          <li>stay inside its live area</li>
+          <li>loop without a seam</li>
+          <li>never flash more than three times a second</li>
+          <li>draw in system colors under forced colors</li>
+        </ul>
+      </section>
+    </article>
+  </main>
+  {{footer}}
+</wa-page>

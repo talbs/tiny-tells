@@ -1,0 +1,369 @@
+main > #tells {
+  --band-edge-start: 0;
+  gap: 0;
+  padding-block: 0 var(--section-pad);
+  color: var(--ink);
+}
+.lineup {
+  position: relative;
+  margin-inline: var(--bleed);
+}
+
+.cast-pick::part(form-control-input) {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 0;
+  padding-inline: calc(max(0px, 50vw - var(--page-width) / 2) + var(--gutter) - var(--wa-space-l));
+}
+.cast-pick wa-radio[appearance='button'] {
+  display: block;
+  min-block-size: 0;
+  padding: 28px var(--wa-space-l) 20px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--ink);
+  --tell-size: min(56%, 96px);
+}
+.cast-pick wa-radio[appearance='button']:hover {
+  background: transparent;
+}
+.cast-field {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 5 / 4;
+  border-radius: var(--wa-border-radius-s);
+  background: color-mix(in oklab, var(--paper) 80%, var(--paper-edge));
+  transition: background-color var(--wa-transition-normal) var(--wa-transition-easing);
+}
+.cast-field tiny-tell {
+  opacity: 0.35;
+  filter: grayscale(1);
+  transition:
+    opacity 0.2s ease,
+    filter 0.2s ease;
+}
+.cast-pick wa-radio[appearance='button']:hover .cast-field tiny-tell {
+  opacity: 0.7;
+  filter: none;
+}
+.cast-pick wa-radio[appearance='button']:hover .cast-name {
+  color: var(--ink);
+}
+.cast-pick wa-radio[appearance='button']:state(checked) .cast-field tiny-tell {
+  opacity: 1;
+  filter: none;
+}
+.cast-pick wa-radio[appearance='button']:state(checked) .cast-field {
+  background: color-mix(in oklab, var(--paper) 62%, var(--paper-edge));
+}
+.cast-pick wa-radio[appearance='button']:state(checked) .cast-name {
+  font-weight: var(--wa-font-weight-bold);
+  color: var(--ink);
+}
+.cast-pick wa-radio[appearance='button']:focus-visible {
+  outline: var(--control-ring);
+  outline-offset: -4px;
+  border-radius: var(--wa-border-radius-l);
+}
+
+.cast-intro {
+  padding-block: var(--wa-space-l) var(--space-group);
+}
+.cast {
+  display: grid;
+  gap: var(--space-group);
+}
+@media (min-width: 860px) {
+  .cast {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-rows: auto auto;
+    grid-auto-flow: column;
+    gap: var(--wa-space-l) var(--space-section);
+  }
+  /* Shared rows line the switches up with the Lab Notes row, and opening Lab Notes only grows the right column. */
+  .cast-proof,
+  .cast-states {
+    display: contents;
+  }
+  .cast-controls,
+  .lab-notes {
+    align-self: start;
+  }
+  .cast-controls {
+    padding-block-start: var(--wa-space-s);
+  }
+}
+
+.proof-table {
+  --cell: var(--wa-space-m);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  border: var(--wa-border-width-s) solid var(--paper-edge);
+  border-radius: var(--wa-border-radius-s);
+  background: var(--paper);
+  overflow: hidden;
+}
+.proof-table .sheet.big {
+  border: 0;
+  border-radius: 0;
+  aspect-ratio: 16 / 10;
+}
+.proof-table .sheet.big tiny-tell {
+  --tell-size: 46%;
+}
+.proof-table .ship-strip {
+  display: grid;
+  align-content: start;
+  gap: var(--wa-space-s);
+  margin: 0;
+  padding: var(--cell);
+  border: 0;
+  border-block-start: var(--wa-border-width-s) solid var(--paper-edge);
+  border-radius: 0;
+  background: transparent;
+}
+.proof-table .ship-strip .model {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-block-size: 0;
+  padding: 0;
+}
+.proof-table .model figure {
+  display: grid;
+  grid-template-columns: 48px auto;
+  justify-items: center;
+  align-items: center;
+  gap: var(--wa-space-xs);
+  margin: 0;
+}
+.proof-table .model figcaption {
+  display: flex;
+  align-items: center;
+  gap: var(--wa-space-xs);
+  justify-self: start;
+  min-inline-size: 0;
+  padding: 0;
+  border: 0;
+  font: var(--wa-font-weight-normal) var(--wa-font-size-xs)/1 var(--font-mono);
+  color: var(--muted);
+}
+.proof-table .model figcaption::before {
+  content: '';
+  inline-size: 10px;
+  border-block-start: var(--wa-border-width-s) dashed color-mix(in oklab, var(--guide) 55%, transparent);
+}
+.proof-table .any-size {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-block-start: var(--wa-border-width-s) solid var(--paper-edge);
+}
+.proof-table .any-size wa-slider {
+  padding: var(--wa-space-l) var(--wa-space-xl);
+  --track-size: 4px;
+  --thumb-width: 14px;
+  --thumb-height: 14px;
+}
+.proof-table .any-size-cell {
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 0;
+  margin: 0;
+  padding: var(--wa-space-m) var(--wa-space-s) var(--wa-space-l);
+  border-inline-start: var(--wa-border-width-s) solid var(--paper-edge);
+}
+.proof-table .any-size-tell {
+  display: grid;
+  place-items: end center;
+  block-size: 72px;
+}
+.proof-table .any-size-cell figcaption {
+  font: var(--wa-font-weight-normal) var(--wa-font-size-xs)/1 var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  color: var(--muted);
+}
+@media (min-width: 860px) {
+  .proof-table {
+    grid-template-columns: minmax(0, 1fr) 9rem;
+    grid-template-rows: 1fr auto;
+  }
+  .proof-table .sheet.big {
+    aspect-ratio: auto;
+    min-block-size: 18.5rem;
+  }
+  .proof-table .ship-strip {
+    grid-template-rows: auto 1fr;
+    justify-items: center;
+    border-block-start: 0;
+    border-inline-start: var(--wa-border-width-s) solid var(--paper-edge);
+  }
+  .proof-table .ship-strip .model {
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+  }
+  .proof-table .model figure {
+    justify-items: start;
+  }
+  .proof-table .model figure tiny-tell {
+    justify-self: center;
+  }
+  .proof-table .any-size {
+    grid-column: 1 / -1;
+    grid-template-columns: subgrid;
+    gap: 0;
+  }
+}
+
+.cast .notes {
+  position: relative;
+  display: grid;
+  margin-inline-start: -14px;
+  border: 0;
+}
+.cast .notes > button {
+  appearance: none;
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 32px minmax(0, 1fr);
+  align-items: center;
+  column-gap: 14px;
+  row-gap: var(--wa-space-3xs);
+  inline-size: 100%;
+  block-size: auto;
+  min-block-size: 44px;
+  margin: 0;
+  padding: var(--wa-space-s) 14px;
+  border: 0;
+  border-radius: var(--wa-border-radius-l);
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-size: var(--wa-font-size-s);
+  line-height: 1.5;
+  white-space: normal;
+  text-align: start;
+  cursor: pointer;
+  --tell-size: 28px;
+  transition:
+    background-color var(--wa-transition-normal) var(--wa-transition-easing),
+    color var(--wa-transition-normal) var(--wa-transition-easing);
+}
+.cast .notes > button tiny-tell {
+  grid-row: span 2;
+}
+.cast .notes > button:not([aria-pressed='true']):hover {
+  background: color-mix(in oklab, var(--paper) 85%, var(--paper-edge));
+}
+.cast .notes > button[aria-pressed='true'] {
+  color: var(--ink);
+}
+.cast .notes > button:focus-visible {
+  outline: var(--control-ring);
+  outline-offset: -2px;
+}
+.notes-hl {
+  position: absolute;
+  inset-inline: 0;
+  inset-block-start: 0;
+  border-radius: var(--wa-border-radius-l);
+  background: color-mix(in oklab, var(--paper) 40%, var(--paper-edge));
+  pointer-events: none;
+  transition:
+    transform var(--wa-transition-slow) var(--ease-out),
+    block-size var(--wa-transition-slow) var(--ease-out);
+}
+@media (prefers-reduced-motion: reduce) {
+  .notes-hl {
+    transition: none;
+  }
+}
+.cast .notes-key {
+  font-weight: var(--wa-font-weight-bold);
+  color: var(--ink);
+}
+
+.lab-notes {
+  border-block-start: var(--wa-border-width-s) solid var(--paper-edge);
+}
+.lab-notes::part(header),
+.lab-notes::part(content) {
+  padding-inline: 0;
+}
+.lab-summary {
+  display: flex;
+  flex: 1;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--wa-space-2xs) var(--wa-space-m);
+  margin-inline-end: var(--wa-space-s);
+}
+.goes-line {
+  font: var(--wa-font-size-s) / 1.4 var(--font-body);
+  letter-spacing: normal;
+  text-transform: none;
+  color: var(--muted);
+}
+.goes-label {
+  margin-inline-end: var(--wa-space-2xs);
+  line-height: 1;
+}
+
+.cast-proof wa-switch::part(label),
+.cast-proof wa-switch {
+  font: var(--wa-font-weight-semibold) var(--wa-font-size-xs)/1.4 var(--font-mono);
+}
+.cast-proof wa-switch {
+  min-block-size: 32px;
+}
+
+@media (max-width: 859px) {
+  .cast-pick::part(form-control-input) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    padding-inline: calc(var(--gutter) - var(--wa-space-s));
+  }
+  .cast-pick wa-radio[appearance='button'] {
+    padding-inline: var(--wa-space-s);
+  }
+  .proof-table .any-size {
+    grid-template-columns: minmax(0, 1fr) 88px;
+    gap: 0;
+  }
+  .proof-table .ship-strip .model {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    align-items: end;
+  }
+  .proof-table .model figure {
+    grid-template-columns: none;
+    justify-items: center;
+    gap: var(--wa-space-xs);
+  }
+  .proof-table .model figcaption {
+    justify-self: center;
+  }
+  .proof-table .model figcaption::before {
+    display: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .cast-pick wa-radio[appearance='button']:state(checked) .cast-field,
+  .cast .notes > button[aria-pressed='true'] {
+    outline: 2px solid Highlight;
+    outline-offset: -2px;
+  }
+  .cast-field tiny-tell {
+    opacity: 1;
+    filter: none;
+  }
+}
+
+.studio.is-bare .proof-table .model figcaption::before {
+  visibility: hidden;
+}
