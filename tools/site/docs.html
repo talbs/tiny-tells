@@ -91,15 +91,21 @@
     slot="main-header"
     class="wa-stack wa-gap-m"
   >
-    <div class="docs-title wa-flank:end wa-gap-m">
-      <h1 class="section-title">Tiny Tells Docs</h1>
+    <div class="docs-title wa-stack wa-gap-2xs wa-align-items-start">
       <wa-badge
         class="wa-font-size-2xs"
         variant="neutral"
         appearance="filled"
         pill
+        ><wa-icon
+          slot="start"
+          family="sharp"
+          variant="regular"
+          name="tag"
+        ></wa-icon
         >v{{version}}</wa-badge
       >
+      <h1 class="section-title">Tiny Tells Docs</h1>
     </div>
     <p class="wa-body-l">
       Tiny Tells is one custom element, <code>&lt;tiny-tell&gt;</code>, that shows what your app is up to with a small

@@ -607,10 +607,11 @@ wa-tooltip {
   --wa-tooltip-content-color: var(--bg);
   --wa-tooltip-border-radius: var(--wa-border-radius-s);
   --wa-tooltip-arrow-size: 4px;
-  --max-width: 28ch;
+  --max-width: none;
 }
 wa-tooltip::part(body) {
   padding: 0.4em 0.65em;
+  white-space: nowrap;
   font: var(--wa-font-weight-semibold) var(--wa-font-size-xs) / 1.3 var(--font-body);
 }
 wa-tooltip[open]::part(body) {
