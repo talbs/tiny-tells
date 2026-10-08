@@ -133,7 +133,7 @@ const vscodeData = () => ({
             ? { valueSet: 'v' }
             : {}),
       })),
-      references: [{ name: 'Docs', url: 'https://talbs.github.io/tiny-tells/docs/' }],
+      references: [{ name: 'Docs', url: `${HOMEPAGE}docs/` }],
     },
   ],
 });

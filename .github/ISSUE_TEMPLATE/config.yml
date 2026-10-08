@@ -1,5 +1,5 @@
 blank_issues_enabled: false
 contact_links:
   - name: Docs
-    url: https://talbs.github.io/tiny-tells/docs/
+    url: https://tinytells.dev/docs/
     about: Sizing, color, accessibility, frameworks, and the full API.

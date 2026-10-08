@@ -570,7 +570,7 @@ test.describe('site pages', () => {
   test.afterEach(noProblems);
 
   test('landing, docs, and 404 load and switch theme without errors', async ({ page }) => {
-    for (const path of ['/tiny-tells/', '/tiny-tells/docs/', '/tiny-tells/404.html']) {
+    for (const path of ['/', '/docs/', '/404.html']) {
       await open(page, { path });
       const html = page.locator('html');
       await expect(html, `${path} applies a theme`).toHaveAttribute('data-theme', /^(light|dark)$/);
