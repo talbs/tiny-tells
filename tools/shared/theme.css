@@ -101,18 +101,20 @@ body {
   font-family: var(--font-body);
   line-height: 1.5;
 }
-h2 {
-  font-size: 26px;
-  letter-spacing: -0.015em;
-  margin: 0;
-}
-h3 {
-  font-size: 17px;
-  margin: 0;
-}
-p {
-  margin: 0;
-  text-wrap: pretty;
+@layer wa-base {
+  h2 {
+    font-size: 26px;
+    letter-spacing: -0.015em;
+    margin: 0;
+  }
+  h3 {
+    font-size: 17px;
+    margin: 0;
+  }
+  p {
+    margin: 0;
+    text-wrap: pretty;
+  }
 }
 .note {
   font-size: 13px;
