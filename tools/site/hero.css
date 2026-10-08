@@ -8,15 +8,6 @@
   padding-block: 0 calc(var(--space-section) + var(--wa-space-m));
   color: var(--fg);
 }
-@media (min-width: 1200px) {
-  .hero {
-    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
-  }
-  .hero-facts {
-    flex-wrap: nowrap;
-    white-space: nowrap;
-  }
-}
 @media (min-width: 768px) {
   .hero-lede {
     max-inline-size: 44ch;
@@ -27,8 +18,15 @@
   }
 }
 @media (min-width: 1200px) {
+  .hero {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  }
   .hero-lede {
     max-inline-size: 26ch;
+  }
+  .hero-facts {
+    flex-wrap: nowrap;
+    white-space: nowrap;
   }
 }
 
@@ -270,7 +268,8 @@
 .hero-cast::before {
   content: '12 fld';
   position: absolute;
-  inset: 0;
+  inset: calc(-1 * var(--frame-t, 0px)) calc(-1 * var(--frame-r, 0px)) calc(-1 * var(--frame-b, 0px))
+    calc(-1 * var(--frame-l, 0px));
   padding: 10px var(--wa-space-s);
   border: var(--wa-border-width-s) dashed color-mix(in oklab, var(--guide) 45%, transparent);
   pointer-events: none;
@@ -483,9 +482,6 @@
     scroll-snap-type: x mandatory;
     scroll-padding-inline: var(--gutter);
   }
-  .hero-cast::before {
-    inset-inline: var(--gutter);
-  }
   .cel {
     flex: none;
     inline-size: min(17rem, 78vw);
@@ -540,9 +536,6 @@
     padding: var(--wa-space-xl) var(--wa-space-l) var(--wa-space-l);
     overflow: visible;
     scroll-snap-type: none;
-  }
-  .hero-cast::before {
-    inset-inline: 0;
   }
   .cel,
   .cel-chat {
@@ -615,8 +608,4 @@
   .cast-dots {
     display: none;
   }
-}
-.hero-stage .hero-cast::before {
-  inset: calc(-1 * var(--frame-t, 0px)) calc(-1 * var(--frame-r, 0px)) calc(-1 * var(--frame-b, 0px))
-    calc(-1 * var(--frame-l, 0px));
 }
