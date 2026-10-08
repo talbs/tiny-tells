@@ -183,27 +183,29 @@
       bottom / 100% 7px no-repeat;
   border-block-end: var(--wa-border-width-s) solid color-mix(in oklab, var(--guide) 45%, transparent);
 }
+/* A full-width strip with the line on its end edge, so the sweep can use translate (no layout or paint per frame) instead of moving the 1px line's own position. */
 .playhead {
   position: absolute;
   inset-block: -10px 0;
-  inline-size: 1px;
-  background: var(--accent);
+  inset-inline: 1px -1px;
+  border-inline-end: var(--wa-border-width-s) solid var(--accent);
+  pointer-events: none;
   animation: playhead 12.8s linear infinite;
 }
 .playhead::before {
   content: '';
   position: absolute;
   inset-block-start: -1px;
-  inset-inline-start: -4px;
+  inset-inline-end: -5px;
   border: 4.5px solid transparent;
   border-block-start-color: var(--accent);
 }
 @keyframes playhead {
   from {
-    inset-inline-start: 0;
+    translate: -100%;
   }
   to {
-    inset-inline-start: 100%;
+    translate: 0;
   }
 }
 
