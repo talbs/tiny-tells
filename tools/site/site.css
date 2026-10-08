@@ -647,6 +647,3 @@ wa-page::part(header) {
     animation-duration: 0.2s;
   }
 }
-.docs-title wa-badge {
-  font-family: var(--font-mono);
-}

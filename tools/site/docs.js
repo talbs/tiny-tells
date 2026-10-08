@@ -78,7 +78,7 @@ $('event-rows').innerHTML = API.events
 $('static-rows').innerHTML = API.statics
   .map(
     m =>
-      `<tr><th scope="row"><span class="wa-cluster wa-gap-xs wa-flex-nowrap"><code>${API.class}.${m.name}</code>${m.readonly ? '<wa-badge class="wa-font-size-2xs" variant="neutral" appearance="filled" pill>Read-Only</wa-badge>' : ''}</span></th><td><code>${m.type}</code></td><td>${m.description}</td></tr>`
+      `<tr><th scope="row"><span class="wa-cluster wa-gap-xs wa-flex-nowrap"><code>${API.class}.${m.name}</code>${m.readonly ? '<wa-tag class="studio" appearance="outlined" size="xs">Read-Only</wa-tag>' : ''}</span></th><td><code>${m.type}</code></td><td>${m.description}</td></tr>`
   )
   .join('');
 $('schemes').innerHTML = ['wa-light', 'wa-dark']
