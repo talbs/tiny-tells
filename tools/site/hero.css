@@ -11,15 +11,23 @@
   .hero {
     grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
   }
-  .hero-lede {
-    max-inline-size: 26ch;
-  }
   .hero-facts {
     flex-wrap: nowrap;
     white-space: nowrap;
   }
-  .hero-actions {
-    max-inline-size: 30rem;
+}
+@media (min-width: 768px) {
+  .hero-lede {
+    max-inline-size: 44ch;
+  }
+  .hero-copy .hero-actions {
+    gap: var(--wa-space-xl);
+    max-inline-size: 26rem;
+  }
+}
+@media (min-width: 1200px) {
+  .hero-lede {
+    max-inline-size: 26ch;
   }
 }
 
@@ -56,9 +64,9 @@
     32px 32px,
     32px 32px;
   background-position:
-    center top,
-    center top,
-    calc(50% + 16px) 16px;
+    var(--grid-x, 50%) var(--grid-y, 0),
+    var(--grid-x, 50%) var(--grid-y, 0),
+    calc(var(--grid-x, 50%) + 16px) calc(var(--grid-y, 0px) + 16px);
   mask-image: radial-gradient(ellipse 85% 90% at 55% 45%, #000 45%, transparent 95%);
 }
 .hero-stage {
@@ -91,12 +99,12 @@
   inline-size: 1px;
 }
 .reg-a {
-  inset-block-start: -11px;
-  inset-inline-start: -11px;
+  inset-block-start: calc(-11px - var(--frame-t, 0px));
+  inset-inline-start: calc(-11px - var(--frame-l, 0px));
 }
 .reg-b {
-  inset-block-end: 21px;
-  inset-inline-end: -11px;
+  inset-block-end: calc(19px - var(--frame-b, 0px));
+  inset-inline-end: calc(-11px - var(--frame-r, 0px));
 }
 .pencil,
 .plan-note,
@@ -114,8 +122,8 @@
 .pencil {
   position: absolute;
   z-index: 1;
-  inset-block-start: 10px;
-  inset-inline-end: var(--wa-space-s);
+  inset-block-start: calc(10px - var(--frame-t, 0px));
+  inset-inline-end: calc(var(--wa-space-s) - var(--frame-r, 0px));
 }
 .hand-notes {
   position: absolute;
@@ -178,6 +186,7 @@
 }
 .timing {
   position: relative;
+  margin-inline: calc(-1 * var(--frame-l, 0px)) calc(-1 * var(--frame-r, 0px));
   block-size: 14px;
   background:
     repeating-linear-gradient(90deg, color-mix(in oklab, var(--guide) 55%, transparent) 0 1px, transparent 1px 96px)
@@ -481,16 +490,6 @@
     inline-size: min(17rem, 78vw);
     scroll-snap-align: start;
   }
-  .hero-facts {
-    display: grid;
-    grid-template-columns: repeat(4, max-content);
-    justify-content: space-between;
-    inline-size: 100%;
-  }
-  .hero-lede {
-    font-size: var(--wa-font-size-xl);
-    text-wrap: pretty;
-  }
   .pencil,
   .reg,
   .timing,
@@ -500,6 +499,12 @@
   .hero {
     gap: var(--wa-space-3xl);
     padding-block-end: var(--space-group);
+  }
+}
+@media (max-width: 767px) {
+  .hero-lede {
+    font-size: var(--wa-font-size-xl);
+    text-wrap: pretty;
   }
 }
 @media (max-width: 599px) {
@@ -517,14 +522,19 @@
     );
     scrollbar-width: none;
   }
+}
+@media (max-width: 407px) {
   .hero-facts {
+    display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
+    inline-size: 100%;
   }
 }
 @media (min-width: 600px) and (max-width: 1199px) {
   .hero-cast {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--wa-space-xl);
     margin-inline: 0;
     padding: var(--wa-space-xl) var(--wa-space-l) var(--wa-space-l);
     overflow: visible;
@@ -566,6 +576,7 @@
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--space-related);
   inline-size: 100%;
+  margin-block-start: var(--actions-nudge, 0px);
 }
 
 .cast-dots {
@@ -603,4 +614,8 @@
   .cast-dots {
     display: none;
   }
+}
+.hero-stage .hero-cast::before {
+  inset: calc(-1 * var(--frame-t, 0px)) calc(-1 * var(--frame-r, 0px)) calc(-1 * var(--frame-b, 0px))
+    calc(-1 * var(--frame-l, 0px));
 }

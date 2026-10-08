@@ -139,6 +139,28 @@ cast.addEventListener('scroll', markDot, { passive: true });
 markDot();
 const stage = document.querySelector('.hero-stage'),
   notes = stage.querySelector('.hand-notes');
+const field = document.querySelector('.hero-field'),
+  GRID = 32;
+const snapToGrid = () => {
+  const f = field.getBoundingClientRect(),
+    origin = document.querySelector('.hero-version').getBoundingClientRect(),
+    actions = document.querySelector('.hero-actions'),
+    c = $('hero-cast').getBoundingClientRect(),
+    nearest = (v, o) => Math.round((v - o) / GRID) * GRID + o,
+    nudge = parseFloat(actions.style.getPropertyValue('--actions-nudge')) || 0,
+    actionsTop = actions.getBoundingClientRect().top - nudge;
+  actions.style.setProperty('--actions-nudge', `${nearest(actionsTop, origin.top) - actionsTop}px`);
+  field.style.setProperty('--grid-x', `${origin.left - f.left}px`);
+  field.style.setProperty('--grid-y', `${origin.top - f.top}px`);
+  stage.style.setProperty('--frame-l', `${c.left - nearest(c.left, origin.left)}px`);
+  stage.style.setProperty('--frame-t', `${c.top - nearest(c.top, origin.top)}px`);
+  stage.style.setProperty('--frame-r', `${nearest(c.right, origin.left) - c.right}px`);
+  stage.style.setProperty('--frame-b', `${nearest(c.bottom, origin.top) - c.bottom}px`);
+};
+const gridSnap = new ResizeObserver(snapToGrid);
+gridSnap.observe(field);
+gridSnap.observe($('hero-cast'));
+gridSnap.observe(document.querySelector('.hero-copy'));
 const offsetIn = el => {
   let x = el.offsetWidth / 2,
     y = el.offsetHeight / 2;
@@ -208,7 +230,7 @@ const renderCast = () => {
     .join('');
   $('any-size-tell').innerHTML = live(skin, `style="--tell-size: ${anySize}px" label=""`);
   $('cast-goes').innerHTML =
-    `<span class="goes-label">Best for<span class="wa-visually-hidden">: </span></span>${GOES[skin].map((use, i) => `<wa-tag appearance="outlined" size="xs">${i ? '<span class="wa-visually-hidden">, </span>' : ''}${use}</wa-tag>`).join('')}`;
+    `<span class="goes-label">Best for<span class="wa-visually-hidden">: </span></span><span class="wa-cluster wa-gap-s">${GOES[skin].map((use, i) => `<wa-tag appearance="outlined" size="xs">${i ? '<span class="wa-visually-hidden">, </span>' : ''}${use}</wa-tag>`).join('')}</span>`;
   $('notes').innerHTML =
     '<span class="notes-hl" aria-hidden="true"></span>' +
     STATES.map(
