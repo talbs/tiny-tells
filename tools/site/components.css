@@ -197,18 +197,22 @@ wa-color-picker::part(slider-handle) {
   padding-block: var(--code-pad-y);
   overflow-x: auto;
 }
-.tag {
-  display: inline-block;
-  inline-size: fit-content;
+wa-tag,
+wa-tag.studio {
   align-self: start;
   justify-self: start;
+  block-size: auto;
   padding: 3px var(--wa-space-xs);
-  border: var(--wa-border-width-s) solid color-mix(in oklab, var(--guide) 45%, transparent);
+  border-color: color-mix(in oklab, var(--guide) 45%, transparent);
   border-radius: var(--wa-border-radius-s);
+  background: transparent;
   font: var(--wa-font-weight-normal) var(--wa-font-size-2xs)/1.4 var(--font-mono);
   letter-spacing: 0.08em;
-  vertical-align: middle;
   color: color-mix(in oklab, var(--guide-ink) 72%, var(--fg));
+}
+wa-tag::part(content) {
+  font-size: inherit;
+  letter-spacing: inherit;
 }
 wa-button {
   --wa-form-control-height: var(--control-h);

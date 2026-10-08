@@ -188,7 +188,8 @@ const renderCast = () => {
     .map(z => `<figure>${live(skin, `style="--tell-size: ${z}px" label=""`)}<figcaption>${z}</figcaption></figure>`)
     .join('');
   $('any-size-tell').innerHTML = live(skin, `style="--tell-size: ${anySize}px" label=""`);
-  $('cast-goes').innerHTML = `<span class="goes-label">Best for</span><span>${GOES[skin].join(', ')}</span>`;
+  $('cast-goes').innerHTML =
+    `<span class="goes-label">Best for<span class="wa-visually-hidden">: </span></span>${GOES[skin].map((use, i) => `<wa-tag appearance="outlined" size="xs">${i ? '<span class="wa-visually-hidden">, </span>' : ''}${use}</wa-tag>`).join('')}`;
   $('notes').innerHTML =
     '<span class="notes-hl" aria-hidden="true"></span>' +
     STATES.map(
