@@ -24,12 +24,20 @@ let env = null,
 const fresh = new Set();
 const stale = new WeakSet();
 
+/* Tells are drawn for 60fps. A 120Hz or faster display would draw them twice as often for no visible gain, so the clock draws on every nth display frame, never dropping below 60fps. */
+let gapMs = 1000 / 60,
+  prevNow = 0,
+  skipped = 0;
 const frame = now => {
+  if (prevNow) gapMs += (clamp(now - prevNow, 4, 50) - gapMs) / 4;
+  prevNow = now;
+  if (++skipped < Math.floor(17 / gapMs + 0.1)) return void (clock.raf = requestAnimationFrame(frame));
+  skipped = 0;
   clock.t += (clock.last ? clamp((now - clock.last) / 1000, 0, 0.1) : 0) * clock.scale;
   clock.last = now;
   clock.live.forEach(el => el[TICK]());
   clock.raf = clock.live.size ? requestAnimationFrame(frame) : 0;
-  if (!clock.raf) clock.last = 0;
+  if (!clock.raf) clock.last = prevNow = skipped = 0;
 };
 const wake = () => {
   if (!clock.raf && clock.live.size) clock.raf = requestAnimationFrame(frame);

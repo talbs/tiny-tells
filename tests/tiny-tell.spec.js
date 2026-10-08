@@ -375,6 +375,37 @@ test.describe('Chromium only', () => {
     noProblems({ page });
   });
 
+  test('a moving tell redraws at 60fps on a 120Hz display, not every display frame (Dia stuttered)', async ({
+    page,
+  }) => {
+    await page.addInitScript(() => {
+      const queue = [],
+        draws = new Map();
+      let now = 0;
+      window.requestAnimationFrame = callback => queue.push(callback);
+      window.cancelAnimationFrame = () => {};
+      const clear = CanvasRenderingContext2D.prototype.clearRect;
+      CanvasRenderingContext2D.prototype.clearRect = function (x, y, w, h) {
+        if (w > 1) draws.set(this.canvas, (draws.get(this.canvas) || 0) + 1);
+        return clear.call(this, x, y, w, h);
+      };
+      window.runDisplay = (hz, frames) => {
+        draws.clear();
+        for (let i = 0; i < frames; i++) {
+          now += 1000 / hz;
+          queue.splice(0).forEach(callback => callback(now));
+        }
+        return Math.max(0, ...draws.values());
+      };
+    });
+    await page.goto('/tests/fixture.html');
+    await page.waitForFunction(() => customElements.get('tiny-tell'));
+    const second = hz => page.evaluate(hz => (window.runDisplay(hz, hz), window.runDisplay(hz, hz)), hz);
+    expect(await second(120)).toBeGreaterThanOrEqual(58);
+    expect(await second(120)).toBeLessThanOrEqual(62);
+    expect(await second(60)).toBeGreaterThanOrEqual(58);
+  });
+
   test('axe finds no accessibility violations in tells', async ({ page }) => {
     await open(page, { still: true });
     const { violations, passes } = await new AxeBuilder({ page })
