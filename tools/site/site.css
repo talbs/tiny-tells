@@ -230,14 +230,9 @@ wa-page[view='desktop']:has(> [slot='navigation'])::part(main-header) {
   margin-inline: 0;
   padding-inline: var(--space-section) 0;
 }
-/* Prose keeps a reading measure; code and examples run wide. The measure is a registered length so it resolves once at body size, not per heading. */
-@property --docs-measure {
-  syntax: '<length>';
-  inherits: true;
-  initial-value: 0px;
-}
+/* Prose keeps a reading measure; code and examples run wide. 39.75rem is 65ch of the body font at 16px. It's rem because a registered ch length resolved at 0.5em per ch (520px) in Chromium and WebKit. */
 wa-page[view='desktop']:has(> [slot='navigation']) {
-  --docs-measure: var(--measure);
+  --docs-measure: 39.75rem;
   & .wa-prose {
     max-inline-size: none;
   }
