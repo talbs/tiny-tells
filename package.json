@@ -16,7 +16,7 @@
   "bugs": "https://github.com/talbs/tiny-tells/issues",
   "repository": {
     "type": "git",
-    "url": "https://github.com/talbs/tiny-tells.git"
+    "url": "git+https://github.com/talbs/tiny-tells.git"
   },
   "license": "MIT",
   "author": "Brian Talbot",
