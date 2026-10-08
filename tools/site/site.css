@@ -22,7 +22,7 @@ body {
 html {
   overflow-x: clip;
 }
-wa-page[view='desktop']:has(> [slot='navigation']) {
+wa-page[view='desktop'].is-docs {
   --menu-width: 15rem;
 }
 wa-page > main {
@@ -52,7 +52,7 @@ wa-page::part(main-content) {
 wa-page::part(main-header) {
   padding-block-start: var(--wa-space-2xl);
 }
-wa-page:not(:has(> [slot='main-header']))::part(main-header) {
+wa-page:not(.is-docs)::part(main-header) {
   display: none;
 }
 [slot='header'],
@@ -171,8 +171,8 @@ main > section > .wa-stack:first-child > p {
 [slot='main-header'] {
   max-inline-size: var(--measure);
 }
-wa-page:has(> [slot='navigation'])::part(main-content),
-wa-page:has(> [slot='navigation'])::part(main-header) {
+wa-page.is-docs::part(main-content),
+wa-page.is-docs::part(main-header) {
   max-inline-size: calc(46rem + 2 * var(--gutter));
 }
 wa-page[view='desktop']::part(body) {
@@ -182,15 +182,15 @@ wa-page[view='desktop']::part(body) {
   margin-inline: auto;
   padding-inline: var(--gutter);
 }
-wa-page[view='desktop']:not(:has(> [slot='navigation']))::part(main-content),
-wa-page[view='desktop']:not(:has(> [slot='navigation']))::part(main-header) {
+wa-page[view='desktop']:not(.is-docs)::part(main-content),
+wa-page[view='desktop']:not(.is-docs)::part(main-header) {
   padding-inline: 0;
 }
-wa-page[view='desktop']:has(> [slot='navigation'])::part(menu) {
+wa-page[view='desktop'].is-docs::part(menu) {
   margin-inline-start: calc(-1 * var(--wa-space-xs));
   padding-inline-start: var(--wa-space-xs);
 }
-wa-page[view='desktop']:has(> [slot='navigation'])::part(navigation) {
+wa-page[view='desktop'].is-docs::part(navigation) {
   block-size: auto;
   min-block-size: 100%;
   padding-block: var(--wa-space-2xl) var(--space-section);
@@ -218,20 +218,20 @@ wa-page > .nav-toggle {
   padding: 0;
   margin-inline-start: calc(var(--gutter) - var(--wa-space-xs));
 }
-wa-page[view='mobile']:has(> .nav-toggle) > [slot='header'] {
+wa-page[view='mobile'].is-docs > [slot='header'] {
   padding-inline-start: var(--wa-space-2xs);
 }
-wa-page[view='mobile']:has(> [slot='navigation']) :is(.sections, .header-docs[aria-current]) {
+wa-page[view='mobile'].is-docs :is(.sections, .header-docs[aria-current]) {
   display: none;
 }
-wa-page[view='desktop']:has(> [slot='navigation'])::part(main-content),
-wa-page[view='desktop']:has(> [slot='navigation'])::part(main-header) {
+wa-page[view='desktop'].is-docs::part(main-content),
+wa-page[view='desktop'].is-docs::part(main-header) {
   max-inline-size: none;
   margin-inline: 0;
   padding-inline: var(--space-section) 0;
 }
 /* Prose keeps a reading measure; code and examples run wide. 39.75rem is 65ch of the body font at 16px. It's rem because a registered ch length resolved at 0.5em per ch (520px) in Chromium and WebKit. */
-wa-page[view='desktop']:has(> [slot='navigation']) {
+wa-page[view='desktop'].is-docs {
   --docs-measure: 39.75rem;
   & .wa-prose {
     max-inline-size: none;
@@ -250,7 +250,7 @@ wa-page[view='desktop']:has(> [slot='navigation']) {
 .wa-prose :is(h2, h3) + :is(.wa-not-prose, wa-tab-group, wa-scroller, .install-head) {
   margin-block-start: 0;
 }
-wa-page:not(:has(> [slot='navigation'])) #page-tell {
+wa-page:not(.is-docs) #page-tell {
   display: none;
 }
 @media (max-width: 699px) {

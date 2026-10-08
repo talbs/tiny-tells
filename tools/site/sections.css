@@ -594,7 +594,7 @@
   inline-size: min(100%, 24rem);
 }
 
-wa-page:has(.lost)::part(main-content) {
+wa-page.is-lost::part(main-content) {
   padding-block: var(--wa-space-3xl) 0;
 }
 .wall {
