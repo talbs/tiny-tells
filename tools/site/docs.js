@@ -24,6 +24,7 @@ import {
   syncInstallTabs,
   tag,
 } from './shared.js';
+import './funsies.js';
 
 const ATTR = Object.fromEntries(API.attributes.map(a => [a.name, a]));
 
@@ -179,7 +180,7 @@ reducedMotion.addEventListener('change', restingNote);
 restingNote();
 // The page runs play, so tells act as core by hand: everywhere when Core is picked, and always in the comparison.
 let isCorePicked = true;
-const isCore = el => el.matches('.is-core') || (isCorePicked && !el.closest('#play, #events-demo'));
+const isCore = el => el.matches('.is-core') || (isCorePicked && !el.closest('#play, #events-demo, #funsies'));
 const playGaze = HOOKS.gaze;
 HOOKS.gaze = el => (isCore(el) ? null : playGaze(el));
 document.addEventListener(

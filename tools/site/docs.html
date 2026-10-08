@@ -141,6 +141,10 @@
       <a href="#browser-support">Browser Support</a>
       <a href="#how-it-works">How It Works</a>
     </div>
+    <div class="wa-stack wa-gap-0">
+      <p class="label">Extras</p>
+      <a href="#funsies">Funsies</a>
+    </div>
   </nav>
   <main>
     <article class="wa-prose">
@@ -1305,6 +1309,118 @@ tell.addEventListener('tell-after-dance', event => {
           <li>never flash more than three times a second</li>
           <li>draw in system colors under forced colors</li>
         </ul>
+      </section>
+      <section
+        id="funsies"
+        aria-labelledby="funsies-title"
+      >
+        <h2 id="funsies-title">Funsies</h2>
+        <p>The tells are off the clock here. None of this teaches anything.</p>
+        <wa-callout
+          id="funsies-still"
+          class="note"
+          variant="neutral"
+          appearance="outlined"
+          size="s"
+          hidden
+        >
+          <wa-icon
+            slot="icon"
+            family="sharp"
+            variant="regular"
+            name="pause"
+          ></wa-icon>
+          <strong>These need motion.</strong>
+          <span>Press play in the header, or turn off reduced motion in your system settings.</span>
+        </wa-callout>
+        <div class="funsies wa-not-prose wa-grid wa-gap-l">
+          <figure class="example">
+            <div class="example-preview studio funsies-stage">
+              <div
+                class="funsies-row wa-cluster wa-justify-content-center wa-gap-s wa-flex-nowrap"
+                id="peanuts"
+              ></div>
+            </div>
+            <figcaption class="example-bar studio wa-flank:end">
+              <div class="wa-stack wa-gap-2xs">
+                <h3 class="wa-heading-s">Peanuts Mode</h3>
+                <span>The whole cast dances, a sixth of a beat apart.</span>
+              </div>
+              <wa-button
+                id="peanuts-go"
+                size="s"
+                appearance="outlined"
+                >Start the Show</wa-button
+              >
+            </figcaption>
+          </figure>
+          <figure class="example">
+            <div class="example-preview studio funsies-stage">
+              <div class="wa-stack wa-gap-m wa-align-items-center">
+                <div
+                  class="funsies-row wa-cluster wa-justify-content-center wa-gap-s wa-flex-nowrap"
+                  id="tempo"
+                ></div>
+                <p
+                  class="wa-caption-s"
+                  id="tempo-readout"
+                  aria-live="polite"
+                >
+                  Tap a beat
+                </p>
+              </div>
+            </div>
+            <figcaption class="example-bar studio wa-flank:end">
+              <div class="wa-stack wa-gap-2xs">
+                <h3 class="wa-heading-s">Tap Tempo</h3>
+                <span>Every tell on the page follows your beat while you tap, then settles back.</span>
+              </div>
+              <wa-button
+                id="tap"
+                size="s"
+                appearance="outlined"
+                >Tap</wa-button
+              >
+            </figcaption>
+          </figure>
+          <figure class="example">
+            <div class="example-preview studio funsies-stage">
+              <div
+                class="funsies-row wa-cluster wa-justify-content-center wa-gap-s wa-flex-nowrap"
+                id="wave"
+              ></div>
+            </div>
+            <figcaption class="example-bar studio wa-flank:end">
+              <div class="wa-stack wa-gap-2xs">
+                <h3 class="wa-heading-s">The Wave</h3>
+                <span>Every state rolls down the row, stadium style.</span>
+              </div>
+              <wa-button
+                id="wave-go"
+                size="s"
+                appearance="outlined"
+                >Do the Wave</wa-button
+              >
+            </figcaption>
+          </figure>
+          <figure class="example">
+            <div
+              class="example-preview studio funsies-stage"
+              id="audience-stage"
+            >
+              <div
+                class="audience wa-gap-s"
+                id="audience"
+              ></div>
+            </div>
+            <figcaption class="example-bar studio wa-flank:end">
+              <div class="wa-stack wa-gap-2xs">
+                <h3 class="wa-heading-s">Audience</h3>
+                <span>They watch you and get bored when you stop.</span>
+              </div>
+            </figcaption>
+          </figure>
+        </div>
       </section>
     </article>
   </main>
