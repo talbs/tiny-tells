@@ -118,6 +118,25 @@ const runCels = isOn =>
   });
 runCels(!isStill());
 onMotionChange(() => runCels(!isStill()));
+const cast = $('hero-cast'),
+  dots = $('cast-dots');
+dots.innerHTML = ['Chat', 'File upload', 'Terminal', 'CI checks']
+  .map(name => `<button type="button" aria-label="${name}"></button>`)
+  .join('');
+dots.addEventListener('click', e => {
+  const i = [...dots.children].indexOf(e.target);
+  if (i < 0) return;
+  const el = cast.children[i];
+  cast.scrollTo({ left: el.offsetLeft - cast.firstElementChild.offsetLeft, behavior: isStill() ? 'auto' : 'smooth' });
+});
+const markDot = () => {
+  const step = cast.children[1].offsetLeft - cast.firstElementChild.offsetLeft,
+    isAtEnd = cast.scrollLeft >= cast.scrollWidth - cast.clientWidth - 2,
+    at = isAtEnd ? dots.children.length - 1 : Math.round(cast.scrollLeft / step);
+  [...dots.children].forEach((dot, i) => dot.setAttribute('aria-current', i === at));
+};
+cast.addEventListener('scroll', markDot, { passive: true });
+markDot();
 const stage = document.querySelector('.hero-stage'),
   notes = stage.querySelector('.hand-notes');
 const offsetIn = el => {
