@@ -139,14 +139,14 @@ cast.addEventListener('scroll', markDot, { passive: true });
 markDot();
 const stage = document.querySelector('.hero-stage'),
   notes = stage.querySelector('.hand-notes');
-const field = document.querySelector('.hero-field'),
-  GRID = 32;
+const field = document.querySelector('.hero-field');
 const snapToGrid = () => {
   const f = field.getBoundingClientRect(),
     origin = document.querySelector('.hero-version').getBoundingClientRect(),
     actions = document.querySelector('.hero-actions'),
     c = $('hero-cast').getBoundingClientRect(),
-    nearest = (v, o) => Math.round((v - o) / GRID) * GRID + o,
+    grid = parseFloat(getComputedStyle(field).getPropertyValue('--grid')),
+    nearest = (v, o) => Math.round((v - o) / grid) * grid + o,
     nudge = parseFloat(actions.style.getPropertyValue('--actions-nudge')) || 0,
     actionsTop = actions.getBoundingClientRect().top - nudge;
   actions.style.setProperty('--actions-nudge', `${nearest(actionsTop, origin.top) - actionsTop}px`);

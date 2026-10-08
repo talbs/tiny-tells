@@ -1,4 +1,5 @@
 .hero {
+  --grid: 32px;
   position: relative;
   isolation: isolate;
   display: grid;
@@ -21,8 +22,8 @@
     max-inline-size: 44ch;
   }
   .hero-copy .hero-actions {
-    gap: var(--wa-space-xl);
-    max-inline-size: 26rem;
+    gap: var(--grid);
+    max-inline-size: calc(13 * var(--grid));
   }
 }
 @media (min-width: 1200px) {
@@ -60,13 +61,13 @@
     linear-gradient(90deg, color-mix(in oklab, var(--guide) 15%, transparent) 1px, transparent 1px),
     radial-gradient(circle, color-mix(in oklab, var(--guide) 18%, transparent) 0.7px, transparent 1.1px);
   background-size:
-    32px 32px,
-    32px 32px,
-    32px 32px;
+    var(--grid) var(--grid),
+    var(--grid) var(--grid),
+    var(--grid) var(--grid);
   background-position:
     var(--grid-x, 50%) var(--grid-y, 0),
     var(--grid-x, 50%) var(--grid-y, 0),
-    calc(var(--grid-x, 50%) + 16px) calc(var(--grid-y, 0px) + 16px);
+    calc(var(--grid-x, 50%) + var(--grid) / 2) calc(var(--grid-y, 0px) + var(--grid) / 2);
   mask-image: radial-gradient(ellipse 85% 90% at 55% 45%, #000 45%, transparent 95%);
 }
 .hero-stage {
@@ -534,7 +535,7 @@
   .hero-cast {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: var(--wa-space-xl);
+    gap: var(--grid);
     margin-inline: 0;
     padding: var(--wa-space-xl) var(--wa-space-l) var(--wa-space-l);
     overflow: visible;
