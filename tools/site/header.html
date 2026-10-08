@@ -1,0 +1,63 @@
+<header
+  slot="header"
+  class="wa-split wa-gap-l"
+>
+  <div class="wa-cluster wa-gap-xl wa-flex-nowrap">
+    <a
+      class="wa-link-plain wa-font-weight-bold"
+      href="{{root}}"
+      >Tiny Tells</a
+    >
+    <nav
+      class="sections wa-cluster wa-gap-l wa-flex-nowrap"
+      aria-label="Page sections"
+    >
+      <a href="{{root}}#tells">Cast</a>
+      <a href="{{root}}#color">Color</a>
+      <a href="{{root}}#wild">In the Wild</a>
+      <a href="{{root}}#install">Install</a>
+    </nav>
+  </div>
+  <div class="wa-cluster wa-gap-xs wa-flex-nowrap">
+    <a
+      class="header-docs"
+      href="{{root}}docs/"
+      >Docs</a
+    >
+    {{picker}}
+    <wa-button
+      id="pause"
+      size="s"
+      appearance="plain"
+      ><span class="swap-icons"
+        ><wa-icon
+          family="sharp"
+          variant="regular"
+          name="pause"
+          label="Pause All Motion"
+        ></wa-icon
+        ><wa-icon
+          family="sharp"
+          variant="regular"
+          name="play"
+        ></wa-icon></span
+    ></wa-button>
+    <wa-button
+      id="theme"
+      size="s"
+      appearance="plain"
+      ><span class="swap-icons"
+        ><wa-icon
+          family="sharp"
+          variant="regular"
+          name="moon"
+          label="Switch to Dark"
+        ></wa-icon
+        ><wa-icon
+          family="sharp"
+          variant="regular"
+          name="lamp-desk"
+        ></wa-icon></span
+    ></wa-button>
+  </div>
+</header>

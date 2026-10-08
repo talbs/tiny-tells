@@ -1,0 +1,657 @@
+/* Site: tokens, page shell, header and footer, base type. Loads before components and sections. */
+:root {
+  --space-tight: var(--wa-space-2xs);
+  --space-related: var(--wa-space-s);
+  --space-group: var(--wa-space-xl);
+  --space-section: var(--wa-space-4xl);
+  --space-page: calc(var(--wa-space-4xl) * 1.5);
+  --section-pad: var(--wa-space-3xl);
+  --page-width: 80rem;
+  --gutter: clamp(var(--wa-space-m), 4vw, var(--wa-space-2xl));
+  --measure: 65ch;
+  --bleed: calc(50% - 50vw);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-settle: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+html,
+body {
+  min-height: 100%;
+  padding: 0;
+  margin: 0;
+}
+html {
+  overflow-x: clip;
+}
+wa-page[view='desktop']:has(> [slot='navigation']) {
+  --menu-width: 15rem;
+}
+wa-page > main {
+  padding: 0;
+}
+wa-page::part(main),
+wa-page::part(main-content),
+wa-page::part(main-header) {
+  min-inline-size: 0;
+}
+wa-page::part(main-content),
+wa-page::part(main-header) {
+  inline-size: 100%;
+  max-inline-size: var(--page-width);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+  box-sizing: border-box;
+}
+wa-page::part(main-content) {
+  padding-block: var(--space-section) var(--space-page);
+}
+@media (max-width: 699px) {
+  wa-page::part(main-content) {
+    padding-block-end: var(--section-pad);
+  }
+}
+wa-page::part(main-header) {
+  padding-block-start: var(--wa-space-2xl);
+}
+wa-page:not(:has(> [slot='main-header']))::part(main-header) {
+  display: none;
+}
+[slot='header'],
+[slot='footer'] {
+  box-sizing: border-box;
+  inline-size: 100%;
+  padding: var(--space-related) var(--gutter);
+}
+wa-page > :is([slot='header'], [slot='footer']) {
+  max-inline-size: var(--page-width);
+  margin-inline: auto;
+}
+[slot='footer'] {
+  padding-block: var(--space-group);
+}
+.wa-prose table code {
+  white-space: nowrap;
+}
+/* A floor keeps columns readable on phones, so the table scrolls inside its wa-scroller instead of squashing. */
+wa-scroller > table {
+  min-inline-size: max(100%, 36rem);
+}
+.wa-prose .tell-cell {
+  --tell-size: 2rem;
+  inline-size: 1px;
+}
+.wa-prose tr:has(> .tell-cell) > * {
+  vertical-align: middle;
+}
+.sections {
+  overflow: auto hidden;
+  scrollbar-width: none;
+  padding-block: var(--wa-space-s);
+  margin-block: calc(-1 * var(--wa-space-s));
+}
+header #page-tell {
+  inline-size: 8.5rem;
+}
+.studio {
+  --paper-tint: color-mix(in oklab, var(--paper) 50%, var(--paper-edge));
+}
+.examples-panel {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-inline-size: 0;
+}
+.select-tell {
+  --tell-size: 18px;
+}
+wa-select wa-icon[slot='start'] {
+  color: var(--muted);
+}
+.examples-bundle > wa-radio-group {
+  flex: 1;
+}
+.examples-bundle wa-radio-group::part(form-control-input) {
+  inline-size: 100%;
+}
+.examples-bundle wa-radio {
+  flex: 1;
+  justify-content: center;
+}
+.examples-panel legend {
+  float: inline-start;
+  inline-size: 100%;
+  padding: 0;
+  margin-block-end: var(--wa-space-2xs);
+}
+.docs-index > div > p {
+  margin-block-end: var(--wa-space-2xs);
+}
+.docs-index a {
+  position: relative;
+  align-self: start;
+  padding-block: var(--wa-space-xs);
+  font: var(--wa-font-weight-semibold) var(--wa-font-size-xs) / 1.3 var(--font-mono);
+  color: var(--muted);
+  text-decoration: none;
+}
+.wa-prose .example-preview {
+  background: var(--paper-tint);
+}
+.palette-probe {
+  position: absolute;
+  inline-size: 0;
+  block-size: 0;
+  overflow: hidden;
+}
+.palette-probe i {
+  background: var(--wa-color-surface-default);
+}
+@media (max-width: 860px) {
+  header #page-tell {
+    inline-size: 7rem;
+  }
+}
+main > section {
+  padding-block: var(--section-pad);
+}
+main > section:last-child {
+  padding-block-end: 0;
+}
+main > section > .wa-stack:first-child > p {
+  max-inline-size: var(--measure);
+}
+.wa-prose > section + section {
+  margin-block-start: var(--space-section);
+}
+.wa-prose > section + p {
+  margin-block-start: var(--space-page);
+}
+.wa-prose > p + section {
+  margin-block-start: var(--space-tight);
+}
+[slot='main-header'] {
+  max-inline-size: var(--measure);
+}
+wa-page:has(> [slot='navigation'])::part(main-content),
+wa-page:has(> [slot='navigation'])::part(main-header) {
+  max-inline-size: calc(46rem + 2 * var(--gutter));
+}
+wa-page[view='desktop']::part(body) {
+  box-sizing: border-box;
+  inline-size: 100%;
+  max-inline-size: var(--page-width);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+wa-page[view='desktop']:not(:has(> [slot='navigation']))::part(main-content),
+wa-page[view='desktop']:not(:has(> [slot='navigation']))::part(main-header) {
+  padding-inline: 0;
+}
+wa-page[view='desktop']:has(> [slot='navigation'])::part(menu) {
+  margin-inline-start: calc(-1 * var(--wa-space-xs));
+  padding-inline-start: var(--wa-space-xs);
+}
+wa-page[view='desktop']:has(> [slot='navigation'])::part(navigation) {
+  block-size: auto;
+  min-block-size: 100%;
+  padding-block: var(--wa-space-2xl) var(--space-section);
+  padding-inline: 0 var(--wa-space-xl);
+  scrollbar-gutter: stable;
+  scrollbar-width: thin;
+  scrollbar-color: var(--line) transparent;
+}
+wa-page[view='desktop'] > :is([slot='navigation'], [slot='navigation-header']),
+wa-page > [slot='main-header'] {
+  padding-inline: 0;
+}
+wa-page[view='desktop']::part(navigation-header) {
+  padding-inline: 0;
+}
+wa-page[view='mobile']::part(header) {
+  flex-wrap: nowrap;
+  align-items: center;
+}
+wa-page[view='mobile'] > [slot='header'] {
+  flex: 1 1 0;
+  min-inline-size: 0;
+}
+wa-page > .nav-toggle {
+  padding: 0;
+  margin-inline-start: calc(var(--gutter) - var(--wa-space-xs));
+}
+wa-page[view='mobile']:has(> .nav-toggle) > [slot='header'] {
+  padding-inline-start: var(--wa-space-2xs);
+}
+wa-page[view='mobile']:has(> [slot='navigation']) :is(.sections, .header-docs[aria-current]) {
+  display: none;
+}
+wa-page[view='desktop']:has(> [slot='navigation'])::part(main-content),
+wa-page[view='desktop']:has(> [slot='navigation'])::part(main-header) {
+  max-inline-size: none;
+  margin-inline: 0;
+  padding-inline: var(--space-section) 0;
+}
+/* Prose keeps a reading measure; code and examples run wide. The measure is a registered length so it resolves once at body size, not per heading. */
+@property --docs-measure {
+  syntax: '<length>';
+  inherits: true;
+  initial-value: 0px;
+}
+wa-page[view='desktop']:has(> [slot='navigation']) {
+  --docs-measure: var(--measure);
+  & .wa-prose {
+    max-inline-size: none;
+  }
+  & > [slot='main-header'],
+  & .wa-prose > :not(section),
+  & .wa-prose > section > :not(pre, .wa-not-prose, .install-head, wa-tab-group, wa-scroller, wa-callout),
+  & .wa-prose wa-callout::part(message),
+  & .wa-prose .wa-not-prose > wa-select {
+    max-inline-size: var(--docs-measure);
+  }
+}
+.wa-prose section > :is(.wa-not-prose, wa-tab-group, wa-scroller) {
+  margin-block: var(--space-group);
+}
+.wa-prose :is(h2, h3) + :is(.wa-not-prose, wa-tab-group, wa-scroller, .install-head) {
+  margin-block-start: 0;
+}
+wa-page:not(:has(> [slot='navigation'])) #page-tell {
+  display: none;
+}
+@media (max-width: 699px) {
+  .sections,
+  .palette-tabs,
+  .header-docs[aria-current],
+  header #page-tell {
+    display: none;
+  }
+}
+/* Type: only the WA size tokens (11–96px). Label is mono 2xs caps, data and controls mono xs, hand lettering is Nanum Pen for the hero notes only, section titles 3xl bold, subheads xl bold. */
+body {
+  font-size: var(--wa-font-size-m);
+  font-kerning: normal;
+  font-optical-sizing: auto;
+  text-rendering: optimizeLegibility;
+}
+:root {
+  --wa-font-size-2xs: 11px;
+  --wa-font-size-xs: 12px;
+  --wa-font-size-s: 14px;
+  --wa-font-size-m: 16px;
+  --wa-font-size-l: 20px;
+  --wa-font-size-xl: 24px;
+  --wa-font-size-2xl: 32px;
+  --wa-font-size-3xl: 40px;
+  --wa-font-size-4xl: 64px;
+  --wa-font-size-5xl: 96px;
+  --well-light: var(--off-white);
+  --well-light-muted: #69655d;
+  --well-dark: var(--dark-well);
+  --pencil: light-dark(#d0574a, #ff8473);
+  --working-default: light-dark(#787ccc, #aeb3ff);
+  --brand-font-awesome: #528dd7;
+  --brand-web-awesome: #f36944;
+  --code-ink: light-dark(var(--slate-900), var(--slate-100));
+  --code-bg: var(--slate-900);
+  --code-working: light-dark(#6062a4, #aeb3ff);
+  --code-done: light-dark(#2a7547, #79c993);
+  --code-error: light-dark(#993433, #f8827c);
+  --code-warning: light-dark(#946114, #efb267);
+  --code-idle: light-dark(#57585c, #a4a5ab);
+  --control-ink: var(--fg);
+  --control-on: var(--bg);
+  --control-edge: color-mix(in oklab, var(--fg) 30%, var(--bg));
+  --control-hover: var(--field);
+  --control-quiet: var(--muted);
+  --control-ring: var(--wa-border-width-m) solid var(--fg);
+  --control-h: 40px;
+  --control-h-s: 32px;
+  --wa-focus-ring: var(--control-ring);
+  --wa-focus-ring-offset: 2px;
+  --wa-color-text-link: var(--fg);
+  --wa-form-control-border-color: var(--control-edge);
+}
+wa-page::part(header) {
+  background: var(--bg);
+  border-block-end: var(--wa-border-width-s) solid var(--line);
+  -webkit-backdrop-filter: blur(0) saturate(1);
+  backdrop-filter: blur(0) saturate(1);
+  transition:
+    background-color var(--wa-transition-slow) var(--wa-transition-easing),
+    backdrop-filter var(--wa-transition-slow) var(--wa-transition-easing);
+}
+:root.is-scrolled wa-page::part(header) {
+  background: color-mix(in oklab, var(--bg) 85%, transparent);
+  -webkit-backdrop-filter: blur(12px) saturate(1.4);
+  backdrop-filter: blur(12px) saturate(1.4);
+}
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+wa-page::part(footer) {
+  border-block-start: var(--wa-border-width-s) solid var(--line);
+}
+:is(h1, h2, h3, [class*='wa-heading']) {
+  text-wrap: balance;
+  font-feature-settings:
+    'kern' 1,
+    'liga' 1;
+}
+:is(p, li, dd) {
+  text-wrap: pretty;
+}
+:root.wa-dark {
+  --code-bg: color-mix(in oklab, var(--slate-900) 50%, var(--slate-950));
+}
+:is(.sections, .foot-links) a,
+.header-docs {
+  white-space: nowrap;
+  font: var(--wa-font-weight-semibold) var(--wa-font-size-xs)/1 var(--font-mono);
+  color: var(--muted);
+  text-decoration: none;
+}
+:is(.sections, .foot-links, .docs-index) a:hover,
+.header-docs:hover,
+.docs-index a[aria-current],
+.header-docs[aria-current],
+.sections a[aria-current] {
+  color: var(--fg);
+}
+.sections a,
+.header-docs {
+  position: relative;
+  padding-block: var(--wa-space-s);
+  margin-block: calc(-1 * var(--wa-space-s));
+}
+.header-docs {
+  margin-inline-end: var(--wa-space-s);
+}
+.sections a::after,
+.header-docs::after,
+.docs-index a::after {
+  content: '';
+  position: absolute;
+  inset-inline: -2px;
+  inset-block-end: calc(var(--wa-space-s) - 7px);
+  block-size: 6px;
+  background: var(--pencil);
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 8' preserveAspectRatio='none'%3E%3Cpath d='M1.5 4.4C30 3.7 64 3.6 98.5 4.1' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round' vector-effect='non-scaling-stroke'/%3E%3C/svg%3E")
+    center / 100% 100% no-repeat;
+  pointer-events: none;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--wa-transition-fast) ease-in;
+}
+.docs-index a::after {
+  inset-block-end: calc(var(--wa-space-xs) - 7px);
+}
+.sections a[aria-current]::after,
+.header-docs[aria-current]::after,
+.docs-index a[aria-current]::after {
+  transform: none;
+  transition: transform 0.35s var(--ease-out);
+}
+@media (prefers-reduced-motion: reduce) {
+  .sections a::after,
+  .header-docs::after,
+  .docs-index a::after {
+    transform: none;
+    opacity: 0;
+    transition: opacity var(--wa-transition-fast);
+  }
+  .sections a[aria-current]::after,
+  .header-docs[aria-current]::after,
+  .docs-index a[aria-current]::after {
+    opacity: 1;
+  }
+}
+.wa-prose :is(p, h2, h3) {
+  margin: revert-layer;
+  font-size: revert-layer;
+}
+.foot-reg {
+  position: relative;
+  inline-size: 14px;
+  block-size: 14px;
+  border: var(--wa-border-width-s) solid color-mix(in oklab, var(--guide) 55%, transparent);
+  border-radius: var(--wa-border-radius-circle);
+}
+.foot-reg::before,
+.foot-reg::after {
+  content: '';
+  position: absolute;
+  background: color-mix(in oklab, var(--guide) 55%, transparent);
+}
+.foot-reg::before {
+  inset-inline: -5px;
+  inset-block-start: 50%;
+  block-size: 1px;
+}
+.foot-reg::after {
+  inset-block: -5px;
+  inset-inline-start: 50%;
+  inline-size: 1px;
+}
+.site-footer {
+  gap: var(--space-related) var(--space-group);
+}
+[slot='footer'].site-footer {
+  padding-block: var(--wa-space-xl);
+}
+@media (max-width: 999px) {
+  .site-footer {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--wa-space-m);
+  }
+  .foot-links {
+    padding-block-start: var(--wa-space-m);
+    border-block-start: var(--wa-border-width-s) dashed var(--line);
+  }
+}
+.title-block > * {
+  padding-inline: var(--wa-space-m);
+  border-inline-start: var(--wa-border-width-s) solid var(--paper-edge);
+}
+.title-block > :first-child {
+  padding-inline-start: 0;
+  border-inline-start: 0;
+}
+.title-block a {
+  color: inherit;
+}
+@media (max-width: 519px) {
+  .title-block > * {
+    padding-inline: var(--wa-space-s);
+  }
+}
+@media (max-width: 479px) {
+  .title-block {
+    gap: var(--wa-space-2xs) var(--wa-space-m);
+  }
+  .title-block > * {
+    padding-inline: 0;
+    border-inline-start: 0;
+  }
+}
+.made-by {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5ch;
+  font: var(--wa-font-size-xs) / var(--wa-line-height-normal) var(--font-body);
+  letter-spacing: normal;
+  text-transform: none;
+}
+.made-with {
+  display: inline-grid;
+  place-items: center;
+  margin: calc(-1 * var(--wa-space-xs));
+  margin-inline-start: calc(-1 * var(--wa-space-2xs));
+  padding: var(--wa-space-xs);
+  border: 0;
+  border-radius: var(--wa-border-radius-circle);
+  background: none;
+  color: var(--accent);
+  font-size: var(--wa-font-size-xs);
+  vertical-align: baseline;
+  cursor: pointer;
+}
+.made-with wa-icon[family='sharp-duotone'] {
+  --secondary-opacity: 1;
+}
+.made-with wa-icon[name^='face-'] {
+  --primary-color: var(--wa-color-yellow-10);
+  --secondary-color: var(--wa-color-yellow-80);
+}
+.made-with wa-icon[name='rectangle-terminal'] {
+  --primary-color: var(--wa-color-cyan-80);
+  --secondary-color: var(--wa-color-gray-10);
+}
+.made-with wa-icon[name='pencil'] {
+  --primary-color: var(--wa-color-yellow-80);
+  --secondary-color: var(--wa-color-pink-70);
+}
+.made-with wa-icon[name='heart'] {
+  --primary-color: var(--wa-color-red-30);
+  --secondary-color: var(--wa-color-red-60);
+}
+.made-with .is-fa {
+  color: var(--brand-font-awesome);
+}
+.made-with .is-wa {
+  color: var(--brand-web-awesome);
+}
+.made-with:focus-visible {
+  outline: var(--control-ring);
+}
+.tb-name {
+  user-select: none;
+  touch-action: manipulation;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--wa-space-s);
+  color: var(--ink);
+  font-weight: var(--wa-font-weight-semibold);
+}
+a {
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+  text-decoration-skip-ink: auto;
+}
+:where(main, .site-footer, [slot='main-header']) a {
+  color: inherit;
+  text-decoration-line: underline;
+  text-decoration-style: solid;
+  text-decoration-color: color-mix(in oklab, currentColor 34%, transparent);
+  text-decoration-skip-ink: none;
+  text-underline-offset: 0.35em;
+}
+:where(main, .site-footer, [slot='main-header']) a:hover {
+  text-decoration-thickness: 2px;
+  text-decoration-color: var(--tell-color-working, var(--working-default));
+}
+:where(main, .site-footer, [slot='main-header']) a:active {
+  color: var(--code-working);
+}
+@media (prefers-reduced-motion: no-preference) {
+  :where(main, .site-footer, [slot='main-header']) a,
+  wa-button.doc-link::part(label) {
+    transition-property: text-decoration-color;
+    transition-duration: 200ms;
+    transition-timing-function: ease-out;
+  }
+}
+:is(p, li, blockquote) {
+  hanging-punctuation: first last;
+}
+:is(.hero-facts, .ship-strip figcaption) {
+  font-variant-numeric: tabular-nums;
+}
+.wa-prose {
+  font-variant-ligatures: common-ligatures contextual;
+}
+.wa-prose :is(p, li):not(.wa-not-prose *) {
+  max-inline-size: 68ch;
+}
+@media (pointer: coarse) {
+  :root {
+    --control-h-s: 40px;
+  }
+}
+.wa-prose h2 {
+  font-size: var(--wa-font-size-2xl);
+  font-weight: var(--wa-font-weight-bold);
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+}
+.wa-prose h3 {
+  font-size: var(--wa-font-size-xl);
+  font-weight: var(--wa-font-weight-bold);
+  letter-spacing: -0.012em;
+}
+:is(main, [slot='main-header']) :not(pre) > code {
+  font-size: max(0.75em, var(--wa-font-size-2xs));
+}
+.wa-prose pre {
+  overflow-x: auto;
+}
+:root.wa-dark .wild-card {
+  background: color-mix(in oklab, var(--paper) 80%, var(--fg));
+}
+::selection {
+  background: color-mix(in oklab, var(--tell-color-working, var(--working-default)) 30%, transparent);
+}
+/* Padding matches each marker's width in mono (0.7em a character), so markers hang flush to the column edge. */
+.wa-prose ul:not(.wa-list-plain) {
+  padding-inline-start: calc(var(--wa-font-size-xs) * 2.1);
+}
+.wa-prose ol:not(.wa-list-plain) {
+  padding-inline-start: calc(var(--wa-font-size-xs) * 2.8);
+}
+.wa-prose :is(ol, ul):not(.wa-list-plain) > li {
+  margin-inline-start: 0;
+  padding-inline-start: 0;
+}
+.wa-prose :is(ol, ul):not(.wa-list-plain) > li + li {
+  margin-block-start: var(--wa-space-s);
+}
+.wa-prose :is(ol, ul):not(.wa-list-plain) > li::marker {
+  font: var(--wa-font-weight-bold) var(--wa-font-size-xs) var(--font-mono);
+  color: var(--pencil);
+}
+.wa-prose ol:not(.wa-list-plain) > li::marker {
+  content: counter(list-item, decimal-leading-zero) '  ';
+}
+.wa-prose ul:not(.wa-list-plain) > li::marker {
+  content: '–  ';
+}
+/* The page waits only for the layout; each component stays invisible, holding its space, until it loads. */
+[data-loading] wa-page > :not([slot='header']) {
+  opacity: 0;
+}
+[data-upgrading] {
+  scroll-behavior: auto !important;
+}
+[data-upgrading] :not(:defined) {
+  visibility: hidden;
+}
+wa-page > :not([slot='header']) {
+  transition: opacity var(--wa-transition-fast) var(--wa-transition-easing);
+}
+wa-page::part(header) {
+  view-transition-name: site-header;
+}
+@media (prefers-reduced-motion: no-preference) {
+  @view-transition {
+    navigation: auto;
+  }
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 0.2s;
+  }
+}
+.docs-title wa-badge {
+  font-family: var(--font-mono);
+}

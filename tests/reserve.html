@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>reserve.css fixture</title>
+    <link
+      rel="stylesheet"
+      href="/dist/reserve.css"
+    />
+    <style>
+      body {
+        font:
+          16px/1.5 system-ui,
+          sans-serif;
+        margin: 16px;
+      }
+      .row {
+        display: flex;
+        gap: 4px;
+        inline-size: 120px;
+      }
+      .stand-in tiny-tell:not(:defined) {
+        display: inline-grid;
+        place-items: center;
+      }
+      .stand-in tiny-tell:not(:defined)::before {
+        content: '•';
+      }
+    </style>
+  </head>
+  <body>
+    <p data-case="default">Default <tiny-tell></tiny-tell> <span>after</span></p>
+    <p
+      data-case="small text"
+      style="font-size: 10px"
+    >
+      Small <tiny-tell></tiny-tell> <span>after</span>
+    </p>
+    <p
+      data-case="large text"
+      style="font-size: 30px"
+    >
+      Large <tiny-tell></tiny-tell> <span>after</span>
+    </p>
+    <p
+      data-case="huge text"
+      style="font-size: 60px"
+    >
+      Huge <tiny-tell></tiny-tell> <span>after</span>
+    </p>
+    <p data-case="pinned on the tell">Pinned <tiny-tell style="--tell-size: 2.5rem"></tiny-tell> <span>after</span></p>
+    <p
+      data-case="pinned on a container"
+      style="--tell-size: 1.5rem"
+    >
+      Inherited <tiny-tell></tiny-tell> <span>after</span>
+    </p>
+    <p
+      data-case="tight flex row"
+      class="row"
+    >
+      <tiny-tell></tiny-tell><span>words that wrap in a narrow row</span>
+    </p>
+    <p
+      data-case="with a stand-in"
+      class="stand-in"
+    >
+      Stand-in <tiny-tell state="done"></tiny-tell> <span>after</span>
+    </p>
+    <p data-case="hidden">Hidden <tiny-tell hidden></tiny-tell> <span>after</span></p>
+  </body>
+</html>

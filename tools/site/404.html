@@ -1,0 +1,49 @@
+<wa-page
+  disable-navigation-toggle
+  mobile-breakpoint="860"
+>
+  {{header}}
+  <main class="lost studio">
+    <h1 class="wa-visually-hidden">Page not found</h1>
+    <div
+      class="wall"
+      id="wall"
+      role="img"
+      aria-label="404, spelled out in tells"
+    ></div>
+    <div
+      class="lost-note wa-split"
+      id="lost-note"
+    >
+      <wa-random-content
+        id="lost-lines"
+        mode="sequence"
+        animation="fade-up"
+        autoplay
+        autoplay-interval="3200"
+      >
+        <p>Nothing here.</p>
+        <p>Nobody’s home.</p>
+        <p>This page wandered off.</p>
+        <p>Not a soul here.</p>
+        <p>All out of page.</p>
+        <p>Huh. Empty.</p>
+      </wa-random-content>
+      <wa-button
+        class="doc-link studio"
+        href="{{root}}"
+        size="s"
+        appearance="plain"
+        >Back to Tiny Tells<svg
+          slot="end"
+          class="doc-arrow"
+          viewBox="5 0 19 18"
+          aria-hidden="true"
+        >
+          <path
+            d="M6.5 12.4C11 12.9 15.6 11 21.5 6.4M15.2 5.1C17.6 5.4 19.8 5.6 22.3 5.8C21.6 8.1 21.1 10.2 20.6 12.4"
+          /></svg
+      ></wa-button>
+    </div>
+  </main>
+</wa-page>

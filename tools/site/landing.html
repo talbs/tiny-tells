@@ -1,0 +1,646 @@
+<wa-page
+  disable-navigation-toggle
+  mobile-breakpoint="860"
+>
+  {{header}}
+  <main class="wa-stack wa-gap-0">
+    <section
+      class="hero studio"
+      id="top"
+      aria-labelledby="hero-title"
+    >
+      <div
+        class="hero-field"
+        aria-hidden="true"
+      ></div>
+      <div class="hero-copy">
+        <p class="hero-version tag">v{{version}}</p>
+        <h1 id="hero-title">
+          <span class="wa-visually-hidden">Tiny Tells</span
+          ><span aria-hidden="true"
+            ><span class="mark-t">T</span
+            ><span class="tittle"
+              >ı<tiny-tell
+                id="mark-tell"
+                skin="eyes"
+                state="working"
+                label=""
+              ></tiny-tell></span
+            >ny <span class="mark-gap">Tells</span></span
+          >
+        </h1>
+        <p class="hero-lede">Give your app’s status a face. Six tiny characters drop in anywhere a spinner would go.</p>
+        <div class="hero-actions">
+          <wa-button
+            href="#install"
+            variant="brand"
+            >Get Started<wa-icon
+              slot="end"
+              family="sharp"
+              variant="regular"
+              name="code"
+            ></wa-icon
+          ></wa-button>
+          <wa-button
+            href="#tells"
+            appearance="outlined"
+            >Meet the Cast<wa-icon
+              slot="end"
+              family="sharp"
+              variant="regular"
+              name="arrow-down"
+            ></wa-icon
+          ></wa-button>
+        </div>
+        <ul class="hero-facts wa-cluster wa-list-plain">
+          <li>6 tells</li>
+          <li>5 states</li>
+          <li>0 dependencies</li>
+          <li>{{size}} KB</li>
+        </ul>
+      </div>
+      <div class="hero-stage">
+        <span
+          class="reg reg-a"
+          aria-hidden="true"
+        ></span>
+        <span
+          class="reg reg-b"
+          aria-hidden="true"
+        ></span>
+        <span
+          class="pencil"
+          aria-hidden="true"
+          >sc. 01 · bg</span
+        >
+        <div
+          class="hero-cast"
+          id="hero-cast"
+          role="group"
+          aria-label="Tiny Tells in four kinds of interface"
+        ></div>
+        <span
+          class="timing"
+          aria-hidden="true"
+          ><i class="playhead"></i
+        ></span>
+        <div
+          class="hand-notes"
+          aria-hidden="true"
+        >
+          <svg
+            class="hand hand-loop"
+            viewBox="0 0 64 64"
+          >
+            <path
+              pathLength="1"
+              d="M34 6C50 4 61 18 59 33C57 50 39 61 23 57C7 53 2 35 6 21C9 11 20 3 38 7"
+            />
+          </svg>
+          <svg
+            class="hand hand-arrow-a"
+            viewBox="0 0 60 96"
+          >
+            <path
+              pathLength="1"
+              d="M52 4C34 18 22 48 12 86M4 74L12 88L22 78"
+            />
+          </svg>
+          <span class="hand-note note-a">eyes lead, head follows</span>
+          <svg
+            class="hand hand-arrow-b"
+            viewBox="0 0 70 44"
+          >
+            <path
+              pathLength="1"
+              d="M66 40C46 36 26 26 8 6M6 19L8 5L21 7"
+            />
+          </svg>
+          <span class="hand-note note-b">hold, then flip</span>
+          <svg
+            class="hand hand-bracket"
+            viewBox="0 0 96 20"
+          >
+            <path
+              pathLength="1"
+              d="M2 2C3 8 4 10 10 10L44 11C47 11 48 14 48 18C48 14 50 11 53 11L88 10C93 10 94 8 94 2"
+            />
+          </svg>
+          <span class="hand-note note-c">1 beat · 0.8s</span>
+        </div>
+      </div>
+    </section>
+
+    <section
+      class="studio band wa-stack wa-gap-xl"
+      id="tells"
+      aria-labelledby="cast-title"
+    >
+      <div class="lineup">
+        <div>
+          <h2
+            class="wa-visually-hidden"
+            id="cast-title"
+          >
+            The cast
+          </h2>
+          <wa-radio-group
+            id="cast-pick"
+            class="cast-pick wa-visually-hidden-label"
+            label="Tell shown across the page"
+            orientation="horizontal"
+            size="s"
+            value="eyes"
+          ></wa-radio-group>
+        </div>
+      </div>
+      <div class="cast-intro section-intro wa-cluster wa-align-items-start">
+        <div class="wa-stack wa-gap-s">
+          <h3
+            class="section-title"
+            id="cast-name"
+          ></h3>
+          <p
+            class="lede"
+            id="cast-who"
+          ></p>
+        </div>
+      </div>
+      <div class="cast">
+        <div class="cast-proof wa-stack wa-gap-l">
+          <div class="proof-table">
+            <div class="sheet big">
+              <canvas
+                class="onion"
+                id="onion"
+                aria-hidden="true"
+              ></canvas>
+              <div
+                class="stage"
+                id="stage"
+              ></div>
+              <span
+                class="guide"
+                aria-hidden="true"
+              ></span>
+            </div>
+            <figure class="ship-strip">
+              <figcaption class="label">Ship Sizes</figcaption>
+              <div
+                class="model"
+                id="stage-ship"
+              ></div>
+            </figure>
+            <div class="any-size">
+              <wa-slider
+                id="any-size"
+                label="Any Size"
+                size="s"
+                min="12"
+                max="72"
+                step="1"
+                value="36"
+              ></wa-slider>
+              <figure class="any-size-cell">
+                <div
+                  class="any-size-tell"
+                  id="any-size-tell"
+                ></div>
+                <figcaption id="any-size-value">36</figcaption>
+              </figure>
+            </div>
+          </div>
+          <div class="cast-controls wa-cluster wa-gap-l">
+            <wa-switch
+              id="onion-toggle"
+              size="s"
+              >Onion Skin</wa-switch
+            ><wa-switch
+              id="guides-toggle"
+              size="s"
+              checked
+              >Guides</wa-switch
+            ><span class="play-switch"
+              ><wa-switch
+                id="play-toggle"
+                size="s"
+                checked
+                >Play</wa-switch
+              ><a
+                class="info-link"
+                href="#play"
+                ><wa-icon
+                  family="sharp"
+                  variant="regular"
+                  name="circle-info"
+                  label="What Play Adds"
+                ></wa-icon></a
+            ></span>
+          </div>
+        </div>
+        <div class="cast-states wa-stack wa-gap-l">
+          <div>
+            <div
+              class="notes"
+              id="notes"
+              role="group"
+              aria-label="State for the stage"
+            ></div>
+          </div>
+          <wa-details
+            class="lab-notes"
+            appearance="plain"
+          >
+            <span
+              slot="summary"
+              class="lab-summary"
+            >
+              <span
+                class="goes-line wa-cluster wa-gap-s"
+                id="cast-goes"
+              ></span>
+              <span>Lab Notes</span>
+            </span>
+            <dl
+              class="lab-grid wa-grid wa-gap-xl"
+              id="cast-build"
+            ></dl>
+          </wa-details>
+        </div>
+      </div>
+    </section>
+
+    <section
+      class="wa-stack wa-gap-xl"
+      id="color"
+      aria-labelledby="color-title"
+    >
+      <div class="section-intro wa-split wa-align-items-end">
+        <div class="wa-stack wa-gap-s">
+          <h2
+            class="section-title"
+            id="color-title"
+          >
+            Make It Yours
+          </h2>
+          <p class="lede">
+            Tells take five color tokens, one per state. Set them on <code>:root</code> or any container, and any you
+            leave out keep the built-in color. Each needs 3:1 contrast against the surface behind it.
+          </p>
+        </div>
+      </div>
+      <div class="wa-stack wa-gap-l">
+        <wa-radio-group
+          id="palette-preset"
+          class="palette-tabs wa-visually-hidden-label"
+          label="Palette"
+          orientation="horizontal"
+          size="s"
+        ></wa-radio-group>
+        <wa-select
+          id="palette-preset-select"
+          class="palette-select"
+          label="Palette"
+          size="s"
+        >
+          <wa-icon
+            slot="start"
+            family="sharp"
+            variant="regular"
+            name="palette"
+          ></wa-icon>
+        </wa-select>
+        <div class="color-body">
+          <div class="swatch-col wa-stack wa-gap-s">
+            <div
+              class="swatch-sheet studio"
+              id="palette"
+              role="table"
+              aria-label="Palette contrast by state"
+            ></div>
+            <div class="swatch-foot wa-split wa-gap-s">
+              <p
+                class="swatch-note"
+                id="palette-note"
+                hidden
+              >
+                Ratios use the library’s default palette.
+              </p>
+              <wa-button
+                id="palette-reset"
+                appearance="plain"
+                size="s"
+                hidden
+                >Reset Colors</wa-button
+              >
+            </div>
+          </div>
+          <div class="color-code wa-stack wa-align-items-end wa-justify-content-space-between">
+            <pre data-copy><code
+              class="language-css"
+              id="palette-css"
+            ></code></pre>
+            <wa-button
+              class="doc-link studio"
+              href="docs/#color"
+              size="s"
+              appearance="plain"
+              >Read the Color Docs<svg
+                slot="end"
+                class="doc-arrow"
+                viewBox="5 0 19 18"
+                aria-hidden="true"
+              >
+                <path
+                  d="M6.5 12.4C11 12.9 15.6 11 21.5 6.4M15.2 5.1C17.6 5.4 19.8 5.6 22.3 5.8C21.6 8.1 21.1 10.2 20.6 12.4"
+                /></svg
+            ></wa-button>
+          </div>
+        </div>
+      </div>
+      <div
+        class="play-block"
+        id="play"
+      >
+        <div class="play-stage studio">
+          <tiny-tell
+            id="play-tell"
+            skin="eyes"
+          ></tiny-tell>
+          <svg
+            class="hand play-arrow"
+            viewBox="0 0 70 44"
+            aria-hidden="true"
+          >
+            <path
+              pathLength="1"
+              d="M66 40C46 36 26 26 8 6M6 19L8 5L21 7"
+            />
+          </svg>
+          <span
+            class="hand-note play-note"
+            aria-hidden="true"
+            >tap me five times</span
+          >
+          <svg
+            class="plan-leader is-follow"
+            viewBox="0 0 90 60"
+            aria-hidden="true"
+          >
+            <circle
+              cx="86"
+              cy="4"
+              r="3"
+            />
+            <path d="M84 6L30 56H0" />
+          </svg>
+          <span
+            class="plan-note is-follow"
+            aria-hidden="true"
+            >Note · Follows your cursor</span
+          >
+        </div>
+        <div class="play-copy">
+          <h3 class="subhead">Add Some Play</h3>
+          <p class="lede">
+            The play bundle adds two extras. Tells glance at your pointer as it passes, and five quick taps on one make
+            it dance. This page runs it, so try it here.
+          </p>
+          <pre data-copy><code
+            class="language-javascript"
+            id="play-install"
+          >import 'tiny-tells/play'; // instead of 'tiny-tells'</code></pre>
+          <div class="play-actions wa-split">
+            <wa-button
+              id="play-dance"
+              size="s"
+              appearance="outlined"
+              >Watch It Dance</wa-button
+            >
+            <wa-button
+              class="doc-link studio"
+              href="docs/#play"
+              size="s"
+              appearance="plain"
+              >Read the Play Docs<svg
+                slot="end"
+                class="doc-arrow"
+                viewBox="5 0 19 18"
+                aria-hidden="true"
+              >
+                <path
+                  d="M6.5 12.4C11 12.9 15.6 11 21.5 6.4M15.2 5.1C17.6 5.4 19.8 5.6 22.3 5.8C21.6 8.1 21.1 10.2 20.6 12.4"
+                /></svg
+            ></wa-button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section
+      class="studio band band-tint wa-stack wa-gap-xl"
+      id="wild"
+      aria-labelledby="wild-title"
+    >
+      <div class="section-intro wa-split wa-align-items-end">
+        <div class="wa-stack wa-gap-s">
+          <h2
+            class="section-title"
+            id="wild-title"
+          >
+            In the Wild
+          </h2>
+          <p class="lede">
+            Each tell, dropped into the kind of interface it’s best for. Pick a state and every example follows it.
+          </p>
+        </div>
+        <wa-radio-group
+          id="wild-state"
+          class="wa-visually-hidden-label"
+          label="State for every example"
+          orientation="horizontal"
+          size="s"
+          value="working"
+        ></wa-radio-group>
+      </div>
+      <div
+        class="wa-grid wa-gap-l"
+        id="wild-grid"
+      ></div>
+    </section>
+
+    <section
+      class="wa-stack wa-gap-s"
+      id="install"
+      aria-labelledby="install-title"
+    >
+      <div class="wa-stack wa-gap-s">
+        <h2
+          class="section-title"
+          id="install-title"
+        >
+          Put One in Your App
+        </h2>
+        <p class="lede">Install once, then drop a tell next to any status text. Colors are optional.</p>
+      </div>
+      <ol class="steps wa-stack wa-gap-xl wa-list-plain">
+        <li class="step wa-stack">
+          <div class="step-head wa-cluster wa-flex-nowrap">
+            <span
+              class="step-num"
+              aria-hidden="true"
+              >01</span
+            >
+            <h3 class="subhead">Install</h3>
+            <wa-radio-group
+              id="b-method"
+              class="wa-visually-hidden-label"
+              label="Install with"
+              orientation="horizontal"
+              size="s"
+              value="npm"
+            ></wa-radio-group>
+          </div>
+          <div class="step-body">
+            <pre data-copy><code
+              class="language-bash"
+              id="b-install"
+            >npm i tiny-tells</code></pre>
+            <div class="wa-flank:end wa-gap-m">
+              <p id="b-install-note"></p>
+              <p class="self-host">Self-hosting? <a href="docs/#get-started">See the docs</a>.</p>
+            </div>
+          </div>
+        </li>
+        <li class="step wa-stack">
+          <wa-divider></wa-divider>
+          <div class="step-head wa-cluster wa-flex-nowrap">
+            <span
+              class="step-num"
+              aria-hidden="true"
+              >02</span
+            >
+            <h3 class="subhead">Drop One In</h3>
+          </div>
+          <div class="step-body builder">
+            <div class="builder-controls wa-stack wa-gap-l">
+              <wa-radio-group
+                id="b-tell"
+                label="Tell"
+                orientation="horizontal"
+                size="s"
+              ></wa-radio-group>
+              <wa-input
+                id="b-words"
+                label="Words Beside It"
+                hint="Leave it empty and the tell announces its own state."
+                size="s"
+                value="Syncing 3 files…"
+              >
+                <wa-button
+                  slot="end"
+                  id="b-shuffle"
+                  size="s"
+                  appearance="plain"
+                  ><wa-icon
+                    family="sharp"
+                    variant="regular"
+                    name="shuffle"
+                    label="Another Example for This State"
+                  ></wa-icon
+                ></wa-button>
+              </wa-input>
+              <div
+                hidden
+                id="b-ideas"
+              >
+                <wa-random-content data-state="working">
+                  <span>Syncing 3 files…</span>
+                  <span>Generating your summary…</span>
+                  <span>Uploading 12 photos…</span>
+                  <span>Checking for updates…</span>
+                </wa-random-content>
+                <wa-random-content data-state="done">
+                  <span>Saved just now.</span>
+                  <span>Payment received.</span>
+                  <span>All 12 photos are backed up.</span>
+                  <span>Your summary is ready.</span>
+                </wa-random-content>
+                <wa-random-content data-state="error">
+                  <span>Couldn’t connect. Check your Wi-Fi.</span>
+                  <span>Card declined. Try another one?</span>
+                  <span>Upload failed. Try again?</span>
+                  <span>Sync stopped. Your storage is full.</span>
+                </wa-random-content>
+                <wa-random-content data-state="warning">
+                  <span>Approve the deploy to continue.</span>
+                  <span>Sign in again to keep syncing.</span>
+                  <span>One file needs your review.</span>
+                  <span>Confirm your email to finish.</span>
+                </wa-random-content>
+                <wa-random-content data-state="idle">
+                  <span>Up to date.</span>
+                  <span>Nothing in the queue.</span>
+                  <span>Ready when you are.</span>
+                  <span>Last synced 2 minutes ago.</span>
+                </wa-random-content>
+              </div>
+              <wa-radio-group
+                id="b-state"
+                label="State"
+                orientation="horizontal"
+                size="s"
+                value="working"
+              ></wa-radio-group>
+              <wa-radio-group
+                id="b-size"
+                label="Size"
+                orientation="horizontal"
+                size="s"
+                value="text"
+              ></wa-radio-group>
+            </div>
+            <figure class="example">
+              <div class="example-preview studio">
+                <div id="b-preview"></div>
+              </div>
+              <pre data-copy><code class="language-html b-code"></code></pre>
+            </figure>
+          </div>
+        </li>
+        <li class="step wa-stack">
+          <wa-divider></wa-divider>
+          <div class="step-head wa-cluster wa-flex-nowrap">
+            <span
+              class="step-num"
+              aria-hidden="true"
+              >03</span
+            >
+            <h3 class="subhead">Color, If You Want</h3>
+          </div>
+          <div class="step-body step-color">
+            <p>
+              Tells ship with colors that pass in light and dark. To use your own, set the five tokens from Make It
+              Yours on <code>:root</code>. To draw in the text color instead, add <code>color="current"</code>.
+            </p>
+            <wa-button
+              class="doc-link studio"
+              appearance="plain"
+              href="#color"
+              >Pick Your Colors<svg
+                slot="end"
+                class="doc-arrow"
+                viewBox="5 0 19 18"
+                aria-hidden="true"
+              >
+                <path
+                  d="M6.5 12.4C11 12.9 15.6 11 21.5 6.4M15.2 5.1C17.6 5.4 19.8 5.6 22.3 5.8C21.6 8.1 21.1 10.2 20.6 12.4"
+                /></svg
+            ></wa-button>
+          </div>
+        </li>
+      </ol>
+    </section>
+  </main>
+  {{footer}}
+</wa-page>

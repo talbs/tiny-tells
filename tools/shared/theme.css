@@ -1,0 +1,149 @@
+/* Shared by every site page: tokens, the Web Awesome mapping, and base type. */
+:root {
+  /* Quiet UI's slate scale. */
+  --slate-50: #f9f9fa;
+  --slate-100: #eef0f2;
+  --slate-200: #d9dce2;
+  --slate-300: #bcc1cc;
+  --slate-400: #9fa6b5;
+  --slate-500: #848da0;
+  --slate-600: #68707f;
+  --slate-700: #525865;
+  --slate-800: #3a3e47;
+  --slate-900: #23262c;
+  --slate-950: #0d0f13;
+  --off-white: #fdfcfa;
+  --off-black: #12110f;
+  --bg: var(--slate-50);
+  --field: var(--slate-100);
+  --fg: var(--slate-900);
+  --muted: var(--slate-700);
+  --line: var(--slate-200);
+  --dark-bg: var(--slate-900);
+  --dark-field: var(--slate-950);
+  --dark-fg: var(--slate-100);
+  --dark-muted: var(--slate-400);
+  --dark-line: var(--slate-800);
+  --dark-well: color-mix(in oklab, var(--slate-900) 63%, var(--slate-950));
+  --is-dark: 0;
+  --font-body: 'Schibsted Grotesk', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'Martian Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --bg: var(--dark-bg);
+    --field: var(--dark-field);
+    --fg: var(--dark-fg);
+    --muted: var(--dark-muted);
+    --line: var(--dark-line);
+    --is-dark: 1;
+    color-scheme: dark;
+  }
+}
+:root[data-theme='dark'] {
+  --bg: var(--dark-bg);
+  --field: var(--dark-field);
+  --fg: var(--dark-fg);
+  --muted: var(--dark-muted);
+  --line: var(--dark-line);
+  --is-dark: 1;
+  color-scheme: dark;
+}
+:root,
+.force-dark {
+  --wa-font-family-body: var(--font-body);
+  --wa-font-family-heading: var(--font-body);
+  --wa-font-family-code: var(--font-mono);
+  --wa-color-surface-default: var(--bg);
+  --wa-color-surface-raised: var(--bg);
+  --wa-color-surface-lowered: var(--field);
+  --wa-color-surface-border: var(--line);
+  --wa-color-text-normal: var(--fg);
+  --wa-color-text-quiet: var(--muted);
+  --wa-focus-ring-color: var(--fg);
+  --wa-border-radius-m: 6px;
+  --wa-border-radius-l: 8px;
+}
+:root,
+.wa-light,
+.wa-dark,
+.force-dark {
+  --wa-color-focus: var(--fg);
+  --wa-font-weight-bold: 700;
+  --wa-focus-ring-width: 2px;
+  --wa-form-control-activated-color: var(--fg);
+  --wa-color-brand-on-loud: var(--off-white);
+  --wa-color-success-on-loud: var(--off-white);
+  --wa-color-warning-on-loud: var(--off-white);
+  --wa-color-danger-on-loud: var(--off-white);
+}
+.wa-light {
+  --wa-color-surface-default: var(--off-white);
+  --wa-color-surface-raised: var(--off-white);
+  --wa-color-neutral-on-loud: var(--off-white);
+  --wa-color-overlay-modal: color-mix(in oklab, var(--off-black) 50%, transparent);
+}
+.wa-dark {
+  --wa-color-overlay-modal: color-mix(in oklab, var(--off-black) 60%, transparent);
+}
+.force-dark {
+  --bg: var(--dark-well);
+  --field: var(--dark-field);
+  --fg: var(--dark-fg);
+  --muted: var(--dark-muted);
+  --line: var(--dark-line);
+  color-scheme: dark;
+}
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-body);
+  line-height: 1.5;
+}
+h2 {
+  font-size: 26px;
+  letter-spacing: -0.015em;
+  margin: 0;
+}
+h3 {
+  font-size: 17px;
+  margin: 0;
+}
+p {
+  margin: 0;
+  text-wrap: pretty;
+}
+.note {
+  font-size: 13px;
+  color: var(--muted);
+}
+/* The studio's warm grays are named materials, not a scale: its surfaces sit too close together to share Quiet's step spacing. */
+.studio {
+  --paper: #fbfaf7;
+  --paper-edge: #e8e5dd;
+  --ink: #2a2926;
+  --muted: #69655d;
+  --guide: #5b9ccf;
+  --guide-ink: #2269a1;
+  --accent: #d0574a;
+  --peg: #edeae2;
+  color: var(--ink);
+}
+:root[data-theme='dark'] .studio,
+.wa-dark .studio,
+.studio.force-dark {
+  --paper: #171614;
+  --paper-edge: #2d2b28;
+  --ink: #ebe7df;
+  --muted: #a39f96;
+  --guide: #86bfe8;
+  --guide-ink: #86bfe8;
+  --accent: #ff8473;
+  --peg: #24221f;
+}
+.notes {
+  margin: 0;
+  display: grid;
+  border-block-start: var(--wa-border-width-s) solid var(--paper-edge);
+}

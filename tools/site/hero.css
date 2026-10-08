@@ -1,0 +1,554 @@
+.hero {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  gap: var(--space-section);
+  align-items: center;
+  padding-block: 0 calc(var(--space-section) + var(--wa-space-m));
+  color: var(--fg);
+}
+@media (min-width: 1200px) {
+  .hero {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  }
+  .hero-lede {
+    max-inline-size: 26ch;
+  }
+  .hero-facts {
+    flex-wrap: nowrap;
+    white-space: nowrap;
+  }
+}
+
+.hero-field {
+  position: absolute;
+  z-index: -1;
+  inset-block: calc(-2 * var(--space-section)) 0;
+  inset-inline: var(--bleed);
+  border-block-end: var(--wa-border-width-s) solid var(--line);
+}
+.hero-field::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity: 0.05;
+  mix-blend-mode: multiply;
+  pointer-events: none;
+}
+:root.wa-dark .hero-field::after {
+  mix-blend-mode: screen;
+  opacity: 0.04;
+}
+.hero-field::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(color-mix(in oklab, var(--guide) 15%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in oklab, var(--guide) 15%, transparent) 1px, transparent 1px),
+    radial-gradient(circle, color-mix(in oklab, var(--guide) 18%, transparent) 0.7px, transparent 1.1px);
+  background-size:
+    32px 32px,
+    32px 32px,
+    32px 32px;
+  background-position:
+    center top,
+    center top,
+    calc(50% + 16px) 16px;
+  mask-image: radial-gradient(ellipse 85% 90% at 55% 45%, #000 45%, transparent 95%);
+}
+.hero-stage {
+  position: relative;
+  display: grid;
+  gap: var(--wa-space-m);
+}
+.reg {
+  position: absolute;
+  z-index: 1;
+  inline-size: 22px;
+  block-size: 22px;
+  border: var(--wa-border-width-s) solid color-mix(in oklab, var(--guide) 50%, transparent);
+  border-radius: var(--wa-border-radius-circle);
+}
+.reg::before,
+.reg::after {
+  content: '';
+  position: absolute;
+  background: color-mix(in oklab, var(--guide) 50%, transparent);
+}
+.reg::before {
+  inset-inline: -8px;
+  inset-block-start: 50%;
+  block-size: 1px;
+}
+.reg::after {
+  inset-block: -8px;
+  inset-inline-start: 50%;
+  inline-size: 1px;
+}
+.reg-a {
+  inset-block-start: -11px;
+  inset-inline-start: -11px;
+}
+.reg-b {
+  inset-block-end: 21px;
+  inset-inline-end: -11px;
+}
+.pencil,
+.plan-note,
+.hero-cast::before {
+  font: var(--wa-font-weight-normal) var(--wa-font-size-2xs)/1 var(--font-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--guide-ink);
+}
+/* Set dressing, so it's exempt from text contrast: the plan note is an instruction and stays solid. */
+.pencil,
+.hero-cast::before {
+  color: color-mix(in oklab, var(--guide-ink) 75%, transparent);
+}
+.pencil {
+  position: absolute;
+  z-index: 1;
+  inset-block-start: 10px;
+  inset-inline-end: var(--wa-space-s);
+}
+.hand-notes {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.hand {
+  position: absolute;
+  overflow: visible;
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.hand-note {
+  position: absolute;
+  font:
+    var(--wa-font-weight-normal) var(--wa-font-size-xl)/1 'Nanum Pen Script',
+    'Segoe Print',
+    cursive;
+  white-space: nowrap;
+  color: var(--accent);
+}
+.hand-loop {
+  inset-inline-start: calc(var(--eyes-x) - 37px);
+  inset-block-start: calc(var(--eyes-y) - 36px);
+  inline-size: 72px;
+  block-size: 72px;
+}
+.hand-arrow-a {
+  inset-inline-start: calc(var(--eyes-x) + 4px);
+  inset-block-start: calc(var(--eyes-y) - 132px);
+  inline-size: 60px;
+  block-size: 96px;
+}
+.note-a {
+  inset-inline-start: calc(var(--eyes-x) + 46px);
+  inset-block-start: calc(var(--eyes-y) - 150px);
+}
+.hand-arrow-b {
+  inset-inline-start: calc(var(--flip-x) + 12px);
+  inset-block-start: calc(var(--flip-y) + 22px);
+  inline-size: 70px;
+  block-size: 44px;
+}
+.note-b {
+  inset-inline-start: calc(var(--flip-x) + 86px);
+  inset-block-start: calc(var(--flip-y) + 54px);
+}
+.hand-bracket {
+  inset-inline-start: 0;
+  inset-block-end: -26px;
+  inline-size: 96px;
+  block-size: 18px;
+}
+.note-c {
+  inset-inline-start: 104px;
+  inset-block-end: -30px;
+}
+.timing {
+  position: relative;
+  block-size: 14px;
+  background:
+    repeating-linear-gradient(90deg, color-mix(in oklab, var(--guide) 55%, transparent) 0 1px, transparent 1px 96px)
+      bottom / 100% 14px no-repeat,
+    repeating-linear-gradient(90deg, color-mix(in oklab, var(--guide) 35%, transparent) 0 1px, transparent 1px 24px)
+      bottom / 100% 7px no-repeat;
+  border-block-end: var(--wa-border-width-s) solid color-mix(in oklab, var(--guide) 45%, transparent);
+}
+.playhead {
+  position: absolute;
+  inset-block: -10px 0;
+  inline-size: 1px;
+  background: var(--accent);
+  animation: playhead 12.8s linear infinite;
+}
+.playhead::before {
+  content: '';
+  position: absolute;
+  inset-block-start: -1px;
+  inset-inline-start: -4px;
+  border: 4.5px solid transparent;
+  border-block-start-color: var(--accent);
+}
+@keyframes playhead {
+  from {
+    inset-inline-start: 0;
+  }
+  to {
+    inset-inline-start: 100%;
+  }
+}
+
+.hero-copy {
+  display: grid;
+  justify-items: start;
+}
+.hero-version {
+  margin-block-end: 20px;
+}
+.hero-lede {
+  margin-block: var(--wa-space-xl) var(--wa-space-3xl);
+  font-size: var(--wa-font-size-2xl);
+  line-height: 1.4;
+  letter-spacing: -0.014em;
+  text-wrap: balance;
+}
+.hero-facts {
+  gap: var(--wa-space-2xs) var(--wa-space-l);
+  margin-block-start: var(--wa-space-xl);
+  font: var(--wa-font-weight-normal) var(--wa-font-size-xs)/1.4 var(--font-mono);
+  color: var(--muted);
+}
+.hero-facts li {
+  white-space: nowrap;
+}
+#hero-title {
+  margin: 0;
+  font-size: clamp(3.5rem, 7vw, var(--wa-font-size-5xl));
+  line-height: 0.92;
+  letter-spacing: -0.045em;
+  word-spacing: -0.06em;
+  margin-inline-start: -0.035em;
+}
+.mark-t {
+  margin-inline-end: -0.035em;
+}
+.mark-gap {
+  margin-inline-start: -0.02em;
+}
+
+.hero-cast {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: var(--wa-space-l);
+  padding: 44px var(--wa-space-xl) var(--wa-space-xl);
+}
+.hero-cast::before {
+  content: '12 fld';
+  position: absolute;
+  inset: 0;
+  padding: 10px var(--wa-space-s);
+  border: var(--wa-border-width-s) dashed color-mix(in oklab, var(--guide) 45%, transparent);
+  pointer-events: none;
+}
+.cel {
+  margin: 0;
+  color: var(--muted);
+  font-size: var(--wa-font-size-s);
+  line-height: 1.4;
+}
+.cel tiny-tell {
+  flex: none;
+}
+
+.cel-chat {
+  grid-column: 1 / 5;
+  align-self: center;
+  display: grid;
+  gap: var(--wa-space-m);
+  padding: 20px;
+  border-radius: 20px;
+  background: var(--paper);
+}
+.cel-ask {
+  justify-self: end;
+  padding: var(--wa-space-xs) var(--wa-space-s);
+  border-radius: 14px 14px 4px 14px;
+  background: var(--peg);
+  color: var(--ink);
+}
+.cel-reply {
+  --tell-size: 64px;
+}
+.cel-reply p {
+  color: var(--ink);
+  font-size: var(--wa-font-size-s);
+}
+
+.cel-files {
+  grid-column: 5 / 7;
+  align-content: center;
+  display: grid;
+  justify-items: center;
+  gap: var(--wa-space-xs);
+  padding: var(--wa-space-l) 20px 20px;
+  border: 1.5px dashed color-mix(in oklab, var(--muted) 45%, transparent);
+  border-radius: 12px;
+  background: color-mix(in oklab, var(--paper) 60%, transparent);
+  box-shadow: none;
+  text-align: center;
+  --tell-size: 72px;
+}
+.cel-files > tiny-tell {
+  margin-block-end: 6px;
+}
+.cel-file {
+  color: var(--ink);
+  font-weight: var(--wa-font-weight-bold);
+}
+.cel-file span {
+  display: block;
+  font-weight: var(--wa-font-weight-normal);
+  color: var(--muted);
+}
+.cel-bar {
+  display: block;
+  inline-size: 100%;
+  block-size: 3px;
+  border-radius: 2px;
+  background: var(--peg);
+  overflow: hidden;
+}
+.cel-bar i {
+  display: block;
+  block-size: 100%;
+  background: var(--ink);
+  transition: inline-size 0.6s var(--ease-settle);
+}
+
+.cel-terminal {
+  grid-column: 1 / 4;
+  align-self: start;
+  display: grid;
+  gap: var(--wa-space-s);
+  padding: var(--wa-space-m) 18px;
+  border-radius: var(--wa-border-radius-s);
+  background: var(--paper);
+  font: var(--wa-font-weight-normal) var(--wa-font-size-xs)/1.4 var(--font-mono);
+}
+.cel-out {
+  color: var(--ink);
+  --tell-size: 36px;
+}
+
+.cel-ci {
+  grid-column: 4 / 7;
+  align-self: start;
+  padding: 14px var(--wa-space-m);
+  border: var(--wa-border-width-s) solid var(--paper-edge);
+  border-radius: 10px;
+  background: var(--paper);
+}
+.cel-ci-title {
+  margin-block-end: var(--wa-space-xs);
+  color: var(--ink);
+  font-weight: var(--wa-font-weight-bold);
+}
+.ci-list li {
+  display: flex;
+  align-items: center;
+  gap: var(--wa-space-xs);
+  padding-block: 6px;
+  border-block-start: var(--wa-border-width-s) solid var(--paper-edge);
+  --tell-size: 24px;
+}
+.ci-list li:nth-child(2) {
+  color: var(--ink);
+}
+.ci-list em {
+  margin-inline-start: auto;
+  font-style: normal;
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .hero-field::before {
+    animation: grid-in 1.4s var(--ease-settle) both;
+  }
+  .hand path {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    animation: draw-on 0.7s cubic-bezier(0.3, 0.6, 0.2, 1) 1.5s forwards;
+  }
+  .hand-arrow-a path,
+  .hand-bracket path {
+    animation-delay: 1.9s;
+  }
+  .hand-arrow-b path {
+    animation-delay: 2.2s;
+  }
+  .hand-note {
+    animation: field-in 0.6s ease-out both;
+    animation-delay: 2s;
+  }
+  .reg,
+  .pencil,
+  .timing,
+  .hero-cast::before {
+    animation: field-in 0.9s var(--ease-settle) both;
+  }
+  .reg,
+  .pencil,
+  .timing {
+    animation-delay: 0.2s;
+  }
+  .cel {
+    animation: cel-in 0.7s var(--ease-settle) both;
+  }
+  .cel:nth-child(1) {
+    animation-delay: 0.45s;
+  }
+  .cel:nth-child(2) {
+    animation-delay: 0.6s;
+  }
+  .cel:nth-child(3) {
+    animation-delay: 0.75s;
+  }
+  .cel:nth-child(4) {
+    animation-delay: 0.9s;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .playhead {
+    display: none;
+  }
+}
+@keyframes grid-in {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+}
+@keyframes draw-on {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes field-in {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes cel-in {
+  from {
+    opacity: 0;
+    translate: 0 16px;
+  }
+}
+.is-paused .hero * {
+  animation-play-state: paused;
+}
+
+@media (max-width: 1199px) {
+  .hero-cast {
+    display: flex;
+    gap: var(--wa-space-m);
+    align-items: start;
+    margin-inline: calc(-1 * var(--gutter));
+    padding: var(--wa-space-xl) var(--gutter) var(--wa-space-l);
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--gutter);
+  }
+  .hero-cast::before {
+    inset-inline: var(--gutter);
+  }
+  .cel {
+    flex: none;
+    inline-size: min(17rem, 78vw);
+    scroll-snap-align: start;
+  }
+  .cel-chat {
+    inline-size: min(19rem, 82vw);
+  }
+  .hero-lede {
+    font-size: var(--wa-font-size-xl);
+  }
+  .pencil,
+  .reg,
+  .timing,
+  .hand-notes {
+    display: none;
+  }
+  .hero {
+    gap: var(--wa-space-3xl);
+    padding-block-end: var(--space-group);
+  }
+}
+@media (max-width: 599px) {
+  .hero-cast::before {
+    display: none;
+  }
+  .hero-cast {
+    padding-block-start: var(--wa-space-m);
+  }
+  .hero-facts {
+    display: grid;
+    grid-template-columns: repeat(2, max-content);
+  }
+}
+@media (min-width: 600px) and (max-width: 1199px) {
+  .hero-cast {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin-inline: 0;
+    padding: var(--wa-space-xl) var(--wa-space-l) var(--wa-space-l);
+    overflow: visible;
+    scroll-snap-type: none;
+  }
+  .hero-cast::before {
+    inset-inline: 0;
+  }
+  .cel,
+  .cel-chat {
+    grid-column: auto;
+    inline-size: auto;
+  }
+}
+
+.cel-reply p,
+.cel-files [data-say],
+.cel-out p {
+  min-block-size: 2lh;
+  align-content: center;
+}
+.hand-notes:not([data-placed]) {
+  visibility: hidden;
+}
+
+.tittle {
+  position: relative;
+}
+.tittle tiny-tell {
+  position: absolute;
+  inset-block-start: 0.07em;
+  inset-inline-start: 50%;
+  translate: -50% 0;
+  --tell-size: 0.35em;
+}
+
+.hero-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-related);
+  inline-size: 100%;
+  max-inline-size: 30rem;
+}

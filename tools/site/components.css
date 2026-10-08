@@ -1,0 +1,703 @@
+/* Components: controls, code and copy, labels, links, and the example block. Shared by the landing and docs. */
+pre {
+  position: relative;
+}
+[data-syntax-theme] {
+  color-scheme: inherit;
+}
+.example {
+  display: grid;
+  margin: 0;
+  border-radius: var(--wa-border-radius-l);
+  overflow: hidden;
+}
+.example pre {
+  margin: 0;
+  border-start-start-radius: 0;
+  border-start-end-radius: 0;
+}
+.example-preview {
+  padding: var(--space-group);
+  border: var(--wa-border-width-s) solid var(--paper-edge);
+  background: var(--paper);
+  color: var(--ink);
+}
+.example:has(> pre) > .example-preview {
+  border-block-end: 0;
+}
+.example .example-preview > p {
+  display: flex;
+  align-items: center;
+  gap: var(--wa-space-xs);
+  margin: 0;
+}
+.example-preview.wa-cluster {
+  gap: var(--wa-space-m) var(--wa-space-l);
+}
+.example-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--wa-space-s) var(--wa-space-m);
+  padding: var(--wa-space-s) var(--space-group);
+  border: var(--wa-border-width-s) solid var(--paper-edge);
+  border-block-start-style: dashed;
+  background: var(--paper);
+  color: var(--muted);
+  font-size: var(--wa-font-size-s);
+}
+.example > .example-preview:has(+ .example-bar),
+.example > .example-bar:has(+ pre) {
+  border-block-end: 0;
+}
+.example-bar wa-slider {
+  flex: 1;
+  min-inline-size: 10rem;
+  max-inline-size: 24rem;
+}
+.compare {
+  --min-column-size: 9rem;
+  justify-items: center;
+}
+.compare tiny-tell {
+  --tell-size: 3rem;
+}
+.example .toolbar {
+  padding: var(--wa-space-xs) var(--wa-space-m);
+  border: var(--wa-border-width-s) solid var(--paper-edge);
+  border-radius: var(--wa-border-radius-m);
+  background: var(--well-light);
+  color: var(--well-light-muted);
+  font-size: var(--wa-font-size-s);
+  --tell-size: 1.5rem;
+}
+.example .muted tiny-tell::part(tell) {
+  opacity: 0.6;
+}
+wa-color-picker::part(grid-handle),
+wa-color-picker::part(slider-handle) {
+  border-color: var(--off-white);
+}
+.builder-controls wa-radio-group::part(form-control-label),
+.builder-controls wa-input::part(form-control-label),
+.palette-select::part(form-control-label),
+.wa-prose > .label,
+.lab-notes::part(header),
+.lab-grid dt,
+.cast-name,
+.title-block,
+.proof-table .any-size wa-slider::part(label),
+.goes-label,
+.label-cases thead th,
+.label {
+  font: var(--wa-font-weight-normal) var(--wa-font-size-2xs) / var(--wa-line-height-normal) var(--font-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+/* Code is always dark. Colors per state come from the palette's own scale (Quiet UI 400 here), all 4.5:1 on --code-bg. The background is Slate 900, or halfway to 950 when the page itself is dark. */
+[data-syntax-theme='drafting'] {
+  --syntax-background: var(--code-bg);
+  --syntax-foreground: var(--code-ink);
+  --syntax-operator: var(--code-ink);
+  --syntax-comment: var(--code-idle);
+  --syntax-keyword: var(--code-working);
+  --syntax-function: var(--code-working);
+  --syntax-type: var(--code-working);
+  --syntax-selector: var(--code-working);
+  --syntax-string: var(--code-done);
+  --syntax-inserted: var(--code-done);
+  --syntax-tag: var(--code-error);
+  --syntax-property: var(--code-error);
+  --syntax-deleted: var(--code-error);
+  --syntax-constant: var(--code-warning);
+  --syntax-variable: var(--code-warning);
+}
+::highlight(comment),
+::highlight(quote) {
+  color: var(--syntax-comment);
+}
+::highlight(keyword),
+::highlight(storage),
+::highlight(at-rule),
+::highlight(doctype),
+::highlight(important),
+::highlight(section) {
+  color: var(--syntax-keyword);
+}
+::highlight(operator),
+::highlight(punctuation) {
+  color: var(--syntax-operator);
+}
+::highlight(string),
+::highlight(regexp),
+::highlight(attribute-value),
+::highlight(link),
+::highlight(raw) {
+  color: var(--syntax-string);
+}
+::highlight(numeric),
+::highlight(boolean),
+::highlight(constant),
+::highlight(symbol),
+::highlight(character-entity),
+::highlight(anchor),
+::highlight(entity) {
+  color: var(--syntax-constant);
+}
+::highlight(function),
+::highlight(decorator),
+::highlight(animation) {
+  color: var(--syntax-function);
+}
+::highlight(type),
+::highlight(support) {
+  color: var(--syntax-type);
+}
+::highlight(variable),
+::highlight(interpolation) {
+  color: var(--syntax-variable);
+}
+::highlight(property),
+::highlight(key) {
+  color: var(--syntax-property);
+}
+::highlight(attribute-name) {
+  color: var(--code-warning);
+}
+::highlight(tag) {
+  color: var(--syntax-tag);
+}
+::highlight(selector) {
+  color: var(--syntax-selector);
+}
+::highlight(inserted) {
+  color: var(--syntax-inserted);
+}
+::highlight(deleted) {
+  color: var(--syntax-deleted);
+}
+[data-syntax-theme='drafting'] pre:has(code) {
+  color-scheme: dark;
+  --code-pad-y: var(--wa-space-m);
+  --code-pad-x: var(--wa-space-l);
+  padding: var(--code-pad-y) var(--code-pad-x);
+  background: var(--code-bg);
+  color: var(--code-ink);
+  font: var(--wa-font-weight-normal) var(--wa-font-size-xs) / 1.9 var(--font-mono);
+}
+[data-syntax-theme='drafting'] pre[data-copy]:has(code) {
+  padding-block: 0;
+  padding-inline-end: calc(var(--code-pad-x) + 2rem);
+  overflow: hidden;
+}
+[data-syntax-theme='drafting'] pre[data-copy] > code {
+  display: block;
+  padding-block: var(--code-pad-y);
+  overflow-x: auto;
+}
+.tag {
+  display: inline-block;
+  inline-size: fit-content;
+  align-self: start;
+  justify-self: start;
+  padding: 3px var(--wa-space-xs);
+  border: var(--wa-border-width-s) solid color-mix(in oklab, var(--guide) 45%, transparent);
+  border-radius: var(--wa-border-radius-s);
+  font: var(--wa-font-weight-normal) var(--wa-font-size-2xs)/1.4 var(--font-mono);
+  letter-spacing: 0.08em;
+  vertical-align: middle;
+  color: color-mix(in oklab, var(--guide-ink) 72%, var(--fg));
+}
+wa-button {
+  --wa-form-control-height: var(--control-h);
+}
+wa-button[size='s'] {
+  --wa-form-control-height: var(--control-h-s);
+}
+wa-button::part(base) {
+  min-block-size: var(--wa-form-control-height);
+  transition:
+    background-color var(--wa-transition-normal) var(--wa-transition-easing),
+    color var(--wa-transition-normal) var(--wa-transition-easing),
+    border-color var(--wa-transition-normal) var(--wa-transition-easing),
+    translate 0.05s ease;
+}
+wa-button:not([disabled]):active::part(base) {
+  translate: 0 1px;
+}
+:is(wa-button, wa-color-picker)[disabled] {
+  opacity: 0.45;
+}
+wa-button[variant='brand']::part(base) {
+  background: var(--control-ink);
+  border-color: var(--control-ink);
+  color: var(--control-on);
+}
+wa-button[variant='brand']:hover::part(base) {
+  background: color-mix(in oklab, var(--control-ink) 86%, var(--control-on));
+}
+wa-button[appearance='outlined']::part(base) {
+  background: transparent;
+  border-color: var(--control-edge);
+  color: var(--control-ink);
+}
+wa-button[appearance='outlined']:hover::part(base) {
+  background: var(--control-hover);
+  border-color: color-mix(in oklab, var(--control-ink) 35%, var(--control-edge));
+}
+wa-button[appearance='plain']::part(base) {
+  color: var(--control-quiet);
+}
+wa-button[appearance='plain']:hover::part(base) {
+  background: var(--control-hover);
+  color: var(--control-ink);
+}
+wa-input wa-button[appearance='plain']:hover::part(base),
+wa-button.doc-link:hover::part(base) {
+  background: transparent;
+}
+wa-button.doc-link::part(label) {
+  text-decoration: underline 2px transparent;
+  text-decoration-skip-ink: none;
+  text-underline-offset: 0.35em;
+}
+wa-button.doc-link:hover::part(label) {
+  text-decoration-color: var(--accent);
+}
+wa-radio[appearance='button'] {
+  min-block-size: var(--control-h-s);
+  font: var(--wa-font-weight-semibold) var(--wa-font-size-xs)/1 var(--font-mono);
+  color: var(--control-quiet);
+  background: transparent;
+  border-color: var(--control-edge);
+  transition:
+    background-color var(--wa-transition-normal) var(--wa-transition-easing),
+    color var(--wa-transition-normal) var(--wa-transition-easing);
+}
+wa-radio[appearance='button']:hover {
+  background: var(--control-hover);
+  color: var(--control-ink);
+}
+wa-radio[appearance='button']:state(checked) {
+  background: var(--control-ink);
+  color: var(--control-on);
+  border-color: var(--control-ink);
+}
+wa-radio-group::part(form-control-input) {
+  position: relative;
+}
+wa-radio-group:has(> .seg-pill) wa-radio[appearance='button'] {
+  position: relative;
+  z-index: 1;
+}
+wa-radio-group[data-pill] wa-radio[appearance='button'] {
+  transition: color var(--wa-transition-slow) var(--ease-out);
+}
+wa-radio-group[data-pill] wa-radio[appearance='button']:state(checked) {
+  background: transparent;
+  border-color: transparent;
+}
+.seg-pill {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  border-radius: var(--wa-border-radius-m);
+  background: var(--control-ink);
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    transform var(--wa-transition-slow) var(--ease-out),
+    inline-size var(--wa-transition-slow) var(--ease-out),
+    block-size var(--wa-transition-slow) var(--ease-out),
+    border-radius var(--wa-transition-slow) var(--ease-out);
+}
+@media (prefers-reduced-motion: reduce) {
+  .seg-pill,
+  .tab-bar {
+    transition: none;
+  }
+}
+wa-radio[appearance='button']:focus-visible {
+  z-index: 1;
+}
+wa-switch,
+wa-slider {
+  --wa-form-control-activated-color: var(--control-ink);
+}
+pre wa-copy-button {
+  position: absolute;
+  inset-block-start: var(--code-pad-y);
+  inset-inline-end: var(--wa-space-s);
+  white-space: normal;
+  font: var(--wa-font-weight-semibold) var(--wa-font-size-xs) / 1.3 var(--font-body);
+  --wa-tooltip-background-color: var(--code-ink);
+  --wa-tooltip-content-color: var(--code-bg);
+}
+pre wa-copy-button::part(button) {
+  background: transparent;
+  color: var(--code-idle);
+}
+pre wa-copy-button::part(button):hover {
+  background: color-mix(in oklab, var(--code-ink) 8%, transparent);
+  color: var(--code-ink);
+}
+pre wa-copy-button wa-icon {
+  font-size: var(--wa-font-size-m);
+}
+pre wa-copy-button::part(copy-icon),
+pre wa-copy-button::part(success-icon),
+pre wa-copy-button::part(error-icon) {
+  animation: copy-in 0.25s var(--ease-out);
+}
+@keyframes copy-in {
+  from {
+    opacity: 0;
+    transform: translateY(3px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  @keyframes copy-in {
+    from {
+      opacity: 0;
+    }
+  }
+}
+pre wa-copy-button::part(success-icon) {
+  color: var(--code-done);
+}
+pre wa-copy-button::part(error-icon) {
+  color: var(--code-error);
+}
+.section-title {
+  font-size: var(--wa-font-size-3xl);
+  font-weight: var(--wa-font-weight-bold);
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+}
+.lede {
+  max-inline-size: 80ch;
+  font-size: var(--wa-font-size-l);
+  line-height: 1.45;
+  letter-spacing: -0.008em;
+  color: var(--muted);
+}
+.section-intro {
+  gap: var(--space-related) var(--space-section);
+}
+.section-intro > :first-child {
+  flex: 1 1 28rem;
+}
+.subhead {
+  font-size: var(--wa-font-size-xl);
+  font-weight: var(--wa-font-weight-bold);
+  line-height: var(--wa-line-height-condensed);
+  letter-spacing: -0.02em;
+}
+.doc-arrow {
+  inline-size: 18px;
+  block-size: 17px;
+  margin-inline-start: var(--wa-space-s);
+  translate: 0 -2px;
+  overflow: visible;
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: translate var(--wa-transition-normal) var(--wa-transition-easing);
+}
+wa-button.doc-link:hover .doc-arrow {
+  translate: 2px -3px;
+}
+main .lede code {
+  padding: 0.1em 0.35em;
+  border-radius: var(--wa-border-radius-s);
+  font-size: max(0.75em, var(--wa-font-size-2xs));
+  vertical-align: 0.1em;
+  background: color-mix(in oklab, var(--paper-edge, var(--line)) 45%, transparent);
+}
+.info-link {
+  display: inline-grid;
+  place-items: center;
+  margin-block: calc(-1 * var(--wa-space-xs));
+  padding: var(--wa-space-xs);
+  border-radius: var(--wa-border-radius-circle);
+  color: var(--control-quiet);
+  text-decoration: none;
+}
+.info-link:hover {
+  color: var(--control-ink);
+}
+.info-link:focus-visible {
+  outline: var(--control-ring);
+}
+.prompt {
+  display: none;
+  flex: none;
+  align-items: center;
+  gap: 0.15em;
+  margin-inline-end: 1ch;
+  color: var(--code-working);
+  user-select: none;
+}
+.prompt wa-icon:last-child {
+  color: var(--code-idle);
+}
+.caret {
+  display: none;
+  flex: none;
+  inline-size: 0.6em;
+  block-size: 1.15em;
+  margin-inline-start: 0.5ch;
+  background: var(--code-ink);
+}
+pre:has(> code.language-bash) {
+  display: flex;
+  align-items: center;
+}
+pre:has(> code.language-bash) > code {
+  flex: 0 1 auto;
+  min-inline-size: 0;
+}
+pre:has(> code.language-bash) > :is(.prompt, .caret),
+.cel-cmd .prompt {
+  display: inline-flex;
+}
+@media (prefers-reduced-motion: no-preference) {
+  :root:not(.is-paused) .caret {
+    animation: caret-blink 1.1s steps(1) infinite;
+  }
+}
+@keyframes caret-blink {
+  50% {
+    opacity: 0;
+  }
+}
+wa-tab-group {
+  --indicator-color: var(--control-ink);
+  --track-color: var(--line);
+}
+wa-tab::part(base) {
+  font: var(--wa-font-weight-semibold) var(--wa-font-size-xs) / 1 var(--font-mono);
+  color: var(--control-quiet);
+}
+wa-tab:hover::part(base),
+wa-tab[active]::part(base) {
+  color: var(--control-ink);
+}
+wa-select::part(display-input),
+wa-option {
+  font-family: var(--font-mono);
+  font-size: var(--wa-font-size-xs);
+}
+wa-color-picker::part(color-picker) {
+  border: var(--wa-border-width-s) solid var(--line);
+  border-radius: var(--wa-border-radius-l);
+  background: var(--bg);
+  overflow: hidden;
+}
+wa-color-picker::part(input) {
+  font-family: var(--font-mono);
+  font-size: var(--wa-font-size-xs);
+}
+wa-color-picker::part(format-button__base) {
+  font: var(--wa-font-weight-semibold) var(--wa-font-size-2xs) / 1 var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+wa-slider {
+  --glow: color-mix(in oklab, var(--ink, var(--control-ink)) 18%, transparent);
+}
+wa-slider::part(thumb) {
+  box-shadow: 0 0 0 0 var(--glow);
+  transition:
+    scale var(--wa-transition-fast) var(--ease-out),
+    box-shadow var(--wa-transition-normal) var(--ease-out);
+}
+wa-slider:hover::part(thumb) {
+  scale: 1.25;
+}
+wa-slider:state(focused)::part(thumb) {
+  outline: none;
+  box-shadow: 0 0 0 6px var(--glow);
+}
+.studio wa-slider::part(track) {
+  background: var(--paper-edge);
+}
+.studio wa-switch {
+  --studio-line: color-mix(in oklab, var(--ink) 32%, var(--paper));
+}
+.studio wa-switch::part(control) {
+  border-color: var(--studio-line);
+}
+.studio wa-switch:not(:state(checked))::part(thumb) {
+  background: var(--studio-line);
+}
+@media (prefers-reduced-motion: reduce) {
+  wa-slider::part(thumb) {
+    transition: box-shadow var(--wa-transition-normal) var(--wa-transition-easing);
+  }
+}
+wa-tab-group:has(> .tab-bar) > wa-tab[active] {
+  border-block-end-color: transparent;
+}
+.install-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  margin-block: var(--space-group);
+}
+.install-head > * {
+  grid-area: 1 / 1;
+}
+.install-head > .bundle-switch {
+  z-index: 1;
+  justify-self: end;
+  align-self: start;
+  margin-block-start: 10px;
+}
+@media (max-width: 30rem) {
+  .install-head > * {
+    grid-area: auto;
+  }
+  .install-head > .bundle-switch {
+    justify-self: start;
+    margin-block: 0 var(--wa-space-s);
+  }
+}
+.tab-bar {
+  position: absolute;
+  inset-block-end: calc(-1 * var(--wa-border-width-m));
+  inset-inline-start: 0;
+  block-size: var(--wa-border-width-m);
+  background: var(--control-ink);
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    transform var(--wa-transition-slow) var(--ease-out),
+    inline-size var(--wa-transition-slow) var(--ease-out);
+}
+/* The negative end margin cancels the icon's width in the line, so an anchor can never change how its heading wraps, and its tooltip still centers on the icon. */
+.heading-anchor {
+  display: inline-block;
+  inline-size: 1em;
+  margin-inline: var(--wa-space-s) -1em;
+  color: var(--muted);
+  font-size: 0.5em;
+  vertical-align: middle;
+  white-space: nowrap;
+  opacity: 0;
+  transition:
+    opacity var(--wa-transition-fast) var(--wa-transition-easing),
+    color var(--wa-transition-fast) var(--wa-transition-easing);
+}
+:where(main) .heading-anchor {
+  text-decoration: none;
+}
+:is(h2, h3):hover > .heading-anchor {
+  opacity: 0.8;
+}
+.heading-anchor:hover {
+  opacity: 1;
+  color: var(--fg);
+}
+wa-tooltip {
+  --wa-tooltip-background-color: var(--fg);
+  --wa-tooltip-content-color: var(--bg);
+  --wa-tooltip-border-radius: var(--wa-border-radius-s);
+  --wa-tooltip-arrow-size: 4px;
+  --max-width: 28ch;
+}
+wa-tooltip::part(body) {
+  padding: 0.4em 0.65em;
+  font: var(--wa-font-weight-semibold) var(--wa-font-size-xs) / 1.3 var(--font-body);
+}
+wa-tooltip[open]::part(body) {
+  animation: tip-in 0.18s var(--ease-out);
+}
+@keyframes tip-in {
+  from {
+    opacity: 0;
+    translate: 0 3px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  @keyframes tip-in {
+    from {
+      opacity: 0;
+    }
+  }
+}
+wa-tab-panel {
+  --padding: var(--wa-space-xl) 0 0;
+}
+:is(pre, wa-tab-group, .install-head, .example):has(+ wa-callout.note) {
+  margin-block-end: 0;
+}
+wa-callout.note {
+  border-color: var(--line);
+  margin-block: var(--wa-space-m);
+  background: transparent;
+  color: var(--muted);
+  font-size: var(--wa-font-size-s);
+}
+wa-callout.note strong {
+  display: block;
+  margin-block-end: var(--wa-space-2xs);
+  color: var(--fg);
+  font-weight: var(--wa-font-weight-bold);
+}
+/* The pin's weight sits at its head, so centering its box on the title line reads high. */
+wa-callout.note::part(icon) {
+  align-self: start;
+  translate: 0 0.15em;
+  color: var(--pencil);
+}
+/* Two icons share one spot and hand off with a turn: bars to burger on hover, moon to lamp with the theme. */
+.swap-icons {
+  display: grid;
+}
+wa-button:has(.swap-icons)::part(base) {
+  inline-size: 2rem;
+  padding-inline: 0;
+}
+.swap-icons > wa-icon {
+  grid-area: 1 / 1;
+  transition:
+    opacity var(--wa-transition-slow) var(--ease-settle),
+    scale var(--wa-transition-slow) var(--ease-out),
+    rotate var(--wa-transition-slow) var(--ease-out);
+}
+.swap-icons > :last-child,
+:is(.nav-toggle:is(:hover, :focus-visible), :root[data-theme='dark'] #theme, .is-paused #pause)
+  .swap-icons
+  > :first-child {
+  opacity: 0;
+  scale: 0.6;
+}
+.swap-icons > :last-child {
+  rotate: -25deg;
+}
+:is(.nav-toggle:is(:hover, :focus-visible), :root[data-theme='dark'] #theme, .is-paused #pause)
+  .swap-icons
+  > :first-child {
+  rotate: 25deg;
+}
+:is(.nav-toggle:is(:hover, :focus-visible), :root[data-theme='dark'] #theme, .is-paused #pause)
+  .swap-icons
+  > :last-child {
+  opacity: 1;
+  scale: 1;
+  rotate: 0deg;
+}
+.nav-toggle:is(:hover, :focus-visible) .swap-icons > :last-child {
+  color: var(--fg);
+}
+@media (prefers-reduced-motion: reduce) {
+  .swap-icons > wa-icon {
+    scale: 1 !important;
+    rotate: 0deg !important;
+    transition: opacity var(--wa-transition-normal) var(--wa-transition-easing);
+  }
+}

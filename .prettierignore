@@ -1,0 +1,7 @@
+*.md
+/dist/
+/site/
+/test-results/
+/playwright-report/
+package.json
+package-lock.json

@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>tiny-tell fixture</title>
+    <style>
+      body {
+        font:
+          16px/1.5 system-ui,
+          sans-serif;
+        margin: 16px;
+      }
+      .dark {
+        color-scheme: dark;
+        background: #111;
+        color: #eee;
+        padding: 8px;
+      }
+      .light {
+        color-scheme: light;
+        background: #fff;
+        color: #111;
+        padding: 8px;
+      }
+      .ink {
+        background: #2563eb;
+        color: #fff;
+        padding: 8px;
+      }
+    </style>
+    <script
+      type="module"
+      src="../dist/tiny-tells.js"
+    ></script>
+  </head>
+  <body>
+    <div id="skins"></div>
+    <div class="light">
+      <tiny-tell
+        id="in-light"
+        skin="drones"
+      ></tiny-tell>
+    </div>
+    <div class="dark">
+      <tiny-tell
+        id="in-dark"
+        skin="drones"
+      ></tiny-tell>
+    </div>
+    <div class="ink">
+      <tiny-tell
+        id="ink"
+        skin="drones"
+        color="current"
+      ></tiny-tell>
+    </div>
+    <fake-button id="slotted"
+      ><tiny-tell
+        skin="drones"
+        color="current"
+      ></tiny-tell
+      >Deploying</fake-button
+    >
+    <div style="--tell-color-done: rgb(220 0 0)">
+      <tiny-tell
+        id="red-done"
+        skin="drones"
+        state="done"
+      ></tiny-tell>
+    </div>
+    <div style="--tell-color-working: light-dark(rgb(0 160 0), rgb(0 0 230))">
+      <tiny-tell
+        id="ld-light"
+        skin="drones"
+        scheme="light"
+      ></tiny-tell
+      ><tiny-tell
+        id="ld-dark"
+        skin="drones"
+        scheme="dark"
+      ></tiny-tell>
+    </div>
+    <div class="light">
+      <tiny-tell
+        id="inverted"
+        skin="drones"
+        scheme="invert"
+      ></tiny-tell>
+    </div>
+    <tiny-tell
+      id="sized"
+      skin="lens"
+      style="--tell-size: 48px"
+    ></tiny-tell>
+    <tiny-tell
+      id="labeled"
+      skin="eyes"
+      label="Deploying"
+    ></tiny-tell>
+    <tiny-tell
+      id="decorative"
+      skin="eyes"
+      label=""
+    ></tiny-tell>
+    <tiny-tell
+      id="hidden"
+      skin="blot"
+      hidden
+    ></tiny-tell>
+    <div style="width: 0; overflow: hidden">
+      <tiny-tell
+        id="zero"
+        skin="blot"
+        style="--tell-size: 0px"
+      ></tiny-tell>
+    </div>
+    <p id="inline">Body text with a <tiny-tell skin="dekatron"></tiny-tell> tell inline.</p>
+    <table>
+      <tr>
+        <td id="in-cell"><tiny-tell skin="lens"></tiny-tell></td>
+        <td>A tell in a table cell</td>
+      </tr>
+    </table>
+    <script>
+      customElements.define(
+        'fake-button',
+        class extends HTMLElement {
+          constructor() {
+            super();
+            this.attachShadow({ mode: 'open' }).innerHTML =
+              '<span style="display:inline-flex;gap:6px;padding:6px 10px;background:#2563eb;color:#fff"><slot></slot></span>';
+          }
+        }
+      );
+      const early = document.createElement('tiny-tell');
+      early.id = 'early';
+      early.setAttribute('skin', 'lens');
+      early.state = 'error';
+      document.body.append(early);
+    </script>
+    <script type="module">
+      document.getElementById('skins').innerHTML = ['drones', 'flipdot', 'eyes', 'blot', 'dekatron', 'lens']
+        .map(s => `<tiny-tell skin="${s}" data-skin="${s}"></tiny-tell>`)
+        .join('');
+    </script>
+  </body>
+</html>
