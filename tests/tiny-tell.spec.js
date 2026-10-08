@@ -601,6 +601,10 @@ test.describe('site pages', () => {
   test.afterEach(noProblems);
 
   test('landing, docs, and 404 load and switch theme without errors', async ({ page }) => {
+    await page.addInitScript(() => {
+      window.windowErrors = [];
+      addEventListener('error', e => window.windowErrors.push(e.message));
+    });
     for (const path of ['/', '/docs/', '/404.html']) {
       await open(page, { path });
       const html = page.locator('html');
@@ -608,6 +612,7 @@ test.describe('site pages', () => {
       const before = await html.getAttribute('data-theme');
       await page.locator('#theme').click();
       await expect(html, `${path} flips the theme`).not.toHaveAttribute('data-theme', before);
+      expect(await page.evaluate(() => window.windowErrors), `${path} raises no window errors`).toEqual([]);
     }
   });
 });
