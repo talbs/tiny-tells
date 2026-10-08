@@ -13,7 +13,7 @@ Set the number before writing the first test for a feature. Judging each test on
 - **Over budget?** Make it table-driven first, then cut.
 - **Gate 1 beats the number.** If a real contract would go unprotected, the budget is wrong, not the test.
 
-Measured 2026-10-08: 29 browser tests (run in up to three engines), 2 node scripts (the test-DOM one runs twice, for jsdom and happy-dom), and 1 node test file.
+Measured 2026-10-08: 30 browser tests (run in up to three engines), 2 node scripts (the test-DOM one runs twice, for jsdom and happy-dom), and 1 node test file.
 
 ## Gate 1: should this test exist?
 
