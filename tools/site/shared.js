@@ -29,7 +29,7 @@ const emit = event => listeners[event].forEach(fn => fn());
 
 export const page = {
   isPaused: false,
-  skin: V1.includes(store.get('tells-site-skin')) ? store.get('tells-site-skin') : 'eyes',
+  skin: V1.includes(store.get('tells-site-skin')) ? store.get('tells-site-skin') : 'drones',
 };
 export const holdAll = root => root.querySelectorAll('tiny-tell').forEach(t => (t.paused = page.isPaused));
 
@@ -68,7 +68,7 @@ $('page-tell')?.insertAdjacentHTML(
 );
 export const setSkin = next => {
   page.skin = next;
-  store.set('tells-site-skin', next === 'eyes' ? null : next);
+  store.set('tells-site-skin', next === 'drones' ? null : next);
   if ($('page-tell')) $('page-tell').value = next;
   emit('skin');
 };
