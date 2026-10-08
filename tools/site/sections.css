@@ -521,6 +521,10 @@
   justify-items: center;
   gap: var(--wa-space-xs);
 }
+.stress-cell {
+  inline-size: var(--tell-size);
+  aspect-ratio: 1;
+}
 .text-sizes > p {
   flex-wrap: wrap;
   align-self: stretch;

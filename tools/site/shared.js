@@ -322,21 +322,35 @@ export const bindPalettePickers = host =>
 
 export const PROMPT =
   '<span class="prompt" aria-hidden="true"><wa-icon family="sharp" variant="regular" name="house"></wa-icon>/app<wa-icon family="sharp" variant="regular" name="dollar-sign"></wa-icon></span>';
-const addCopyButtons = () =>
+const addCopyButton = pre => {
+  const btn = document.createElement('wa-copy-button');
+  btn.value = pre.querySelector('code').textContent;
+  btn.copyLabel = 'Copy';
+  btn.successLabel = 'Copied';
+  btn.tooltipPlacement = 'left';
+  btn.innerHTML = ['copy:copy', 'success:check', 'error:xmark']
+    .map(icon => icon.split(':'))
+    .map(([slot, name]) => `<wa-icon slot="${slot}-icon" family="sharp" variant="regular" name="${name}"></wa-icon>`)
+    .join('');
+  pre.append(btn);
+};
+/* A copy button is eight Web Awesome components (icons, tooltip, popup), so each one is added as its code block nears the screen. */
+const addCopyButtons = () => {
+  const near = new IntersectionObserver(
+    entries =>
+      entries.forEach(({ isIntersecting, target }) => {
+        if (!isIntersecting) return;
+        near.unobserve(target);
+        addCopyButton(target);
+      }),
+    { rootMargin: '100% 0px' }
+  );
   document.querySelectorAll('pre[data-copy]').forEach(pre => {
-    const btn = document.createElement('wa-copy-button');
-    btn.value = pre.textContent;
     pre.insertAdjacentHTML('afterbegin', PROMPT);
     pre.querySelector('code').insertAdjacentHTML('afterend', '<span class="caret" aria-hidden="true"></span>');
-    btn.copyLabel = 'Copy';
-    btn.successLabel = 'Copied';
-    btn.tooltipPlacement = 'left';
-    btn.innerHTML = ['copy:copy', 'success:check', 'error:xmark']
-      .map(icon => icon.split(':'))
-      .map(([slot, name]) => `<wa-icon slot="${slot}-icon" family="sharp" variant="regular" name="${name}"></wa-icon>`)
-      .join('');
-    pre.append(btn);
+    near.observe(pre);
   });
+};
 
 export const syncInstallTabs = groups => {
   const set = name =>

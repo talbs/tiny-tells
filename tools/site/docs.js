@@ -287,9 +287,24 @@ $('size-ladder').innerHTML = ['eyes', 'dekatron']
   )
   .join('');
 
-$('stress-grid').innerHTML = Array.from({ length: 100 }, (_, i) =>
-  tag(V1[i % V1.length], `state="${STATES[Math.floor(i / V1.length) % STATES.length]}" label="" paused`)
-).join('');
+/* The grid holds over half the page's tells, so it fills in only as a reader nears it. Same-size cells keep its space until then. */
+$('stress-grid').innerHTML = '<i class="stress-cell"></i>'.repeat(100);
+let isStressBuilt = false;
+const buildStress = () => {
+  if (isStressBuilt) return;
+  isStressBuilt = true;
+  $('stress-grid').innerHTML = Array.from({ length: 100 }, (_, i) =>
+    tag(V1[i % V1.length], `state="${STATES[Math.floor(i / V1.length) % STATES.length]}" label="" paused`)
+  ).join('');
+};
+new IntersectionObserver(
+  ([e], observer) => {
+    if (!e.isIntersecting) return;
+    buildStress();
+    observer.disconnect();
+  },
+  { rootMargin: '100% 0px' }
+).observe($('stress-grid'));
 let isStressRunning = false,
   frames = 0,
   since = 0,
@@ -320,6 +335,7 @@ const holdStress = () => {
   }
 };
 $('stress-run').addEventListener('click', () => {
+  buildStress();
   isStressRunning = !isStressRunning;
   holdStress();
 });
