@@ -31,7 +31,7 @@ Tiny Tells is one custom element, `<tiny-tell>`, that shows what an app is up to
 - Attributes: `skin`, `state`, `color`, `scheme`, `label`, `paused`. Also `::part(tell)` and `:state()`. The play bundle fires `tell-dance` (cancelable) and `tell-after-dance`; the core fires no events.
 - Accessibility: an image role named by its state (or `label`), `label=""` for decorative tells, reduced motion holds a still pose, forced colors draws in system colors, no flashing over 3 a second, the default palette meets 3:1. A state change does not announce; pair it with a `role="status"` region.
 - Support floor: Chrome 99+, Firefox 112+, Safari 16.4+.
-- Alpha (0.1.0). Names and defaults may change before 1.0. Custom tells aren't supported.
+- Alpha (0.1.x). Names and defaults may change before 1.0. Custom tells aren't supported.
 - The tells themselves have no dependencies and no Web Awesome references. Web Awesome is for site and demo chrome only.
 - Console warnings link to docs anchors (`#states`, `#tells`, `#play`). Those URLs freeze into each published version.
 
