@@ -505,7 +505,7 @@
   }
 }
 @media (max-width: 599px) {
-  wa-page:has(.hero)::part(main-content) {
+  wa-page.is-home::part(main-content) {
     padding-block-start: var(--wa-space-xl);
   }
   .hero {

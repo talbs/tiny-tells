@@ -221,21 +221,18 @@ wa-page[view='mobile'].is-docs :is(.sections, .header-docs[aria-current]) {
   display: none;
 }
 /* The preview controls ride along with the links instead of pinning above them, so a short phone still has room to scroll the index. */
-wa-page::part(drawer__dialog) {
-  overscroll-behavior: contain;
-}
-wa-page::part(drawer__body) {
+wa-page.is-docs::part(drawer__body) {
   flex: none;
   overflow: visible;
 }
-wa-page::part(drawer__header) {
+wa-page.is-docs::part(drawer__header) {
   position: relative;
   padding-inline-end: var(--spacing);
 }
-wa-page::part(drawer__header-actions) {
+wa-page.is-docs::part(drawer__header-actions) {
   position: absolute;
-  inset-block-start: var(--wa-space-s);
-  inset-inline-end: var(--wa-space-s);
+  inset-block-start: calc(var(--spacing) - var(--wa-form-control-padding-block));
+  inset-inline-end: calc(var(--spacing) - var(--wa-form-control-padding-block));
 }
 wa-page[view='desktop'].is-docs::part(main-content),
 wa-page[view='desktop'].is-docs::part(main-header) {
