@@ -82,12 +82,6 @@ wa-scroller > table {
 .wa-prose tr:has(> .tell-cell) > * {
   vertical-align: middle;
 }
-.sections {
-  overflow: auto hidden;
-  scrollbar-width: none;
-  padding-block: var(--wa-space-s);
-  margin-block: calc(-1 * var(--wa-space-s));
-}
 header #page-tell {
   inline-size: 8.5rem;
 }
@@ -127,8 +121,10 @@ wa-select wa-icon[slot='start'] {
 }
 .docs-index a {
   position: relative;
+  scroll-margin-block: var(--wa-space-m);
   align-self: start;
-  padding-block: var(--wa-space-xs);
+  padding: var(--wa-space-xs) var(--wa-space-2xs);
+  margin-inline: calc(-1 * var(--wa-space-2xs));
   font: var(--wa-font-weight-semibold) var(--wa-font-size-xs) / 1.3 var(--font-mono);
   color: var(--muted);
   text-decoration: none;
@@ -298,11 +294,8 @@ body {
   --control-edge: color-mix(in oklab, var(--fg) 30%, var(--bg));
   --control-hover: var(--field);
   --control-quiet: var(--muted);
-  --control-ring: var(--wa-border-width-m) solid var(--fg);
   --control-h: 40px;
   --control-h-s: 32px;
-  --wa-focus-ring: var(--control-ring);
-  --wa-focus-ring-offset: 2px;
   --wa-color-text-link: var(--fg);
   --wa-form-control-border-color: var(--control-edge);
 }
@@ -357,11 +350,11 @@ wa-page::part(footer) {
 .sections a,
 .header-docs {
   position: relative;
-  padding-block: var(--wa-space-s);
-  margin-block: calc(-1 * var(--wa-space-s));
+  padding: var(--wa-space-s) var(--wa-space-2xs);
+  margin: calc(-1 * var(--wa-space-s)) calc(-1 * var(--wa-space-2xs));
 }
 .header-docs {
-  margin-inline-end: var(--wa-space-s);
+  margin-inline-end: calc(var(--wa-space-s) - var(--wa-space-2xs));
 }
 .sections a::after,
 .header-docs::after,
@@ -378,6 +371,11 @@ wa-page::part(footer) {
   transform: scaleX(0);
   transform-origin: left;
   transition: transform var(--wa-transition-fast) ease-in;
+}
+.sections a::after,
+.header-docs::after,
+.docs-index a::after {
+  inset-inline: calc(var(--wa-space-2xs) - 2px);
 }
 .docs-index a::after {
   inset-block-end: calc(var(--wa-space-xs) - 7px);
@@ -517,8 +515,21 @@ wa-page::part(footer) {
 .made-with .is-wa {
   color: var(--brand-web-awesome);
 }
-.made-with:focus-visible {
-  outline: var(--control-ring);
+/* Web Awesome 3.14 styles a .skip-to-content class its link doesn't carry, so its own styles are applied here through the part. */
+wa-page::part(skip-to-content):focus {
+  position: absolute;
+  inset-block-start: var(--wa-space-m);
+  inset-inline-start: var(--wa-space-m);
+  z-index: 6;
+  padding: var(--wa-space-s) var(--wa-space-m);
+  border-radius: var(--wa-border-radius-m);
+  background: var(--wa-color-surface-default);
+  box-shadow: var(--wa-shadow-l);
+  color: var(--fg);
+  font: var(--wa-font-weight-semibold) var(--wa-font-size-xs) / 1 var(--font-mono);
+  text-decoration: none;
+  outline: var(--wa-focus-ring);
+  outline-offset: var(--wa-focus-ring-offset);
 }
 .tb-name {
   user-select: none;

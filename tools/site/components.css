@@ -200,8 +200,8 @@ wa-color-picker::part(slider-handle) {
   overflow-x: auto;
 }
 [data-syntax-theme='drafting'] pre[data-copy] > code:focus-visible {
-  outline: var(--wa-border-width-m) solid var(--syntax-foreground);
-  outline-offset: calc(-1 * var(--wa-border-width-m));
+  outline: var(--wa-focus-ring);
+  outline-offset: calc(-1 * var(--wa-focus-ring-width));
 }
 wa-tag,
 wa-tag.studio {
@@ -440,8 +440,42 @@ main .lede code {
 .info-link:hover {
   color: var(--control-ink);
 }
-.info-link:focus-visible {
-  outline: var(--control-ring);
+/* Entrance only: Web Awesome hides the skip link with !important, and a lingering ring would blur where focus is. */
+@keyframes ring-in {
+  from {
+    outline-width: 0;
+    outline-color: transparent;
+  }
+}
+@keyframes skip-in {
+  from {
+    opacity: 0;
+    translate: 0 calc(-1 * var(--wa-space-s));
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  :focus-visible {
+    animation: ring-in var(--wa-transition-fast) var(--ease-out);
+  }
+  wa-button:focus-within::part(base),
+  wa-tab:focus-visible::part(base),
+  wa-switch:focus-within::part(control),
+  wa-slider:focus-within::part(thumb),
+  wa-details:focus-within::part(header),
+  wa-input:focus-within::part(base),
+  wa-select:focus-within::part(combobox),
+  wa-copy-button:focus-within::part(button) {
+    animation: ring-in var(--wa-transition-fast) var(--ease-out);
+  }
+  wa-page::part(skip-to-content):focus {
+    animation: skip-in var(--wa-transition-normal) var(--ease-out);
+  }
+}
+:where(a:focus-visible, pre > code:focus-visible) {
+  border-radius: var(--wa-form-control-border-radius);
+}
+wa-tab::part(base) {
+  border-radius: var(--wa-form-control-border-radius);
 }
 .prompt {
   display: none;
@@ -517,21 +551,11 @@ wa-color-picker::part(format-button__base) {
   text-transform: uppercase;
   letter-spacing: 0.08em;
 }
-wa-slider {
-  --glow: color-mix(in oklab, var(--ink, var(--control-ink)) 18%, transparent);
-}
 wa-slider::part(thumb) {
-  box-shadow: 0 0 0 0 var(--glow);
-  transition:
-    scale var(--wa-transition-fast) var(--ease-out),
-    box-shadow var(--wa-transition-normal) var(--ease-out);
+  transition: scale var(--wa-transition-fast) var(--ease-out);
 }
 wa-slider:hover::part(thumb) {
   scale: 1.25;
-}
-wa-slider:state(focused)::part(thumb) {
-  outline: none;
-  box-shadow: 0 0 0 6px var(--glow);
 }
 .studio wa-slider::part(track) {
   background: var(--paper-edge);

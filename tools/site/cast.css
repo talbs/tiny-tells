@@ -62,8 +62,8 @@ main > #tells {
   color: var(--ink);
 }
 .cast-pick wa-radio[appearance='button']:focus-visible {
-  outline: var(--control-ring);
-  outline-offset: -4px;
+  outline: var(--wa-focus-ring);
+  outline-offset: calc(-1 * var(--wa-focus-ring-width) - 1px);
   border-radius: var(--wa-border-radius-l);
 }
 
@@ -263,8 +263,8 @@ main > #tells {
   color: var(--ink);
 }
 .cast .notes > button:focus-visible {
-  outline: var(--control-ring);
-  outline-offset: -2px;
+  outline: var(--wa-focus-ring);
+  outline-offset: calc(-1 * var(--wa-focus-ring-width));
 }
 .notes-hl {
   position: absolute;
