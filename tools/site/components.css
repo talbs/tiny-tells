@@ -318,15 +318,25 @@ wa-radio-group[data-pill] wa-radio[appearance='button']:state(checked) {
   opacity: 0;
   pointer-events: none;
   transition:
-    transform var(--wa-transition-slow) var(--wa-transition-easing),
-    inline-size var(--wa-transition-slow) var(--wa-transition-easing),
-    block-size var(--wa-transition-slow) var(--wa-transition-easing),
-    border-radius var(--wa-transition-slow) var(--wa-transition-easing);
+    transform var(--wa-transition-slow) var(--ease-detent),
+    inline-size var(--wa-transition-slow) var(--ease-detent),
+    block-size var(--wa-transition-slow) var(--ease-move),
+    border-radius var(--wa-transition-slow) var(--ease-move);
+}
+wa-switch::part(thumb) {
+  transition:
+    translate var(--wa-transition-slow) var(--ease-detent),
+    background var(--wa-transition-normal) var(--wa-transition-easing),
+    border-color var(--wa-transition-normal) var(--wa-transition-easing),
+    box-shadow var(--wa-transition-normal) var(--wa-transition-easing);
 }
 @media (prefers-reduced-motion: reduce) {
   .seg-pill,
   .tab-bar {
     transition: none;
+  }
+  wa-switch::part(thumb) {
+    transition-duration: 0s;
   }
 }
 wa-radio[appearance='button']:focus-visible {
@@ -609,8 +619,8 @@ wa-tab-group:has(> .tab-bar) > wa-tab[active] {
   opacity: 0;
   pointer-events: none;
   transition:
-    transform var(--wa-transition-slow) var(--wa-transition-easing),
-    inline-size var(--wa-transition-slow) var(--wa-transition-easing);
+    transform var(--wa-transition-slow) var(--ease-detent),
+    inline-size var(--wa-transition-slow) var(--ease-detent);
 }
 /* The negative end margin cancels the icon's width in the line, so an anchor can never change how its heading wraps, and its tooltip still centers on the icon. */
 .heading-anchor {

@@ -274,8 +274,8 @@ main > #tells {
   background: color-mix(in oklab, var(--paper) 40%, var(--paper-edge));
   pointer-events: none;
   transition:
-    transform var(--wa-transition-slow) var(--wa-transition-easing),
-    block-size var(--wa-transition-slow) var(--wa-transition-easing);
+    transform var(--wa-transition-slow) var(--ease-detent),
+    block-size var(--wa-transition-slow) var(--ease-move);
 }
 @media (prefers-reduced-motion: reduce) {
   .notes-hl {
