@@ -1,7 +1,7 @@
 import { BEAT } from '../../src/core.js';
 import { DANCE } from '../../src/element.js';
 import { V1 } from '../shared/copy.js';
-import { $, holdAll, isStill, onMotionChange, tag } from './shared.js';
+import { $, holdAll, isStill, onMotionChange, reducedMotion, tag } from './shared.js';
 
 const BEAT_MS = BEAT * 1000;
 const section = $('funsies');
@@ -17,6 +17,9 @@ const keepDancing = (el, isOn) =>
 const syncMotion = () => {
   const isOff = isStill();
   $('funsies-still').hidden = !isOff;
+  $('funsies-still-why').textContent = reducedMotion.matches
+    ? 'Your system asks for reduced motion, so these stay still.'
+    : 'Press play in the header to try these.';
   buttons.forEach(button => (button.disabled = isOff));
 };
 syncMotion();
