@@ -204,16 +204,6 @@
 .sw-ratio.is-low {
   color: var(--wa-color-danger-on-quiet);
 }
-@container (max-width: 28rem) {
-  .sw-row {
-    gap: var(--wa-space-m);
-  }
-  .sw-cell {
-    flex-direction: column;
-    align-items: start;
-    gap: var(--wa-space-2xs);
-  }
-}
 .sw-chip,
 .sw-name wa-color-picker::part(trigger) {
   inline-size: 20px;
@@ -229,6 +219,17 @@
 }
 .sw-name wa-color-picker::part(trigger)::before {
   border-radius: var(--wa-border-radius-m);
+}
+/* A 52px well beside its ratio needs about 110px, which the cells drop under below 28rem. */
+@container (max-width: 28rem) {
+  .sw-row {
+    gap: var(--wa-space-m);
+  }
+  .sw-cell {
+    flex-direction: column;
+    align-items: start;
+    gap: var(--wa-space-2xs);
+  }
 }
 .play-block {
   display: grid;
@@ -463,25 +464,6 @@
     padding-inline: var(--wa-space-2xs);
   }
 }
-.example-bar:has(> #handoff-state) {
-  container-type: inline-size;
-}
-/* Five states need about 21rem in a row. Narrower, they wrap as separate chips instead of a joined group split across two lines. */
-@container (max-width: 21rem) {
-  #handoff-state {
-    inline-size: 100%;
-  }
-  #handoff-state::part(form-control-input) {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: var(--wa-space-2xs);
-  }
-  #handoff-state wa-radio {
-    justify-content: center;
-    margin: 0;
-    border-radius: var(--wa-form-control-border-radius);
-  }
-}
 .palette-tabs::part(form-control-input) {
   display: flex;
   flex-wrap: wrap;
@@ -592,16 +574,30 @@
 .text-sizes [data-measure] {
   margin-inline-start: auto;
 }
-.text-sizes {
-  container-type: inline-size;
-}
-@container (max-width: 30rem) {
+/* The 24px sample, its tell, and its caption measure 370px in a row. */
+@container (max-width: 24rem) {
   .text-sizes > p {
     row-gap: var(--wa-space-3xs);
   }
   .text-sizes [data-measure] {
     flex-basis: 100%;
     margin-inline-start: 0;
+  }
+}
+/* Five states measure 358px in a row. Narrower, they wrap as separate chips instead of a joined group split across two lines. */
+@container (max-width: 23rem) {
+  #handoff-state {
+    inline-size: 100%;
+  }
+  #handoff-state::part(form-control-input) {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--wa-space-2xs);
+  }
+  #handoff-state wa-radio {
+    justify-content: center;
+    margin: 0;
+    border-radius: var(--wa-form-control-border-radius);
   }
 }
 .label-cases {
