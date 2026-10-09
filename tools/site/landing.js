@@ -139,6 +139,33 @@ cast.addEventListener('scroll', markDot, { passive: true });
 markDot();
 const stage = document.querySelector('.hero-stage'),
   notes = stage.querySelector('.hand-notes');
+const field = document.querySelector('.hero-field'),
+  badge = document.querySelector('.hero-version'),
+  actions = document.querySelector('.hero-actions'),
+  copy = document.querySelector('.hero-copy');
+let snapFrame = 0;
+const snapToGrid = () => {
+  const f = field.getBoundingClientRect(),
+    origin = badge.getBoundingClientRect(),
+    c = $('hero-cast').getBoundingClientRect(),
+    grid = parseFloat(getComputedStyle(field).getPropertyValue('--grid')),
+    nearest = (v, o) => Math.round((v - o) / grid) * grid + o,
+    nudge = parseFloat(actions.style.getPropertyValue('--actions-nudge')) || 0,
+    actionsTop = actions.getBoundingClientRect().top - nudge;
+  actions.style.setProperty('--actions-nudge', `${nearest(actionsTop, origin.top) - actionsTop}px`);
+  field.style.setProperty('--grid-x', `${origin.left - f.left}px`);
+  field.style.setProperty('--grid-y', `${origin.top - f.top}px`);
+  stage.style.setProperty('--frame-l', `${c.left - nearest(c.left, origin.left)}px`);
+  stage.style.setProperty('--frame-t', `${c.top - nearest(c.top, origin.top)}px`);
+  stage.style.setProperty('--frame-r', `${nearest(c.right, origin.left) - c.right}px`);
+  stage.style.setProperty('--frame-b', `${nearest(c.bottom, origin.top) - c.bottom}px`);
+};
+// The snap moves the buttons, which resizes an observed box, so it runs on the next frame to stay out of the observer's own pass.
+const gridSnap = new ResizeObserver(() => {
+  cancelAnimationFrame(snapFrame);
+  snapFrame = requestAnimationFrame(snapToGrid);
+});
+[field, $('hero-cast'), copy].forEach(el => gridSnap.observe(el));
 const offsetIn = el => {
   let x = el.offsetWidth / 2,
     y = el.offsetHeight / 2;
@@ -208,7 +235,7 @@ const renderCast = () => {
     .join('');
   $('any-size-tell').innerHTML = live(skin, `style="--tell-size: ${anySize}px" label=""`);
   $('cast-goes').innerHTML =
-    `<span class="goes-label">Best for<span class="wa-visually-hidden">: </span></span>${GOES[skin].map((use, i) => `<wa-tag appearance="outlined" size="xs">${i ? '<span class="wa-visually-hidden">, </span>' : ''}${use}</wa-tag>`).join('')}`;
+    `<span class="goes-label">Best for<span class="wa-visually-hidden">: </span></span><span class="wa-cluster wa-gap-s">${GOES[skin].map((use, i) => `<wa-tag appearance="outlined" size="xs">${i ? '<span class="wa-visually-hidden">, </span>' : ''}${use}</wa-tag>`).join('')}</span>`;
   $('notes').innerHTML =
     '<span class="notes-hl" aria-hidden="true"></span>' +
     STATES.map(

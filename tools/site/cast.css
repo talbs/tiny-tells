@@ -294,12 +294,14 @@ main > #tells {
 .lab-notes::part(content) {
   padding-inline: 0;
 }
+.lab-notes::part(header) {
+  align-items: start;
+}
 .lab-summary {
-  display: flex;
+  display: grid;
   flex: 1;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: baseline;
   gap: var(--wa-space-2xs) var(--wa-space-m);
   margin-inline-end: var(--wa-space-s);
 }
@@ -310,7 +312,6 @@ main > #tells {
   color: var(--muted);
 }
 .goes-label {
-  margin-inline-end: var(--wa-space-2xs);
   line-height: 1;
 }
 
@@ -349,6 +350,15 @@ main > #tells {
   }
   .proof-table .model figcaption::before {
     display: none;
+  }
+  .cast .notes {
+    margin-inline: calc(-1 * var(--wa-space-xs));
+  }
+  .cast .notes > button {
+    padding-inline: var(--wa-space-xs);
+  }
+  .cast-controls {
+    gap: var(--wa-space-s) var(--wa-space-m);
   }
 }
 

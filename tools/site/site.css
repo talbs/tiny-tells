@@ -402,10 +402,6 @@ wa-page::part(footer) {
     opacity: 1;
   }
 }
-.wa-prose :is(p, h2, h3) {
-  margin: revert-layer;
-  font-size: revert-layer;
-}
 .foot-reg {
   position: relative;
   inline-size: 14px;
@@ -431,6 +427,9 @@ wa-page::part(footer) {
 }
 .site-footer {
   gap: var(--space-related) var(--space-group);
+}
+.site-footer .title-block {
+  row-gap: var(--wa-space-s);
 }
 [slot='footer'].site-footer {
   padding-block: var(--wa-space-xl);
@@ -483,13 +482,13 @@ wa-page::part(footer) {
   display: inline-grid;
   place-items: center;
   margin: calc(-1 * var(--wa-space-xs));
-  margin-inline-start: calc(-1 * var(--wa-space-2xs));
+  margin-inline-start: calc(-1.5 * var(--wa-space-2xs));
   padding: var(--wa-space-xs);
   border: 0;
   border-radius: var(--wa-border-radius-circle);
   background: none;
   color: var(--accent);
-  font-size: var(--wa-font-size-xs);
+  font-size: var(--wa-font-size-s);
   vertical-align: baseline;
   cursor: pointer;
 }
@@ -575,13 +574,13 @@ a {
     --control-h-s: 40px;
   }
 }
-.wa-prose h2 {
+.wa-prose h2:not(.wa-not-prose *) {
   font-size: var(--wa-font-size-2xl);
   font-weight: var(--wa-font-weight-bold);
   line-height: 1.1;
   letter-spacing: -0.03em;
 }
-.wa-prose h3 {
+.wa-prose h3:not(.wa-not-prose *) {
   font-size: var(--wa-font-size-xl);
   font-weight: var(--wa-font-weight-bold);
   letter-spacing: -0.012em;
