@@ -91,7 +91,6 @@ wa-color-picker::part(slider-handle) {
 .cast-name,
 .title-block,
 .proof-table .any-size wa-slider::part(label),
-.goes-label,
 .label-cases thead th,
 .label {
   font: var(--wa-font-weight-normal) var(--wa-font-size-2xs) / var(--wa-line-height-normal) var(--font-mono);

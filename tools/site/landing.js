@@ -235,7 +235,7 @@ const renderCast = () => {
     .join('');
   $('any-size-tell').innerHTML = live(skin, `style="--tell-size: ${anySize}px" label=""`);
   $('cast-goes').innerHTML =
-    `<span class="goes-label">Best for<span class="wa-visually-hidden">: </span></span><span class="wa-cluster wa-gap-s">${GOES[skin].map((use, i) => `<wa-tag appearance="outlined" size="xs">${i ? '<span class="wa-visually-hidden">, </span>' : ''}${use}</wa-tag>`).join('')}</span>`;
+    `<span class="wa-visually-hidden">Best for: </span><span class="wa-cluster wa-gap-s">${GOES[skin].map((use, i) => `<wa-tag appearance="outlined" size="xs">${i ? '<span class="wa-visually-hidden">, </span>' : ''}${use}</wa-tag>`).join('')}</span>`;
   $('notes').innerHTML =
     '<span class="notes-hl" aria-hidden="true"></span>' +
     STATES.map(
