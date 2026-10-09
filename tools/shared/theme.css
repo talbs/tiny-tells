@@ -119,7 +119,7 @@ body {
   font-size: 13px;
   color: var(--muted);
 }
-/* Web Awesome Create's in and move curves, plus a detent: sliding toggles pass their mark by about 2% and settle. */
+/* In and move curves, plus a detent: sliding toggles pass their mark by about 2% and settle. */
 :root {
   --ease-in: cubic-bezier(0.4, 0, 1, 1);
   --ease-move: cubic-bezier(0.2, 0, 0, 1);
