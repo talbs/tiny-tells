@@ -232,7 +232,7 @@ wa-button::part(base) {
     background-color var(--wa-transition-normal) var(--wa-transition-easing),
     color var(--wa-transition-normal) var(--wa-transition-easing),
     border-color var(--wa-transition-normal) var(--wa-transition-easing),
-    translate 0.05s ease;
+    translate var(--wa-transition-fast) var(--wa-transition-easing);
 }
 wa-button:not([disabled]):active::part(base) {
   translate: 0 1px;
@@ -303,7 +303,7 @@ wa-radio-group:has(> .seg-pill) wa-radio[appearance='button'] {
   z-index: 1;
 }
 wa-radio-group[data-pill] wa-radio[appearance='button'] {
-  transition: color var(--wa-transition-slow) var(--wa-transition-easing);
+  transition: color var(--wa-transition-normal) var(--wa-transition-easing);
 }
 wa-radio-group[data-pill] wa-radio[appearance='button']:state(checked) {
   background: transparent;
@@ -369,7 +369,7 @@ pre wa-copy-button wa-icon {
 pre wa-copy-button::part(copy-icon),
 pre wa-copy-button::part(success-icon),
 pre wa-copy-button::part(error-icon) {
-  animation: copy-in 0.25s var(--wa-transition-easing);
+  animation: copy-in var(--wa-transition-normal) var(--wa-transition-easing);
 }
 @keyframes copy-in {
   from {
@@ -659,7 +659,7 @@ wa-tooltip::part(body) {
   font: var(--wa-font-weight-semibold) var(--wa-font-size-xs) / 1.3 var(--font-body);
 }
 wa-tooltip[open]::part(body) {
-  animation: tip-in 0.18s var(--wa-transition-easing);
+  animation: tip-in var(--wa-transition-fast) var(--wa-transition-easing);
 }
 @keyframes tip-in {
   from {
@@ -710,9 +710,9 @@ wa-button:has(.swap-icons)::part(base) {
 .swap-icons > wa-icon {
   grid-area: 1 / 1;
   transition:
-    opacity var(--wa-transition-slow) var(--wa-transition-easing),
-    scale var(--wa-transition-slow) var(--wa-transition-easing),
-    rotate var(--wa-transition-slow) var(--wa-transition-easing);
+    opacity var(--wa-transition-normal) var(--wa-transition-easing),
+    scale var(--wa-transition-normal) var(--wa-transition-easing),
+    rotate var(--wa-transition-normal) var(--wa-transition-easing);
 }
 .swap-icons > :last-child,
 :is(.nav-toggle:is(:hover, :focus-visible), :root[data-theme='dark'] #theme, .is-paused #pause)

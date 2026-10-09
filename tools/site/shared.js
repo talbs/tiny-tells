@@ -537,6 +537,11 @@ export const onMotionChange = fn => {
   reducedMotion.addEventListener('change', fn);
 };
 const lift = () => (reducedMotion.matches ? 0 : 4);
+const token = name => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+const ms = name => {
+  const v = token(name);
+  return (parseFloat(v) || 0) * (v.endsWith('ms') ? 1 : 1000);
+};
 export const settleIn = el => {
   if (page.isPaused || !el?.animate) return;
   el.animate(
@@ -544,7 +549,7 @@ export const settleIn = el => {
       { opacity: 0, transform: `translateY(${lift()}px)` },
       { opacity: 1, transform: 'none' },
     ],
-    { duration: 220, easing: 'cubic-bezier(0.16, 1, 0.3, 1)' }
+    { duration: ms('--wa-transition-normal'), easing: token('--wa-transition-easing') }
   );
 };
 export const swapText = (el, text) => {
@@ -559,7 +564,7 @@ export const swapText = (el, text) => {
       { opacity: 1, transform: 'none' },
       { opacity: 0, transform: `translateY(-${lift()}px)` },
     ],
-    { duration: 120, easing: 'ease-in', fill: 'forwards' }
+    { duration: ms('--wa-transition-fast'), easing: token('--ease-in'), fill: 'forwards' }
   ).finished.then(
     () => {
       el.textContent = text;
