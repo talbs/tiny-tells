@@ -645,7 +645,7 @@ const follow = (group, items, attr, place) => {
   });
   const watch = () => [group, ...group.querySelectorAll(items)].forEach(el => sizes.observe(el));
   new MutationObserver(records => {
-    const isNew = records.some(r => r.type === 'childList');
+    const isNew = records.some(r => r.type === 'childList' && r.target === group);
     if (isNew) watch();
     queue(isNew);
   }).observe(group, { childList: true, subtree: true, attributes: true, attributeFilter: [attr] });
