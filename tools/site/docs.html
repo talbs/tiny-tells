@@ -166,7 +166,7 @@
             id="docs-bundle"
             class="bundle-switch"
             size="s"
-            >Play bundle</wa-switch
+            >Play Bundle</wa-switch
           >
           <wa-tab-group
             id="docs-install"
@@ -297,9 +297,9 @@ words.textContent = 'Synced 3 files.';</code></pre>
         id="play"
         aria-labelledby="play-title"
       >
-        <h2 id="play-title">Play</h2>
+        <h2 id="play-title">Play Bundle</h2>
         <p>
-          Play is an optional second bundle, <code>tiny-tells/play</code>. It’s the same element with the same states,
+          The play bundle, <code>tiny-tells/play</code>, is optional. It’s the same element with the same states,
           colors, and API. It adds two things that only happen when someone’s there to see them: a tell glances toward a
           nearby pointer, and five quick taps make it dance.
         </p>
@@ -1331,7 +1331,7 @@ tell.addEventListener('tell-after-dance', event => {
             name="pause"
           ></wa-icon>
           <strong>These need motion.</strong>
-          <span>Press play in the header, or turn off reduced motion in your system settings.</span>
+          <span id="funsies-still-why">Your system asks for reduced motion, so these stay still.</span>
         </wa-callout>
         <div class="funsies wa-not-prose wa-grid wa-gap-l">
           <figure class="example">
