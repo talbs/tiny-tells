@@ -68,6 +68,10 @@
 .wa-dark,
 .force-dark {
   --wa-color-focus: var(--guide-ring);
+  --wa-transition-easing: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ease-move: cubic-bezier(0.2, 0, 0, 1);
+  --ease-detent: cubic-bezier(0.3, 1.25, 0.5, 1);
   --wa-font-weight-bold: 700;
   --wa-form-control-activated-color: var(--fg);
   --wa-color-brand-on-loud: var(--off-white);
