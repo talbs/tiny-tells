@@ -10,8 +10,6 @@
   --gutter: clamp(var(--wa-space-m), 4vw, var(--wa-space-2xl));
   --measure: 65ch;
   --bleed: calc(50% - 50vw);
-  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
-  --ease-settle: cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 html,
 body {
@@ -384,7 +382,7 @@ wa-page::part(footer) {
   pointer-events: none;
   transform: scaleX(0);
   transform-origin: left;
-  transition: transform var(--wa-transition-fast) ease-in;
+  transition: transform var(--wa-transition-fast) var(--ease-in);
 }
 .sections a::after,
 .header-docs::after,
@@ -398,7 +396,7 @@ wa-page::part(footer) {
 .header-docs[aria-current]::after,
 .docs-index a[aria-current]::after {
   transform: none;
-  transition: transform 0.35s var(--ease-out);
+  transition: transform var(--wa-transition-slow) var(--wa-transition-easing);
 }
 @media (prefers-reduced-motion: reduce) {
   .sections a::after,
@@ -578,8 +576,8 @@ a {
   :where(main, .site-footer, [slot='main-header']) a,
   wa-button.doc-link::part(label) {
     transition-property: text-decoration-color;
-    transition-duration: 200ms;
-    transition-timing-function: ease-out;
+    transition-duration: var(--wa-transition-fast);
+    transition-timing-function: var(--wa-transition-easing);
   }
 }
 :is(p, li, blockquote) {
@@ -668,6 +666,6 @@ wa-page::part(header) {
   }
   ::view-transition-old(root),
   ::view-transition-new(root) {
-    animation-duration: 0.2s;
+    animation-duration: var(--wa-transition-normal);
   }
 }

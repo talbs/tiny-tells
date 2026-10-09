@@ -627,6 +627,17 @@ test.describe('site pages', () => {
     await expect(link, 'the drawer closes').toBeHidden();
   });
 
+  test('the tab underline slides on a first visit to a tab, not only on later ones', async ({ page }) => {
+    await open(page, { path: '/docs/' });
+    const group = page.locator('wa-tab-group:has(> .tab-bar)').first();
+    await page.addStyleTag({ content: ':root, .wa-light, .wa-dark { --wa-transition-slow: 5s !important }' });
+    await group.scrollIntoViewIfNeeded();
+    await group.locator(':scope > wa-tab').nth(1).click();
+    await expect(group.locator('wa-tab-panel[active] pre wa-copy-button')).toBeAttached();
+    const isSliding = () => group.evaluate(g => g.querySelector(':scope > .tab-bar').getAnimations().length > 0);
+    expect(await isSliding(), 'the panel filling in mid-slide does not cut the slide short').toBe(true);
+  });
+
   test('Tap Tempo hands the speed back once the tapping stops', async ({ page }) => {
     await open(page, { path: '/docs/' });
     const tap = page.locator('#tap');

@@ -234,7 +234,7 @@ wa-button::part(base) {
     background-color var(--wa-transition-normal) var(--wa-transition-easing),
     color var(--wa-transition-normal) var(--wa-transition-easing),
     border-color var(--wa-transition-normal) var(--wa-transition-easing),
-    translate 0.05s ease;
+    translate var(--wa-transition-fast) var(--wa-transition-easing);
 }
 wa-button:not([disabled]):active::part(base) {
   translate: 0 1px;
@@ -305,7 +305,7 @@ wa-radio-group:has(> .seg-pill) wa-radio[appearance='button'] {
   z-index: 1;
 }
 wa-radio-group[data-pill] wa-radio[appearance='button'] {
-  transition: color var(--wa-transition-slow) var(--ease-out);
+  transition: color var(--wa-transition-normal) var(--wa-transition-easing);
 }
 wa-radio-group[data-pill] wa-radio[appearance='button']:state(checked) {
   background: transparent;
@@ -320,15 +320,25 @@ wa-radio-group[data-pill] wa-radio[appearance='button']:state(checked) {
   opacity: 0;
   pointer-events: none;
   transition:
-    transform var(--wa-transition-slow) var(--ease-out),
-    inline-size var(--wa-transition-slow) var(--ease-out),
-    block-size var(--wa-transition-slow) var(--ease-out),
-    border-radius var(--wa-transition-slow) var(--ease-out);
+    transform var(--wa-transition-slow) var(--ease-detent),
+    inline-size var(--wa-transition-slow) var(--ease-detent),
+    block-size var(--wa-transition-slow) var(--ease-move),
+    border-radius var(--wa-transition-slow) var(--ease-move);
+}
+wa-switch::part(thumb) {
+  transition:
+    translate var(--wa-transition-slow) var(--ease-detent),
+    background var(--wa-transition-normal) var(--wa-transition-easing),
+    border-color var(--wa-transition-normal) var(--wa-transition-easing),
+    box-shadow var(--wa-transition-normal) var(--wa-transition-easing);
 }
 @media (prefers-reduced-motion: reduce) {
   .seg-pill,
   .tab-bar {
     transition: none;
+  }
+  wa-switch::part(thumb) {
+    transition-duration: 0s;
   }
 }
 wa-radio[appearance='button']:focus-visible {
@@ -361,7 +371,7 @@ pre wa-copy-button wa-icon {
 pre wa-copy-button::part(copy-icon),
 pre wa-copy-button::part(success-icon),
 pre wa-copy-button::part(error-icon) {
-  animation: copy-in 0.25s var(--ease-out);
+  animation: copy-in var(--wa-transition-normal) var(--wa-transition-easing);
 }
 @keyframes copy-in {
   from {
@@ -457,7 +467,7 @@ main .lede code {
 }
 @media (prefers-reduced-motion: no-preference) {
   :focus-visible {
-    animation: ring-in var(--wa-transition-fast) var(--ease-out);
+    animation: ring-in var(--wa-transition-fast) var(--wa-transition-easing);
   }
   wa-button:focus-within::part(base),
   wa-tab:focus-visible::part(base),
@@ -467,10 +477,10 @@ main .lede code {
   wa-input:focus-within::part(base),
   wa-select:focus-within::part(combobox),
   wa-copy-button:focus-within::part(button) {
-    animation: ring-in var(--wa-transition-fast) var(--ease-out);
+    animation: ring-in var(--wa-transition-fast) var(--wa-transition-easing);
   }
   wa-page::part(skip-to-content):focus {
-    animation: skip-in var(--wa-transition-normal) var(--ease-out);
+    animation: skip-in var(--wa-transition-normal) var(--wa-transition-easing);
   }
 }
 :where(a:focus-visible, pre > code:focus-visible) {
@@ -554,7 +564,7 @@ wa-color-picker::part(format-button__base) {
   letter-spacing: 0.08em;
 }
 wa-slider::part(thumb) {
-  transition: scale var(--wa-transition-fast) var(--ease-out);
+  transition: scale var(--wa-transition-fast) var(--wa-transition-easing);
 }
 wa-slider:hover::part(thumb) {
   scale: 1.25;
@@ -611,8 +621,8 @@ wa-tab-group:has(> .tab-bar) > wa-tab[active] {
   opacity: 0;
   pointer-events: none;
   transition:
-    transform var(--wa-transition-slow) var(--ease-out),
-    inline-size var(--wa-transition-slow) var(--ease-out);
+    transform var(--wa-transition-slow) var(--ease-detent),
+    inline-size var(--wa-transition-slow) var(--ease-detent);
 }
 /* The negative end margin cancels the icon's width in the line, so an anchor can never change how its heading wraps, and its tooltip still centers on the icon. */
 .heading-anchor {
@@ -651,7 +661,7 @@ wa-tooltip::part(body) {
   font: var(--wa-font-weight-semibold) var(--wa-font-size-xs) / 1.3 var(--font-body);
 }
 wa-tooltip[open]::part(body) {
-  animation: tip-in 0.18s var(--ease-out);
+  animation: tip-in var(--wa-transition-fast) var(--wa-transition-easing);
 }
 @keyframes tip-in {
   from {
@@ -702,9 +712,9 @@ wa-button:has(.swap-icons)::part(base) {
 .swap-icons > wa-icon {
   grid-area: 1 / 1;
   transition:
-    opacity var(--wa-transition-slow) var(--ease-settle),
-    scale var(--wa-transition-slow) var(--ease-out),
-    rotate var(--wa-transition-slow) var(--ease-out);
+    opacity var(--wa-transition-normal) var(--wa-transition-easing),
+    scale var(--wa-transition-normal) var(--wa-transition-easing),
+    rotate var(--wa-transition-normal) var(--wa-transition-easing);
 }
 .swap-icons > :last-child,
 :is(.nav-toggle:is(:hover, :focus-visible), :root[data-theme='dark'] #theme, .is-paused #pause)
