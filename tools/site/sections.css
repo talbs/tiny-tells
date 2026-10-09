@@ -673,3 +673,32 @@ wa-page.is-lost::part(main-content) {
   margin: 0;
   white-space: nowrap;
 }
+
+.funsies {
+  --min-column-size: 20rem;
+}
+.funsies .example {
+  grid-row: span 2;
+  grid-template-rows: subgrid;
+  gap: 0;
+}
+.funsies .example-bar {
+  align-content: start;
+}
+.funsies-stage {
+  display: grid;
+  place-items: center;
+  min-block-size: 12rem;
+  container-type: inline-size;
+}
+.funsies .example-bar h3 {
+  color: var(--ink);
+}
+.funsies-row,
+.audience {
+  --tell-size: min(40px, (100cqi - 5 * var(--wa-space-s)) / 6);
+}
+.audience {
+  display: grid;
+  grid-template-columns: repeat(6, var(--tell-size));
+}

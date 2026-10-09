@@ -615,4 +615,14 @@ test.describe('site pages', () => {
       expect(await page.evaluate(() => window.windowErrors), `${path} raises no window errors`).toEqual([]);
     }
   });
+
+  test('Tap Tempo hands the speed back once the tapping stops', async ({ page }) => {
+    await open(page, { path: '/docs/' });
+    const tap = page.locator('#tap');
+    await tap.scrollIntoViewIfNeeded();
+    for (let i = 0; i < 4; i++) await tap.click();
+    const speed = () => page.evaluate(() => customElements.get('tiny-tell').timeScale);
+    expect(await speed(), 'quick taps speed the tells up').toBeGreaterThan(1);
+    await expect.poll(speed, { message: 'the speed eases back to 1 once tapping stops' }).toBe(1);
+  });
 });

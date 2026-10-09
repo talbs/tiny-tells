@@ -13,7 +13,7 @@ Set the number before writing the first test for a feature. Judging each test on
 - **Over budget?** Make it table-driven first, then cut.
 - **Gate 1 beats the number.** If a real contract would go unprotected, the budget is wrong, not the test.
 
-Measured 2026-10-08: 31 browser tests (run in up to three engines), 2 node scripts (the test-DOM one runs twice, for jsdom and happy-dom), and 1 node test file.
+Measured 2026-10-08: 32 browser tests (run in up to three engines), 2 node scripts (the test-DOM one runs twice, for jsdom and happy-dom), and 1 node test file.
 
 ## Gate 1: should this test exist?
 
@@ -37,7 +37,7 @@ If the answer doesn't depend on a real browser, it doesn't go in one. A browser 
 | Bundle size (min + gzip ≤ `budgetKb` in `tools/build.mjs`) | `node tools/build.mjs --check` |
 | A missing import or unused name | `eslint .` |
 | Importing on a server (both bundles) | `node tests/server-import.mjs` |
-| The landing, docs, and 404 load and switch theme without errors | Playwright, `tests/tiny-tell.spec.js` "site pages" (Chromium, needs the network for Web Awesome) |
+| The landing, docs, and 404 load and switch theme without errors, and Tap Tempo hands the speed back | Playwright, `tests/tiny-tell.spec.js` "site pages" (Chromium, needs the network for Web Awesome) |
 | Rendering in test DOMs (jsdom, happy-dom) without throwing or logging | `node tests/fake-dom.mjs jsdom` and `… happy-dom` |
 
 Don't repeat a layer's job in another layer.
