@@ -294,6 +294,10 @@ main > #tells {
 .lab-notes::part(content) {
   padding-inline: 0;
 }
+/* Baselines keep the label and chevron on the first row of tags once they wrap. */
+.lab-notes::part(header) {
+  align-items: baseline;
+}
 .lab-label {
   grid-column: 2;
   grid-row: 1;
@@ -302,7 +306,7 @@ main > #tells {
   display: grid;
   flex: 1;
   grid-template-columns: minmax(0, 1fr) auto;
-  align-items: center;
+  align-items: baseline;
   gap: var(--wa-space-2xs) var(--wa-space-m);
   margin-inline-end: var(--wa-space-s);
 }
