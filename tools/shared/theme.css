@@ -60,7 +60,6 @@
   --wa-color-surface-border: var(--line);
   --wa-color-text-normal: var(--fg);
   --wa-color-text-quiet: var(--muted);
-  --wa-focus-ring-color: var(--fg);
   --wa-border-radius-m: 6px;
   --wa-border-radius-l: 8px;
 }
@@ -68,9 +67,8 @@
 .wa-light,
 .wa-dark,
 .force-dark {
-  --wa-color-focus: var(--fg);
+  --wa-color-focus: var(--guide-ring);
   --wa-font-weight-bold: 700;
-  --wa-focus-ring-width: 2px;
   --wa-form-control-activated-color: var(--fg);
   --wa-color-brand-on-loud: var(--off-white);
   --wa-color-success-on-loud: var(--off-white);
@@ -120,6 +118,11 @@ body {
   font-size: 13px;
   color: var(--muted);
 }
+/* Drafting blue. Ink is for guide text (4.5:1); the ring is the guide's own hue, darkened only to the 3:1 a focus ring needs on the docs paper. */
+:root {
+  --guide-ink: light-dark(#2269a1, #86bfe8);
+  --guide-ring: light-dark(#4989bb, #86bfe8);
+}
 /* The studio's warm grays are named materials, not a scale: its surfaces sit too close together to share Quiet's step spacing. */
 .studio {
   --paper: #fbfaf7;
@@ -127,7 +130,6 @@ body {
   --ink: #2a2926;
   --muted: #69655d;
   --guide: #5b9ccf;
-  --guide-ink: #2269a1;
   --accent: #d0574a;
   --peg: #edeae2;
   color: var(--ink);
@@ -140,7 +142,6 @@ body {
   --ink: #ebe7df;
   --muted: #a39f96;
   --guide: #86bfe8;
-  --guide-ink: #86bfe8;
   --accent: #ff8473;
   --peg: #24221f;
 }

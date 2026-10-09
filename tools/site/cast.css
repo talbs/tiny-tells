@@ -62,8 +62,8 @@ main > #tells {
   color: var(--ink);
 }
 .cast-pick wa-radio[appearance='button']:focus-visible {
-  outline: var(--control-ring);
-  outline-offset: -4px;
+  outline: var(--wa-focus-ring);
+  outline-offset: calc(-1 * var(--wa-focus-ring-width) - 1px);
   border-radius: var(--wa-border-radius-l);
 }
 
@@ -263,8 +263,8 @@ main > #tells {
   color: var(--ink);
 }
 .cast .notes > button:focus-visible {
-  outline: var(--control-ring);
-  outline-offset: -2px;
+  outline: var(--wa-focus-ring);
+  outline-offset: calc(-1 * var(--wa-focus-ring-width));
 }
 .notes-hl {
   position: absolute;
@@ -294,9 +294,6 @@ main > #tells {
 .lab-notes::part(content) {
   padding-inline: 0;
 }
-.lab-notes::part(header) {
-  align-items: start;
-}
 .lab-label {
   grid-column: 2;
   grid-row: 1;
@@ -305,7 +302,7 @@ main > #tells {
   display: grid;
   flex: 1;
   grid-template-columns: minmax(0, 1fr) auto;
-  align-items: baseline;
+  align-items: center;
   gap: var(--wa-space-2xs) var(--wa-space-m);
   margin-inline-end: var(--wa-space-s);
 }
