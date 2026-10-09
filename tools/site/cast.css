@@ -172,12 +172,12 @@ main > #tells {
   justify-items: center;
   gap: 0;
   margin: 0;
-  padding: var(--wa-space-m) var(--wa-space-s) var(--wa-space-l);
+  padding: var(--wa-space-m) var(--wa-space-s);
   border-inline-start: var(--wa-border-width-s) solid var(--paper-edge);
 }
 .proof-table .any-size-tell {
   display: grid;
-  place-items: end center;
+  place-items: center;
   block-size: 72px;
 }
 .proof-table .any-size-cell figcaption {
@@ -297,6 +297,10 @@ main > #tells {
 .lab-notes::part(header) {
   align-items: start;
 }
+.lab-label {
+  grid-column: 2;
+  grid-row: 1;
+}
 .lab-summary {
   display: grid;
   flex: 1;
@@ -310,9 +314,6 @@ main > #tells {
   letter-spacing: normal;
   text-transform: none;
   color: var(--muted);
-}
-.goes-label {
-  line-height: 1;
 }
 
 .cast-proof wa-switch::part(label),
