@@ -592,7 +592,7 @@ a {
   overflow-x: auto;
 }
 :root.wa-dark .wild-card {
-  background: color-mix(in oklab, var(--paper) 80%, var(--fg));
+  background: color-mix(in oklab, var(--paper) 86%, var(--fg));
 }
 ::selection {
   background: color-mix(in oklab, var(--tell-color-working, var(--working-default)) 30%, transparent);

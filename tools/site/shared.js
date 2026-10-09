@@ -483,7 +483,20 @@ export const start = async () => {
   if ($('page-tell')) $('page-tell').value = page.skin;
   addCopyButtons();
   addTooltips();
+  focusScrollers();
   reveal();
+};
+
+// A region that scrolls sideways needs a tab stop, or keyboard users can't reach what's past the edge.
+const focusScrollers = () => {
+  const watch = new ResizeObserver(entries =>
+    entries.forEach(({ target }) =>
+      target.scrollWidth > target.clientWidth
+        ? target.setAttribute('tabindex', '0')
+        : target.removeAttribute('tabindex')
+    )
+  );
+  document.querySelectorAll('pre > code, .hero-cast').forEach(el => watch.observe(el));
 };
 
 const frame = () => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));

@@ -199,6 +199,10 @@ wa-color-picker::part(slider-handle) {
   padding-block: var(--code-pad-y);
   overflow-x: auto;
 }
+[data-syntax-theme='drafting'] pre[data-copy] > code:focus-visible {
+  outline: var(--wa-border-width-m) solid var(--syntax-foreground);
+  outline-offset: calc(-1 * var(--wa-border-width-m));
+}
 wa-tag,
 wa-tag.studio {
   align-self: start;

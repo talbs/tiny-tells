@@ -87,9 +87,10 @@
     </fieldset>
     <wa-divider></wa-divider>
   </div>
-  <header
+  <section
     slot="main-header"
     class="wa-stack wa-gap-m"
+    aria-labelledby="docs-title"
   >
     <div class="docs-title wa-stack wa-gap-s wa-align-items-start">
       <wa-tag
@@ -98,7 +99,12 @@
         size="xs"
         >v{{version}}</wa-tag
       >
-      <h1 class="section-title">Tiny Tells Docs</h1>
+      <h1
+        class="section-title"
+        id="docs-title"
+      >
+        Tiny Tells Docs
+      </h1>
     </div>
     <p class="wa-body-l">
       Tiny Tells is one custom element, <code>&lt;tiny-tell&gt;</code>, that shows what your app is up to with a small
@@ -106,7 +112,7 @@
       <a href="#states">five states</a> with the <code>state</code> attribute. Change the state and the tell
       <a href="#handoffs">springs into the new one</a>.
     </p>
-  </header>
+  </section>
   <nav
     slot="navigation"
     class="docs-index wa-stack wa-gap-xl"
