@@ -379,16 +379,35 @@ export const syncInstallTabs = groups => {
     });
 };
 
+const up = node => node.assignedSlot ?? node.parentElement ?? node.getRootNode().host;
+const scrollerOf = el => {
+  for (let node = up(el); node && node !== document.documentElement; node = up(node))
+    if (/auto|scroll/.test(getComputedStyle(node).overflowY) && node.scrollHeight > node.clientHeight) return node;
+  return null;
+};
+// scrollIntoView would also scroll the page: Chromium treats a link inside a sticky scroller as off-screen.
+const revealIn = (scroller, el) => {
+  if (!scroller) return;
+  const r = el.getBoundingClientRect(),
+    box = scroller.getBoundingClientRect(),
+    top = Math.max(box.top, 0) + r.height * 2,
+    bottom = Math.min(box.bottom, innerHeight) - r.height * 2;
+  if (r.top < top) scroller.scrollTop -= top - r.top;
+  else if (r.bottom > bottom) scroller.scrollTop += r.bottom - bottom;
+};
 export const spy = (links, sections, { isFirstByDefault = false } = {}) => {
+  let shown;
   const update = () => {
     const isBottom = innerHeight + scrollY >= document.documentElement.scrollHeight - 2,
       current = isBottom
         ? sections.at(-1)
         : (sections.filter(s => s.getBoundingClientRect().top <= innerHeight * 0.3).at(-1) ??
           (isFirstByDefault ? sections[0] : undefined));
-    links.forEach(a =>
-      a.hash === `#${current?.id}` ? a.setAttribute('aria-current', 'true') : a.removeAttribute('aria-current')
-    );
+    const link = links.find(a => a.hash === `#${current?.id}`);
+    links.forEach(a => (a === link ? a.setAttribute('aria-current', 'true') : a.removeAttribute('aria-current')));
+    if (current === shown) return;
+    shown = current;
+    if (link) revealIn(scrollerOf(link), link);
   };
   let isQueued = false;
   addEventListener(
@@ -404,6 +423,16 @@ export const spy = (links, sections, { isFirstByDefault = false } = {}) => {
     { passive: true }
   );
   update();
+  // Web Awesome upgrades wa-page after load; until then its menu isn't the sidebar's scroller.
+  customElements
+    .whenDefined('wa-page')
+    .then(() => document.querySelector('wa-page')?.updateComplete)
+    .then(() =>
+      requestAnimationFrame(() => {
+        shown = undefined;
+        update();
+      })
+    );
 };
 
 const fitScrollPadding = async () => {
