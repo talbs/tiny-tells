@@ -68,6 +68,7 @@
 .wa-dark,
 .force-dark {
   --wa-color-focus: var(--guide-ring);
+  --wa-transition-easing: cubic-bezier(0.2, 0.8, 0.2, 1);
   --wa-font-weight-bold: 700;
   --wa-form-control-activated-color: var(--fg);
   --wa-color-brand-on-loud: var(--off-white);
@@ -117,6 +118,12 @@ body {
 .note {
   font-size: 13px;
   color: var(--muted);
+}
+/* In and move curves, plus a detent: sliding toggles pass their mark by about 2% and settle. */
+:root {
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ease-move: cubic-bezier(0.2, 0, 0, 1);
+  --ease-detent: cubic-bezier(0.3, 1.25, 0.5, 1);
 }
 /* Drafting blue. Ink is for guide text (4.5:1); the ring is the guide's own hue, darkened only to the 3:1 a focus ring needs on the docs paper. */
 :root {

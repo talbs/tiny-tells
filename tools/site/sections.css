@@ -499,7 +499,7 @@
   gap: var(--wa-space-2xs);
   color: var(--muted);
   font: var(--wa-font-size-2xs) / 1 var(--font-mono);
-  transition: color 0.12s var(--ease-out);
+  transition: color var(--wa-transition-fast) var(--wa-transition-easing);
 }
 .beat-bar li::before {
   content: '';
@@ -507,7 +507,7 @@
   block-size: 4px;
   border-radius: 2px;
   background: var(--paper-edge);
-  transition: background-color 0.12s var(--ease-out);
+  transition: background-color var(--wa-transition-fast) var(--wa-transition-easing);
 }
 .beat-bar li[data-on] {
   color: var(--fg);

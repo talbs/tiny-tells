@@ -40,8 +40,8 @@ main > #tells {
   opacity: 0.35;
   filter: grayscale(1);
   transition:
-    opacity 0.2s ease,
-    filter 0.2s ease;
+    opacity var(--wa-transition-normal) var(--wa-transition-easing),
+    filter var(--wa-transition-normal) var(--wa-transition-easing);
 }
 .cast-pick wa-radio[appearance='button']:hover .cast-field tiny-tell {
   opacity: 0.7;
@@ -274,8 +274,8 @@ main > #tells {
   background: color-mix(in oklab, var(--paper) 40%, var(--paper-edge));
   pointer-events: none;
   transition:
-    transform var(--wa-transition-slow) var(--ease-out),
-    block-size var(--wa-transition-slow) var(--ease-out);
+    transform var(--wa-transition-slow) var(--ease-detent),
+    block-size var(--wa-transition-slow) var(--ease-move);
 }
 @media (prefers-reduced-motion: reduce) {
   .notes-hl {
