@@ -37,7 +37,7 @@ If the answer doesn't depend on a real browser, it doesn't go in one. A browser 
 | Bundle size (min + gzip ≤ `budgetKb` in `tools/build.mjs`) | `node tools/build.mjs --check` |
 | A missing import or unused name | `eslint .` |
 | Importing on a server (both bundles) | `node tests/server-import.mjs` |
-| The landing, docs, and 404 load and switch theme without errors, and Tap Tempo hands the speed back | Playwright, `tests/tiny-tell.spec.js` "site pages" (Chromium, needs the network for Web Awesome) |
+| The landing, docs, and 404 load and switch theme without errors, the docs drawer and tabs behave, and Tap Tempo hands the speed back | Playwright, `tests/tiny-tell.spec.js` "site pages" (Chromium, Font Awesome's icons stubbed so it runs offline on any port) |
 | Rendering in test DOMs (jsdom, happy-dom) without throwing or logging | `node tests/fake-dom.mjs jsdom` and `… happy-dom` |
 
 Don't repeat a layer's job in another layer.

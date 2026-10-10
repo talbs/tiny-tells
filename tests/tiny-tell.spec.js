@@ -621,6 +621,15 @@ test.describe('reserve.css', () => {
 
 test.describe('site pages', () => {
   test.skip(({ browserName }) => browserName !== 'chromium', 'the page wiring is the same in every engine');
+  // Font Awesome's kit only serves its allowed hosts (locally, just port 4173), and an outage there isn't our bug.
+  test.beforeEach(({ page }) =>
+    page.route('https://ka-p.fontawesome.com/**', route =>
+      route.fulfill({
+        contentType: 'image/svg+xml',
+        body: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"/>',
+      })
+    )
+  );
   test.afterEach(noProblems);
 
   test('landing, docs, and 404 load and switch theme without errors', async ({ page }) => {
