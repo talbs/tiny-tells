@@ -623,9 +623,6 @@
 .label-cases tr:last-child > * {
   border-block-end: 0;
 }
-.label-cases thead th {
-  line-height: 1.4;
-}
 .label-cases tbody th {
   font-weight: var(--wa-font-weight-normal);
 }

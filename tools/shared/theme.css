@@ -98,7 +98,7 @@ body {
   background: var(--bg);
   color: var(--fg);
   font-family: var(--font-body);
-  line-height: 1.5;
+  line-height: var(--wa-line-height-normal);
 }
 @layer wa-base {
   h2 {
