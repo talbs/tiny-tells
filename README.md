@@ -1,5 +1,10 @@
 # Tiny Tells
 
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://tinytells.dev/readme-dark.gif">
+  <img src="https://tinytells.dev/readme.gif" alt="The six Tiny Tells moving through working, done, error, warning, and idle." width="1200" height="272">
+</picture>
+
 Give your app's status a face. Six tiny characters drop in anywhere a spinner would go, and no two of them move the same way. People can tell at a glance whether things are working, done, broken, or waiting on them.
 
 It's one custom element, `<tiny-tell>`, with no dependencies and about 14 KB min+gzip. It works in Chrome 99+, Firefox 112+, and Safari 16.4+.
@@ -44,7 +49,7 @@ npm test
 - `src/` is the source of truth, as plain ES modules. `npm run build` builds `dist/` and the site in `site/`: the landing page, the docs, and the 404 page. Neither is committed, since CI builds them and the site deploys to GitHub Pages from `main`.
 - `npm run serve` serves the built site at `http://127.0.0.1:4173/`, the root it has on tinytells.dev, so the 404 page's absolute links work locally.
 - `npm test` runs Prettier, ESLint, the size budgets, the test-DOM and server checks, and the Playwright tests in Chromium, Firefox, and WebKit, including the canvas checks for live area, flashing, and loop seams.
-- The social card and the favicon PNGs are committed. After changing `tools/og/card.html` or `tools/favicon/favicon.svg`, run `npm run og` or `npm run icons` to render them again.
+- The social card, the README strips, and the favicon PNGs are committed. After changing `tools/og/card.html`, `tools/og/strip.html`, or `tools/favicon/favicon.svg`, run `npm run og`, `npm run gif`, or `npm run icons` to render them again.
 - Tests follow [tests/README.md](tests/README.md).
 
 ## License
