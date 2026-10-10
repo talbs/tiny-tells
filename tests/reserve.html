@@ -26,6 +26,9 @@
       .stand-in tiny-tell:not(:defined)::before {
         content: '•';
       }
+      .restyled tiny-tell {
+        vertical-align: top;
+      }
     </style>
   </head>
   <body>
@@ -66,6 +69,12 @@
       class="stand-in"
     >
       Stand-in <tiny-tell state="done"></tiny-tell> <span>after</span>
+    </p>
+    <p
+      data-case="restyled by the page"
+      class="restyled"
+    >
+      Restyled <tiny-tell></tiny-tell> <span>after</span>
     </p>
     <p data-case="hidden">Hidden <tiny-tell hidden></tiny-tell> <span>after</span></p>
   </body>

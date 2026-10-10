@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+`reserve.css` no longer outranks your own styles for `<tiny-tell>`. A page rule that restyles the tell, like a different `vertical-align`, now applies before the element loads too, so nothing shifts when it does.
+
 ## 0.1.1
 
 On 120Hz and faster displays, tells now draw at 60fps or a little above instead of on every display frame. They look the same and cost half the work, and the play bundle's glance eases at the same speed on every display.

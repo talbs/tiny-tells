@@ -316,7 +316,7 @@ for (const { name, title } of BUNDLES) {
   console.log('wrote', write(minified[name], 'dist', `${name}.min.js`));
 }
 write(
-  `/*! Tiny Tells ${VERSION} · reserves each tell's space until the element loads · MIT */\ntiny-tell:not(:defined):not([hidden]) { ${BOX} overflow: hidden; }\n`,
+  `/*! Tiny Tells ${VERSION} · reserves each tell's space until the element loads · MIT */\n:where(tiny-tell:not(:defined):not([hidden])) { ${BOX} overflow: hidden; }\n`,
   'dist',
   'reserve.css'
 );
