@@ -505,6 +505,21 @@
   }
 }
 @media (max-width: 599px) {
+  wa-page.is-home::part(main-content) {
+    padding-block-start: var(--wa-space-xl);
+  }
+  .hero {
+    gap: var(--wa-space-xl);
+  }
+  .hero-lede {
+    margin-block: var(--wa-space-l);
+  }
+  .hero-facts {
+    margin-block-start: var(--wa-space-l);
+  }
+  .cel-chat {
+    align-self: start;
+  }
   .hero-cast::before {
     display: none;
   }

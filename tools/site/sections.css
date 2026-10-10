@@ -159,6 +159,7 @@
   }
 }
 .swatch-sheet {
+  container-type: inline-size;
   display: grid;
   border: var(--wa-border-width-s) solid var(--paper-edge);
   border-radius: var(--wa-border-radius-s);
@@ -181,6 +182,7 @@
   --tell-size: 24px;
 }
 .sw-well {
+  flex: none;
   display: grid;
   place-items: center;
   inline-size: 52px;
@@ -217,6 +219,17 @@
 }
 .sw-name wa-color-picker::part(trigger)::before {
   border-radius: var(--wa-border-radius-m);
+}
+/* A 52px well beside its ratio needs about 110px, which the cells drop under below 28rem. */
+@container (max-width: 28rem) {
+  .sw-row {
+    gap: var(--wa-space-m);
+  }
+  .sw-cell {
+    flex-direction: column;
+    align-items: start;
+    gap: var(--wa-space-2xs);
+  }
 }
 .play-block {
   display: grid;
@@ -561,6 +574,41 @@
 .text-sizes [data-measure] {
   margin-inline-start: auto;
 }
+/* The 24px sample, its tell, and its caption measure 370px in a row. */
+@container (max-width: 24rem) {
+  .text-sizes > p {
+    row-gap: var(--wa-space-3xs);
+  }
+  .text-sizes [data-measure] {
+    flex-basis: 100%;
+    margin-inline-start: 0;
+  }
+}
+/* The label and four fallbacks measure 499px in a row. */
+@container (max-width: 32rem) {
+  .fallback-glyphs > * {
+    flex-basis: calc((100% - var(--wa-space-l)) / 2);
+  }
+  .fallback-glyphs > .label {
+    flex-basis: 100%;
+  }
+}
+/* Five states measure 358px in a row. Narrower, they wrap as separate chips instead of a joined group split across two lines. */
+@container (max-width: 23rem) {
+  #handoff-state {
+    inline-size: 100%;
+  }
+  #handoff-state::part(form-control-input) {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--wa-space-2xs);
+  }
+  #handoff-state wa-radio {
+    justify-content: center;
+    margin: 0;
+    border-radius: var(--wa-form-control-border-radius);
+  }
+}
 .label-cases {
   inline-size: 100%;
   border-collapse: collapse;
@@ -607,6 +655,9 @@
   .label-cases :is(th, td) {
     padding: 0;
     border: 0;
+  }
+  .label-cases td:first-child {
+    inline-size: auto;
   }
   .label-cases [data-hears] {
     grid-column: 2;

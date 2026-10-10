@@ -18,6 +18,7 @@ pre {
   border-start-end-radius: 0;
 }
 .example-preview {
+  container-type: inline-size;
   padding: var(--wa-space-l);
   border: var(--wa-panel-border-width) var(--wa-panel-border-style) var(--paper-edge);
   background: var(--paper);
@@ -36,6 +37,7 @@ pre {
   gap: var(--wa-space-m) var(--wa-space-l);
 }
 .example-bar {
+  container-type: inline-size;
   display: flex;
   flex-wrap: wrap;
   align-items: center;

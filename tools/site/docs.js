@@ -218,6 +218,10 @@ spy(
   links.map(a => $(a.hash.slice(1))),
   { isFirstByDefault: true }
 );
+const shell = document.querySelector('wa-page');
+shell.addEventListener('click', e => {
+  if (e.target.closest('[slot^="navigation"] a[href^="#"]')) shell.hideNavigation();
+});
 syncInstallTabs([$('docs-install'), $('play-install'), $('reserve-install')]);
 
 const bundled = [...document.querySelectorAll('[data-bundle]')].map(el => [el, el.textContent]);

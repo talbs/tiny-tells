@@ -616,6 +616,17 @@ test.describe('site pages', () => {
     }
   });
 
+  test('picking a link in the mobile docs drawer closes the drawer', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await open(page, { path: '/docs/' });
+    await page.locator('.nav-toggle').click();
+    const link = page.getByRole('navigation', { name: 'Docs' }).getByRole('link', { name: 'Color' });
+    await expect(link, 'the drawer opens').toBeVisible();
+    await link.click();
+    await expect(page, 'the link still jumps to its section').toHaveURL(/#color$/);
+    await expect(link, 'the drawer closes').toBeHidden();
+  });
+
   test('the tab underline slides on a first visit to a tab, not only on later ones', async ({ page }) => {
     await open(page, { path: '/docs/' });
     const group = page.locator('wa-tab-group:has(> .tab-bar)').first();
@@ -626,6 +637,7 @@ test.describe('site pages', () => {
     const isSliding = () => group.evaluate(g => g.querySelector(':scope > .tab-bar').getAnimations().length > 0);
     expect(await isSliding(), 'the panel filling in mid-slide does not cut the slide short').toBe(true);
   });
+
   test('Tap Tempo hands the speed back once the tapping stops, and announces the tempo once', async ({ page }) => {
     await open(page, { path: '/docs/' });
     const tap = page.locator('#tap');
