@@ -269,7 +269,7 @@ wa-page:not(.is-docs) #page-tell {
     display: none;
   }
 }
-/* Type: only the WA size tokens (11–96px). Label is mono 2xs caps, data and controls mono xs, hand lettering is Nanum Pen for the hero notes only, section titles 3xl bold, subheads xl bold. */
+/* Type: the WA size tokens at WA's own scale, plus a 6rem cap on the hero title. Label is mono 2xs caps, data and controls mono xs, hand lettering is Nanum Pen for the hero notes only, section titles 3xl bold, subheads xl bold. */
 body {
   font-size: var(--wa-font-size-m);
   font-kerning: normal;
@@ -277,16 +277,6 @@ body {
   text-rendering: optimizeLegibility;
 }
 :root {
-  --wa-font-size-2xs: 11px;
-  --wa-font-size-xs: 12px;
-  --wa-font-size-s: 14px;
-  --wa-font-size-m: 16px;
-  --wa-font-size-l: 20px;
-  --wa-font-size-xl: 24px;
-  --wa-font-size-2xl: 32px;
-  --wa-font-size-3xl: 40px;
-  --wa-font-size-4xl: 64px;
-  --wa-font-size-5xl: 96px;
   --well-light: var(--off-white);
   --well-light-muted: #69655d;
   --well-dark: var(--dark-well);

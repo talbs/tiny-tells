@@ -102,12 +102,10 @@ body {
 }
 @layer wa-base {
   h2 {
-    font-size: 26px;
     letter-spacing: -0.015em;
     margin: 0;
   }
   h3 {
-    font-size: 17px;
     margin: 0;
   }
   p {
@@ -116,7 +114,6 @@ body {
   }
 }
 .note {
-  font-size: 13px;
   color: var(--muted);
 }
 /* In and move curves, plus a detent: sliding toggles pass their mark by about 2% and settle. */
