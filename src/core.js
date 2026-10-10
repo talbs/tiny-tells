@@ -109,10 +109,7 @@ export const toSrgb = ([L, C, H]) => {
     -0.0041960863 * l - 0.7034186147 * m + 1.707614701 * s,
   ].map(gamma);
 };
-export const css = ([L, C, H], a = 1, dl = 0) => {
-  const [r, g, b] = toSrgb([clamp(L + dl), Math.max(0, C), H]);
-  return `rgb(${r} ${g} ${b} / ${clamp(a)})`;
-};
+export const css = ([L, C, H], a = 1, dl = 0) => `oklch(${clamp(L + dl)} ${Math.max(0, C)} ${H} / ${clamp(a)})`;
 export const toLab = ([L, C, H]) => [L, C * Math.cos((H * PI) / 180), C * Math.sin((H * PI) / 180)];
 export const rgbToOklch = ([r, g, b]) => {
   const lin = c => ((c /= 255) <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4),
