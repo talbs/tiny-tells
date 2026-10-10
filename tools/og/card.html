@@ -1,62 +1,40 @@
 <!doctype html>
-<html lang="en">
+<html
+  lang="en"
+  class="dark"
+>
   <head>
     <meta charset="utf-8" />
     <title>Tiny Tells social card</title>
     <link
       rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Martian+Mono:wght@500&family=Schibsted+Grotesk:wght@400;700&family=Nanum+Pen+Script&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Martian+Mono:wght@500&family=Schibsted+Grotesk:wght@400;700&display=swap"
+    />
+    <link
+      rel="stylesheet"
+      href="/tools/og/drafting.css"
     />
     <style>
-      :root {
-        --paper: #171614;
-        --ink: #ebe7df;
-        --guide: #86bfe8;
-        --pencil: #ff8473;
-        --floor: 164px;
-        color-scheme: dark;
-      }
       html,
       body {
-        margin: 0;
         inline-size: 1200px;
         block-size: 630px;
-        overflow: hidden;
       }
       body {
-        position: relative;
-        background: var(--paper);
-        color: var(--ink);
         font-family: 'Schibsted Grotesk', system-ui, sans-serif;
       }
       /* At feed size (about 0.45×) a full-strength grid turns to mesh, so it fades out from the middle and reads as paper. */
-      body::before {
-        content: '';
-        position: absolute;
-        inset: 0;
-        background-image:
-          linear-gradient(color-mix(in oklab, var(--guide) 9%, transparent) 1px, transparent 1px),
-          linear-gradient(90deg, color-mix(in oklab, var(--guide) 9%, transparent) 1px, transparent 1px);
+      .grid {
         background-size: 40px 40px;
-        background-position: -1px -1px;
         mask-image: radial-gradient(ellipse 70% 75% at 50% 55%, #000 20%, transparent 100%);
-      }
-      body::after {
-        content: '';
-        position: absolute;
-        inset: 0;
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
-        opacity: 0.04;
-        mix-blend-mode: screen;
       }
       /* Hand-set like the landing's wordmark: a dotless ı takes the Eyes tell as its tittle, and the tight pairs are kerned by eye. */
       h1 {
         position: absolute;
-        inset-block-start: 144px;
-        inset-inline-start: 50%;
-        translate: -50% 0;
+        inset-block-start: 88px;
+        inset-inline-start: 92px;
         margin: 0;
-        font-size: 144px;
+        font-size: 112px;
         font-weight: 700;
         line-height: 0.92;
         letter-spacing: -0.045em;
@@ -81,138 +59,64 @@
       .te {
         letter-spacing: -0.06em;
       }
-      .frame {
+      .lede {
         position: absolute;
-        inset: 44px;
-        border: 2px dashed color-mix(in oklab, var(--guide) 40%, transparent);
-      }
-      .reg {
-        position: absolute;
-        inline-size: 34px;
-        block-size: 34px;
-        translate: -50% -50%;
-        fill: none;
-        stroke: color-mix(in oklab, var(--guide) 80%, transparent);
-        stroke-width: 1.6;
-      }
-      .drafting {
-        position: absolute;
-        color: var(--guide);
-        font:
-          500 18px/1 'Martian Mono',
-          ui-monospace,
-          monospace;
-        letter-spacing: 0.12em;
-        text-transform: uppercase;
+        inset-block-start: 212px;
+        inset-inline-start: 92px;
+        margin: 0;
+        font-size: 28px;
+        color: color-mix(in oklab, var(--ink) 70%, transparent);
       }
       .cast {
-        position: absolute;
         inset-inline: 92px;
-        inset-block-end: var(--floor);
-        display: grid;
-        grid-template-columns: repeat(6, 1fr);
-        justify-items: center;
-        align-items: end;
+        inset-block-start: 318px;
+        --pose: 128px;
+        --label-size: 15px;
+        --label-gap: 22px;
       }
-      .cast figure {
-        position: relative;
-        margin: 0;
+      .cast figcaption {
+        font-family: 'Martian Mono', ui-monospace, monospace;
       }
-      .cast tiny-tell {
-        --tell-size: var(--pose);
-        translate: 0 var(--sink, 0px);
+      .drafting,
+      .state {
+        --mark-size: 16px;
+        font-family: 'Martian Mono', ui-monospace, monospace;
       }
-      .cast figure::after {
-        content: '';
-        position: absolute;
-        inset-block-end: -7px;
-        inset-inline: 20%;
-        block-size: 14px;
-        background: radial-gradient(closest-side, rgb(0 0 0 / 0.6), transparent);
-        z-index: -1;
+      .state {
+        inset-block-end: 102px;
+        inset-inline-end: 92px;
+        text-transform: none;
+        letter-spacing: 0.08em;
       }
       .ruler {
-        position: absolute;
+        --ruler-width: 1016px;
+        --ruler-height: 18px;
+        --ruler-major: 96px;
+        --ruler-minor: 24px;
         inset-inline: 92px;
-        inset-block-end: 96px;
-        block-size: 18px;
-        background:
-          repeating-linear-gradient(
-              90deg,
-              color-mix(in oklab, var(--guide) 60%, transparent) 0 1px,
-              transparent 1px 96px
-            )
-            bottom / 100% 18px no-repeat,
-          repeating-linear-gradient(
-              90deg,
-              color-mix(in oklab, var(--guide) 38%, transparent) 0 1px,
-              transparent 1px 24px
-            )
-            bottom / 100% 9px no-repeat;
-        border-block-end: 2px solid color-mix(in oklab, var(--guide) 50%, transparent);
+        inset-block-end: 72px;
       }
       .playhead {
-        position: absolute;
-        inset-block: -12px 0;
-        inset-inline-start: 58%;
         inline-size: 2px;
-        background: var(--pencil);
       }
       .playhead::before {
-        content: '';
-        position: absolute;
-        inset-block-start: -1px;
         inset-inline-start: -5px;
-        border: 6px solid transparent;
-        border-block-start-color: var(--pencil);
-      }
-      .notes {
-        position: absolute;
-        inset: 0;
-        fill: none;
-        stroke: var(--pencil);
-        stroke-width: 3;
-        stroke-linecap: round;
-        stroke-linejoin: round;
-      }
-      .notes path {
-        vector-effect: non-scaling-stroke;
-      }
-      .notes text {
-        fill: var(--pencil);
-        stroke: none;
-        font:
-          400 46px 'Nanum Pen Script',
-          cursive;
+        border-width: 6px;
       }
     </style>
   </head>
   <body>
-    <div class="frame"></div>
-    <svg
-      class="reg"
-      viewBox="0 0 30 30"
-      style="left: 44px; top: 44px"
+    <div class="grid"></div>
+    <span
+      class="drafting"
+      style="left: 92px; top: 48px"
+      >12 fld</span
     >
-      <circle
-        cx="15"
-        cy="15"
-        r="7"
-      />
-      <path d="M15 0V30M0 15H30" />
-    </svg>
-    <svg
-      class="reg"
-      viewBox="0 0 30 30"
-      style="left: 1156px; top: 586px"
+    <span
+      class="drafting"
+      style="right: 92px; top: 48px"
+      >sc. 01 · og</span
     >
-      <circle
-        cx="15"
-        cy="15"
-        r="7"
-      />
-      <path d="M15 0V30M0 15H30" />
-    </svg>
     <h1>
       <span class="t">T</span
       ><span class="tittle"
@@ -225,78 +129,70 @@
         ></tiny-tell></span
       >ny<span class="gap"><span class="te">Te</span>lls</span>
     </h1>
+    <p class="lede">Give your app’s status a face.</p>
     <div class="cast">
-      <figure style="--pose: 124px">
+      <figure>
         <tiny-tell
           skin="drones"
           state="working"
           label=""
           data-t="2.4"
         ></tiny-tell>
+        <figcaption>drones</figcaption>
       </figure>
-      <figure style="--pose: 140px">
+      <figure>
         <tiny-tell
           skin="flipdot"
           state="warning"
           label=""
           data-t="1.07"
         ></tiny-tell>
+        <figcaption>flipdot</figcaption>
       </figure>
-      <figure style="--pose: 164px">
+      <figure>
         <tiny-tell
           skin="eyes"
           state="done"
           label=""
           data-t="1.2"
         ></tiny-tell>
+        <figcaption>eyes</figcaption>
       </figure>
-      <figure style="--pose: 164px">
+      <figure>
         <tiny-tell
           skin="blot"
           state="idle"
           label=""
           data-t="1.2"
         ></tiny-tell>
+        <figcaption>blot</figcaption>
       </figure>
-      <figure style="--pose: 140px">
+      <figure>
         <tiny-tell
           skin="dekatron"
           state="working"
           label=""
           data-t="0.53"
         ></tiny-tell>
+        <figcaption>dekatron</figcaption>
       </figure>
-      <figure style="--pose: 124px">
+      <figure>
         <tiny-tell
           skin="lens"
           state="error"
           label=""
           data-t="0.27"
         ></tiny-tell>
+        <figcaption>lens</figcaption>
       </figure>
     </div>
-    <span
-      class="drafting"
-      style="left: 68px; top: 68px"
-      >12 fld</span
+    <span class="state">1 beat · 0.8 s</span>
+    <div
+      class="ruler"
+      style="--progress: 0.58"
     >
-    <span
-      class="drafting"
-      style="right: 68px; top: 68px"
-      >sc. 00 · og</span
-    >
-    <div class="ruler"><i class="playhead"></i></div>
-    <svg
-      class="notes"
-      viewBox="0 0 1200 630"
-    >
-      <path
-        id="loop"
-        d="M34 6C50 4 61 18 59 33C57 50 39 61 23 57C7 53 2 35 6 21C9 11 20 3 38 7"
-      />
-      <path id="arrow" />
-      <text id="note">keep an i on it</text>
-    </svg>
+      <i class="playhead"></i>
+    </div>
     <script>
       window.__TINY_TELLS_VERSION__ = 'card';
     </script>
@@ -306,45 +202,12 @@
       await document.fonts.ready;
       /* Still frames come from one table keyed by state, so each tell connects and draws with its own pose time before the next. */
       const { STILL } = await import('/src/element.js');
-      const { STATE_COLOR } = await import('/src/core.js');
-      /* Blot is the only idle tell here, so idle borrows the play bundle's dance color. */
-      STATE_COLOR.idle = 'sky';
       const settle = () => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
       for (const [el, parent, next] of parked) {
         STILL[el.getAttribute('state')] = Number(el.dataset.t);
         parent.insertBefore(el, next);
         await settle();
       }
-      /* Each drawing sits somewhere inside its square, so drop it until its lowest pixel stands on the floor. */
-      for (const el of document.querySelectorAll('.cast tiny-tell')) {
-        const canvas = el.shadowRoot.querySelector('canvas');
-        const { data, width, height } = canvas.getContext('2d').getImageData(0, 0, canvas.width, canvas.height);
-        const isInk = row => data.subarray(row * width * 4, (row + 1) * width * 4).some((v, i) => i % 4 === 3 && v > 8);
-        let row = height - 1;
-        while (row > 0 && !isInk(row)) row--;
-        el.style.setProperty('--sink', `${((height - 1 - row) / height) * el.getBoundingClientRect().height}px`);
-      }
-      {
-        const dot = document.querySelector('.tittle tiny-tell').getBoundingClientRect();
-        /* The landing's own loop path, stretched from its 64-unit box to ring the face. */
-        const cx = dot.left + dot.width / 2,
-          cy = dot.top + dot.height * 0.45,
-          sx = (dot.width * 1.5) / 56,
-          sy = (dot.height * 1.6) / 56;
-        document
-          .getElementById('loop')
-          .setAttribute('transform', `translate(${cx - 32 * sx} ${cy - 32 * sy}) scale(${sx} ${sy})`);
-        const tip = [cx + 22 * sx, cy - 30 * sy],
-          tail = [tip[0] + 64, tip[1] - 14],
-          bend = [tip[0] + 26, tail[1] - 8];
-        const angle = Math.atan2(tip[1] - bend[1], tip[0] - bend[0]),
-          barb = turn => [tip[0] - 14 * Math.cos(angle + turn), tip[1] - 14 * Math.sin(angle + turn)];
-        document.getElementById('arrow').setAttribute('d', `M${tail}Q${bend} ${tip}M${barb(0.5)}L${tip}L${barb(-0.5)}`);
-        const note = document.getElementById('note');
-        note.setAttribute('x', tail[0] + 10);
-        note.setAttribute('y', tail[1] + 12);
-      }
-      await settle();
       document.body.dataset.ready = '';
     </script>
   </body>
