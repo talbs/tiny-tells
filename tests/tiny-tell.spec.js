@@ -638,13 +638,18 @@ test.describe('site pages', () => {
     expect(await isSliding(), 'the panel filling in mid-slide does not cut the slide short').toBe(true);
   });
 
-  test('Tap Tempo hands the speed back once the tapping stops', async ({ page }) => {
+  test('Tap Tempo hands the speed back once the tapping stops, and announces the tempo once', async ({ page }) => {
     await open(page, { path: '/docs/' });
     const tap = page.locator('#tap');
     await tap.scrollIntoViewIfNeeded();
     for (let i = 0; i < 4; i++) await tap.click();
     const speed = () => page.evaluate(() => customElements.get('tiny-tell').timeScale);
+    const status = page.locator('#funsies [role="status"]');
     expect(await speed(), 'quick taps speed the tells up').toBeGreaterThan(1);
+    await expect(status, 'nothing is announced while the taps keep coming').toBeEmpty();
+    await expect(status, 'the tempo is announced once the tapping stops').toContainText('BPM');
     await expect.poll(speed, { message: 'the speed eases back to 1 once tapping stops' }).toBe(1);
+    await tap.click();
+    await expect(status, 'a new round clears it, so the same tempo is announced again').toBeEmpty();
   });
 });

@@ -396,9 +396,11 @@ for (const [out, opts] of [
   const html = await sitePage({ ...opts, size: gzipKb(minified['tiny-tells']).toFixed(1) });
   console.log('wrote', write(html, ...out), `(${Math.round(html.length / 1024)} KB)`);
 }
-copyFileSync(join(ROOT, 'tools', 'og', 'og.png'), join(ROOT, 'site', 'og.png'));
+['og.png', 'readme.gif', 'readme-dark.gif'].forEach(name =>
+  copyFileSync(join(ROOT, 'tools', 'og', name), join(ROOT, 'site', name))
+);
 ICONS.forEach(name => copyFileSync(join(ROOT, 'tools', 'favicon', name), join(ROOT, 'site', name)));
-console.log('wrote site/og.png and the favicons');
+console.log('wrote site/og.png, the README strips, and the favicons');
 
 const args = process.argv.slice(2);
 if (args.includes('--sizes') || args.includes('--check')) {

@@ -55,8 +55,6 @@
   "scripts": {
     "build": "node tools/build.mjs",
     "check": "node tools/build.mjs --check",
-    "og": "node tools/build.mjs && node tools/og/render.mjs",
-    "icons": "node tools/favicon/render.mjs",
     "serve": "node tests/serve.mjs 4173",
     "test": "prettier --check . && eslint . && node tools/build.mjs --check && node tests/server-import.mjs && node tests/fake-dom.mjs jsdom && node tests/fake-dom.mjs happy-dom && node --test tests/public-surface.test.mjs && playwright test",
     "prepack": "node tools/build.mjs",
