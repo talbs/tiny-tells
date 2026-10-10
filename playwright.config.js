@@ -8,7 +8,8 @@ export default defineConfig({
   webServer: {
     command: 'node tests/serve.mjs 4173',
     url: 'http://127.0.0.1:4173/tests/fixture.html',
-    reuseExistingServer: true,
+    // Playwright's error suggests true. Keep false: a server from another checkout would quietly be tested instead.
+    reuseExistingServer: false,
     stdout: 'ignore',
     stderr: 'ignore',
   },
