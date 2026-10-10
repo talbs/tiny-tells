@@ -318,14 +318,14 @@ const WILD = [
       idle: 'Ask me anything.',
     },
     html: (t, c) =>
-      `<div class="wild-chat"><p class="cel-ask">Summarize this week’s notes?</p><p class="wa-cluster wa-gap-xs wa-flex-nowrap">${t}<span role="status">${c}</span></p><p class="wild-composer" aria-hidden="true">Reply…</p></div>`,
+      `<div class="wild-chat"><p class="cel-ask">Summarize this week’s notes?</p><p class="wa-cluster wa-gap-xs wa-flex-nowrap">${t}<span>${c}</span></p><p class="wild-composer" aria-hidden="true">Reply…</p></div>`,
   },
   {
     name: 'CI Checks',
     skin: 'flipdot',
     copy: { working: 'Running', done: 'Passed', error: 'Failed', warning: 'Needs approval', idle: 'Queued' },
     html: (t, c, sk) =>
-      `<div class="wild-ci"><p class="cel-ci-title">Checks</p><ul class="ci-list wa-list-plain"><li>${tag(sk, 'state="done" label=""')}<span>Lint</span><em>Passed</em></li><li>${t}<span>Unit tests</span><em role="status">${c}</em></li><li>${tag(sk, 'state="idle" label=""')}<span>Deploy preview</span><em>Queued</em></li></ul></div>`,
+      `<div class="wild-ci"><p class="cel-ci-title">Checks</p><ul class="ci-list wa-list-plain"><li>${tag(sk, 'state="done" label=""')}<span>Lint</span><em>Passed</em></li><li>${t}<span>Unit tests</span><em>${c}</em></li><li>${tag(sk, 'state="idle" label=""')}<span>Deploy preview</span><em>Queued</em></li></ul></div>`,
   },
   {
     name: 'File Upload',
@@ -338,7 +338,7 @@ const WILD = [
       idle: 'Ready to upload',
     },
     html: (t, c, sk, s) =>
-      `<div class="wild-upload"><p class="wild-file wa-cluster wa-gap-xs wa-flex-nowrap"><wa-icon family="sharp" variant="regular" name="file-pdf"></wa-icon><strong>resume.pdf</strong><span>240 KB</span>${t}</p><wa-progress-bar value="${{ working: 62, done: 100, error: 62, warning: 0, idle: 0 }[s]}" label="Upload progress"></wa-progress-bar><p class="wild-say" role="status">${c}</p></div>`,
+      `<div class="wild-upload"><p class="wild-file wa-cluster wa-gap-xs wa-flex-nowrap"><wa-icon family="sharp" variant="regular" name="file-pdf"></wa-icon><strong>resume.pdf</strong><span>240 KB</span>${t}</p><wa-progress-bar value="${{ working: 62, done: 100, error: 62, warning: 0, idle: 0 }[s]}" label="Upload progress"></wa-progress-bar><p class="wild-say">${c}</p></div>`,
   },
   {
     name: 'Status Bar',
@@ -351,7 +351,7 @@ const WILD = [
       idle: 'No changes',
     },
     html: (t, c) =>
-      `<div class="wild-editor"><div class="wild-doc" aria-hidden="true"><i></i><i></i><i></i></div><p class="statusbar wa-cluster wa-gap-m wa-flex-nowrap"><span>Draft</span><span>1,204 words</span><span class="statusbar-save wa-cluster wa-gap-xs wa-flex-nowrap">${t}<span role="status">${c}</span></span></p></div>`,
+      `<div class="wild-editor"><div class="wild-doc" aria-hidden="true"><i></i><i></i><i></i></div><p class="statusbar wa-cluster wa-gap-m wa-flex-nowrap"><span>Draft</span><span>1,204 words</span><span class="statusbar-save wa-cluster wa-gap-xs wa-flex-nowrap">${t}<span>${c}</span></span></p></div>`,
   },
   {
     name: 'Button',
@@ -380,7 +380,7 @@ const WILD = [
       `<div class="wild-order"><p class="wild-order-head wa-split"><span>Order #4821</span><span>2 items</span></p><p class="wild-order-say">${t} <span>${c}</span></p></div>`,
   },
 ];
-const wildBody = (ex, s) => ex.html(tag(ex.skin, `state="${s}" label="${ex.copy[s]}"`), ex.copy[s], ex.skin, s);
+const wildBody = (ex, s) => ex.html(tag(ex.skin, `state="${s}" label=""`), ex.copy[s], ex.skin, s);
 const wildHTML = () =>
   WILD.map(
     ex =>
