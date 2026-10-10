@@ -68,6 +68,7 @@ export const FORMS = [
 ];
 export const DRONES = {
   keys: ['x', 'z', 'h', 'a'],
+  vel: true,
   pos: ['x', 'z'],
   cam: { working: AERIAL, done: FLAT, error: FLAT, warning: AERIAL, idle: AERIAL },
   states: {
