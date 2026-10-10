@@ -5,6 +5,7 @@ export const DK = 10,
   dkAt = k => -PI / 2 + (TAU * k) / DK;
 export const DEKATRON = {
   keys: ['k', 'g'],
+  vel: true,
   pos: [],
   wrap: { k: DK },
   states: {

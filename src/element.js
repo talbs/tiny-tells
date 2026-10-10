@@ -294,6 +294,7 @@ class TinyTell extends (typeof HTMLElement === 'undefined' ? class {} : HTMLElem
         `<tiny-tell>: unknown skin "${skin}". Known: ${Object.keys(SKINS).join(', ')}. Showing "drones". ${DOCS}tells`
       );
     this.#validate();
+    this.#canvas._blot = null;
     this.#player = playerFor(this.skin, this.state);
     this.#player.t0 = clock.t;
     this.#built = this.skin;
