@@ -401,7 +401,6 @@ pre wa-copy-button::part(error-icon) {
 .lede {
   max-inline-size: 80ch;
   font-size: var(--wa-font-size-l);
-  line-height: 1.45;
   letter-spacing: -0.008em;
   color: var(--muted);
 }

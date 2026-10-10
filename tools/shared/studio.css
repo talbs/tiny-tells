@@ -38,7 +38,7 @@
   position: absolute;
   inset: calc(13% + 74% * 0.08);
   border: var(--wa-border-width-s) dashed color-mix(in oklab, var(--guide) 40%, transparent);
-  border-radius: 4px;
+  border-radius: var(--wa-border-radius-s);
   pointer-events: none;
 }
 .guide::before,
