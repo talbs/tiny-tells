@@ -1,0 +1,106 @@
+/* The drafting-sheet look the social card and the README strip share: paper, guide grid, mono marks, the beat ruler. */
+:root {
+  --paper: #fbfaf7;
+  --paper-edge: #e8e5dd;
+  --ink: #2a2926;
+  --guide: #86bfe8;
+  --pencil: #ff8473;
+  color-scheme: light;
+}
+:root.dark {
+  --paper: #171614;
+  --paper-edge: #2a2926;
+  --ink: #ebe7df;
+  color-scheme: dark;
+}
+html,
+body {
+  margin: 0;
+}
+body {
+  position: relative;
+  overflow: hidden;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: 'Martian Mono', ui-monospace, monospace;
+}
+.grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(color-mix(in oklab, var(--guide) 14%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in oklab, var(--guide) 14%, transparent) 1px, transparent 1px);
+  background-size: 32px 32px;
+  background-position: -1px -1px;
+  mask-image: radial-gradient(ellipse 75% 90% at 50% 45%, #000 30%, transparent 100%);
+}
+.cast {
+  position: absolute;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  justify-items: center;
+}
+.cast figure {
+  margin: 0;
+  display: grid;
+  justify-items: center;
+  gap: var(--label-gap, 10px);
+}
+.cast tiny-tell {
+  --tell-size: var(--pose, 48px);
+}
+.cast figcaption,
+.drafting,
+.state {
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.cast figcaption {
+  font-size: var(--label-size, 8px);
+  color: color-mix(in oklab, var(--ink) 72%, transparent);
+}
+.drafting {
+  position: absolute;
+  font-size: var(--mark-size, 7px);
+  color: color-mix(in oklab, var(--guide) 85%, var(--ink));
+}
+.state {
+  position: absolute;
+  font-size: var(--mark-size, 7px);
+  color: var(--pencil);
+}
+.ruler {
+  position: absolute;
+  block-size: var(--ruler-height, 9px);
+  background:
+    repeating-linear-gradient(
+        90deg,
+        color-mix(in oklab, var(--guide) 70%, transparent) 0 1px,
+        transparent 1px var(--ruler-major, 88px)
+      )
+      bottom / 100% 100% no-repeat,
+    repeating-linear-gradient(
+        90deg,
+        color-mix(in oklab, var(--guide) 45%, transparent) 0 1px,
+        transparent 1px var(--ruler-minor, 22px)
+      )
+      bottom / 100% 55% no-repeat;
+  border-block-end: 1px solid color-mix(in oklab, var(--guide) 60%, transparent);
+}
+.playhead {
+  position: absolute;
+  inset-block: calc(-0.7 * var(--ruler-height, 9px)) 0;
+  inset-inline-start: 0;
+  inline-size: 1px;
+  background: var(--pencil);
+  translate: calc(var(--progress, 0) * var(--ruler-width)) 0;
+}
+.playhead::before {
+  content: '';
+  position: absolute;
+  inset-block-start: -1px;
+  inset-inline-start: -3px;
+  border: 3.5px solid transparent;
+  border-block-start-color: var(--pencil);
+}

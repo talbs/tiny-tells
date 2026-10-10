@@ -56,6 +56,7 @@
     "build": "node tools/build.mjs",
     "check": "node tools/build.mjs --check",
     "og": "node tools/build.mjs && node tools/og/render.mjs",
+    "gif": "node tools/og/strip.mjs",
     "icons": "node tools/favicon/render.mjs",
     "serve": "node tests/serve.mjs 4173",
     "test": "prettier --check . && eslint . && node tools/build.mjs --check && node tests/server-import.mjs && node tests/fake-dom.mjs jsdom && node tests/fake-dom.mjs happy-dom && node --test tests/public-surface.test.mjs && playwright test",
@@ -73,10 +74,13 @@
     "@playwright/test": "^1.63.0",
     "esbuild": "^0.28.2",
     "eslint": "^10.12.0",
+    "gifenc": "^1.0.3",
     "globals": "^17.13.0",
     "happy-dom": "^20.14.5",
     "jsdom": "^30.1.2",
     "microlighter": "2.2.0",
+    "omggif": "^1.0.10",
+    "pngjs": "^7.0.0",
     "prettier": "^3.9.9"
   }
 }

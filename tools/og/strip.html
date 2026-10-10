@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Tiny Tells README strip</title>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Martian+Mono:wght@500&display=swap"
+    />
+    <link
+      rel="stylesheet"
+      href="/tools/og/drafting.css"
+    />
+    <style>
+      html,
+      body {
+        inline-size: 600px;
+        block-size: 136px;
+      }
+      .cast {
+        inset-inline: 36px;
+        inset-block-start: 22px;
+      }
+      .ruler {
+        --ruler-width: 528px;
+        inset-inline: 36px;
+        inset-block-end: 14px;
+      }
+      .state {
+        inset-block-end: 28px;
+        inset-inline-end: 36px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="grid"></div>
+    <span
+      class="drafting"
+      style="left: 36px; top: 8px"
+      >12 fld</span
+    >
+    <span
+      class="drafting"
+      style="right: 36px; top: 8px"
+      >sc. 00 · readme</span
+    >
+    <div class="cast">
+      <figure>
+        <tiny-tell
+          skin="drones"
+          label=""
+        ></tiny-tell>
+        <figcaption>drones</figcaption>
+      </figure>
+      <figure>
+        <tiny-tell
+          skin="flipdot"
+          label=""
+        ></tiny-tell>
+        <figcaption>flipdot</figcaption>
+      </figure>
+      <figure>
+        <tiny-tell
+          skin="eyes"
+          label=""
+        ></tiny-tell>
+        <figcaption>eyes</figcaption>
+      </figure>
+      <figure>
+        <tiny-tell
+          skin="blot"
+          label=""
+        ></tiny-tell>
+        <figcaption>blot</figcaption>
+      </figure>
+      <figure>
+        <tiny-tell
+          skin="dekatron"
+          label=""
+        ></tiny-tell>
+        <figcaption>dekatron</figcaption>
+      </figure>
+      <figure>
+        <tiny-tell
+          skin="lens"
+          label=""
+        ></tiny-tell>
+        <figcaption>lens</figcaption>
+      </figure>
+    </div>
+    <span
+      class="state"
+      id="state"
+      >working</span
+    >
+    <div class="ruler"><i class="playhead"></i></div>
+    <script>
+      window.__TINY_TELLS_VERSION__ = 'strip';
+      if (new URLSearchParams(location.search).get('scheme') === 'dark') document.documentElement.classList.add('dark');
+    </script>
+    <script type="module">
+      await import('/src/tiny-tells.js');
+      await document.fonts.ready;
+      const tells = [...document.querySelectorAll('tiny-tell')];
+      const label = document.getElementById('state');
+      const playhead = document.querySelector('.playhead');
+      /* The renderer drives these on its own clock, so every frame is reproducible. */
+      window.strip = {
+        set: state => {
+          tells.forEach(t => (t.state = state));
+          label.textContent = state;
+        },
+        progress: p => playhead.style.setProperty('--progress', p),
+      };
+      requestAnimationFrame(() => requestAnimationFrame(() => (document.body.dataset.ready = '')));
+    </script>
+  </body>
+</html>
