@@ -93,6 +93,13 @@ test.describe('in motion', () => {
   test.beforeEach(({ page }) => open(page));
   test.afterEach(noProblems);
 
+  test('an unpaused tell moves', async ({ page }) => {
+    const a = await frame(page, '[data-skin="drones"]');
+    await expect
+      .poll(() => frame(page, '[data-skin="drones"]'), { message: 'a running tell draws a new frame' })
+      .not.toBe(a);
+  });
+
   test('paused freezes the frame', async ({ page }) => {
     await page.$eval('[data-skin="drones"]', el => {
       el.paused = true;
@@ -130,6 +137,7 @@ test.describe('in motion', () => {
   });
 
   test('moving a tell keeps its animation going instead of restarting it', async ({ page }) => {
+    // Run the clock a while first, so a restart would visibly jump back to the first pose.
     for (let i = 0; i < 20; i++) await twoFrames(page);
     await page.evaluate(() => {
       customElements.get('tiny-tell').timeScale = 0;
@@ -156,17 +164,23 @@ test.describe('still frames', () => {
   test.afterEach(noProblems);
 
   test('every skin draws in every state', async ({ page }) => {
-    for (const skin of SKINS)
+    for (const skin of SKINS) {
+      const selector = `[data-skin="${skin}"]`;
+      let last = null;
       for (const state of STATES) {
         await page.$eval(
-          `[data-skin="${skin}"]`,
+          selector,
           (el, s) => {
             el.state = s;
           },
           state
         );
-        expect((await pixels(page, `[data-skin="${skin}"]`)).alpha, `${skin} draws in ${state}`).toBeGreaterThan(0);
+        const next = await frame(page, selector);
+        expect((await pixels(page, selector)).alpha, `${skin} draws in ${state}`).toBeGreaterThan(0);
+        if (last) expect(next, `${skin} redraws for ${state}`).not.toBe(last);
+        last = next;
       }
+    }
   });
 
   test('reduced motion holds a still pose', async ({ page }) => {
@@ -401,9 +415,9 @@ test.describe('Chromium only', () => {
     await page.goto('/tests/fixture.html');
     await page.waitForFunction(() => customElements.get('tiny-tell'));
     const second = hz => page.evaluate(hz => (window.runDisplay(hz, hz), window.runDisplay(hz, hz)), hz);
-    expect(await second(120)).toBeGreaterThanOrEqual(58);
-    expect(await second(120)).toBeLessThanOrEqual(62);
-    expect(await second(60)).toBeGreaterThanOrEqual(58);
+    expect(await second(120), 'a 120Hz display draws at least 58 frames a second').toBeGreaterThanOrEqual(58);
+    expect(await second(120), 'a 120Hz display draws at most 62 frames a second').toBeLessThanOrEqual(62);
+    expect(await second(60), 'a 60Hz display still draws every frame').toBeGreaterThanOrEqual(58);
   });
 
   test('axe finds no accessibility violations in tells', async ({ page }) => {
@@ -490,7 +504,7 @@ test.describe('play bundle', () => {
     const warnings = [];
     page.on('console', msg => msg.type() === 'warning' && warnings.push(msg.text()));
     await page.evaluate(() => import('/dist/tiny-tells.min.js'));
-    await expect.poll(() => warnings.join('\n')).toContain('already defined');
+    await expect.poll(() => warnings.join('\n'), 'the second copy warns').toContain('already defined');
   });
 
   test('dance: five quick taps fire tell-dance, dance in the dance color, then fire tell-after-dance and return', async ({
@@ -519,7 +533,9 @@ test.describe('play bundle', () => {
       page.locator('#eyes').getByRole('img', { name: 'Idle' }),
       'the name stays on the real state while dancing'
     ).toHaveCount(1);
-    await expect.poll(() => page.evaluate(() => window.heard.length), { timeout: 5000 }).toBe(2);
+    await expect
+      .poll(() => page.evaluate(() => window.heard.length), { message: 'the dance ends on its own', timeout: 5000 })
+      .toBe(2);
     expect(await hue(page, '#eyes'), 'the dance color is gone once it ends').toBeLessThan(20);
     expect(
       await page.evaluate(() => window.heard),
@@ -532,6 +548,7 @@ test.describe('play bundle', () => {
 
   test('dance events: canceling tell-dance keeps the tell from dancing', async ({ page }) => {
     await page.evaluate(() => {
+      customElements.get('tiny-tell').timeScale = 4;
       window.canceled = false;
       window.ended = false;
       document.addEventListener('tell-dance', e => {
@@ -542,6 +559,8 @@ test.describe('play bundle', () => {
     });
     await tap5(page, '#eyes');
     await expect.poll(() => page.evaluate(() => window.canceled), { message: 'five taps asked to dance' }).toBe(true);
+    // Nothing signals a dance that didn't happen, so give one at 4× speed time to show its color first.
+    for (let i = 0; i < 30; i++) await twoFrames(page);
     expect(await hue(page, '#eyes'), 'no dance color after a canceled dance').toBeLessThan(20);
     expect(await page.evaluate(() => window.ended), 'a dance that never started never ends').toBe(false);
   });
@@ -553,11 +572,15 @@ test.describe('play bundle', () => {
       document.addEventListener('tell-after-dance', () => window.ended++);
     });
     await tap5(page, '#eyes');
-    await expect.poll(() => hue(page, '#eyes'), { timeout: 8000 }).toBeGreaterThan(40);
+    await expect
+      .poll(() => hue(page, '#eyes'), { message: 'the first dance starts', timeout: 8000 })
+      .toBeGreaterThan(40);
     await page.$eval('#eyes', el => (el.state = 'done'));
     expect(await page.evaluate(() => window.ended), 'a state change reports the end right away').toBe(1);
     await tap5(page, '#eyes');
-    await expect.poll(() => hue(page, '#eyes'), { timeout: 8000 }).toBeGreaterThan(40);
+    await expect
+      .poll(() => hue(page, '#eyes'), { message: 'the second dance starts', timeout: 8000 })
+      .toBeGreaterThan(40);
     await page.$eval('#eyes', el => (el.skin = 'drones'));
     expect(await page.evaluate(() => window.ended), 'so does a skin change').toBe(2);
   });
@@ -633,7 +656,10 @@ test.describe('site pages', () => {
     await page.addStyleTag({ content: ':root, .wa-light, .wa-dark { --wa-transition-slow: 5s !important }' });
     await group.scrollIntoViewIfNeeded();
     await group.locator(':scope > wa-tab').nth(1).click();
-    await expect(group.locator('wa-tab-panel[active] pre wa-copy-button')).toBeAttached();
+    await expect(
+      group.locator('wa-tab-panel[active] pre wa-copy-button'),
+      'the new panel fills in its copy button'
+    ).toBeAttached();
     const isSliding = () => group.evaluate(g => g.querySelector(':scope > .tab-bar').getAnimations().length > 0);
     expect(await isSliding(), 'the panel filling in mid-slide does not cut the slide short').toBe(true);
   });
@@ -646,7 +672,7 @@ test.describe('site pages', () => {
     const speed = () => page.evaluate(() => customElements.get('tiny-tell').timeScale);
     const status = page.locator('#funsies [role="status"]');
     expect(await speed(), 'quick taps speed the tells up').toBeGreaterThan(1);
-    await expect(status, 'nothing is announced while the taps keep coming').toBeEmpty();
+    expect((await status.textContent()).trim(), 'nothing is announced while the taps keep coming').toBe('');
     await expect(status, 'the tempo is announced once the tapping stops').toContainText('BPM');
     await expect.poll(speed, { message: 'the speed eases back to 1 once tapping stops' }).toBe(1);
     await tap.click();
