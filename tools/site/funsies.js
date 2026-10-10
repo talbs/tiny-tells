@@ -59,13 +59,16 @@ toys.push({
   },
 });
 const tellClass = () => customElements.get('tiny-tell');
-const readout = $('tempo-readout');
+const readout = $('tempo-readout'),
+  status = $('tempo-status');
 const REST = `Back to the ${BEAT}s beat (${Math.round(60 / BEAT)} BPM)`;
 let band = [],
   taps = [],
+  bpm = 0,
   easing = 0,
   settleTimer = 0;
 const settle = () => {
+  if (bpm) status.textContent = `${bpm} BPM. Easing back to the ${BEAT}s beat.`;
   const from = tellClass().timeScale,
     startedAt = performance.now();
   const step = now => {
@@ -74,6 +77,7 @@ const settle = () => {
     if (k < 1) return void (easing = requestAnimationFrame(step));
     readout.textContent = REST;
     taps = [];
+    bpm = 0;
     band.forEach(el => (el.state = 'idle'));
   };
   easing = requestAnimationFrame(step);
@@ -81,6 +85,7 @@ const settle = () => {
 $('tap').addEventListener('click', () => {
   cancelAnimationFrame(easing);
   clearTimeout(settleTimer);
+  status.textContent = '';
   band.forEach(el => (el.state = 'working'));
   const now = performance.now();
   taps = taps
@@ -94,7 +99,8 @@ $('tap').addEventListener('click', () => {
   }
   const gap = (taps.at(-1) - taps[0]) / (taps.length - 1) / 1000;
   tellClass().timeScale = Math.min(4, Math.max(0.25, BEAT / gap));
-  readout.textContent = `${Math.round((60 / BEAT) * tellClass().timeScale)} BPM · ${tellClass().timeScale.toFixed(2)}× speed`;
+  bpm = Math.round((60 / BEAT) * tellClass().timeScale);
+  readout.textContent = `${bpm} BPM · ${tellClass().timeScale.toFixed(2)}× speed`;
   settleTimer = setTimeout(settle, gap * 2000);
 });
 toys.push({
@@ -120,7 +126,7 @@ const wake = () => {
   boredSteps.forEach(clearTimeout);
   boredSteps = [];
   clearTimeout(boredTimer);
-  seats.forEach(el => (el.state = 'working'));
+  seats.forEach(el => el.state === 'idle' && (el.state = 'working'));
   boredTimer = setTimeout(
     () =>
       [...seats]
