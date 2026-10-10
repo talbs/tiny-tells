@@ -2,7 +2,7 @@
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://tinytells.dev/readme-dark.gif">
-  <img src="https://tinytells.dev/readme.gif" alt="The six Tiny Tells moving through working, done, error, warning, and idle." width="1200" height="272">
+  <img src="https://tinytells.dev/readme.gif" alt="The six Tiny Tells moving through working, done, error, warning, and idle.">
 </picture>
 
 Give your app's status a face. Six tiny characters drop in anywhere a spinner would go, and no two of them move the same way. People can tell at a glance whether things are working, done, broken, or waiting on them.
