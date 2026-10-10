@@ -3,3 +3,12 @@ contact_links:
   - name: Docs
     url: https://tinytells.dev/docs/
     about: Sizing, color, accessibility, frameworks, and the full API.
+  - name: Ask a question
+    url: https://github.com/talbs/tiny-tells/discussions/categories/q-a
+    about: Something unclear? Ask here, so the answer helps the next person.
+  - name: Show what you built
+    url: https://github.com/talbs/tiny-tells/discussions/categories/show-and-tell
+    about: A tell in your app? We'd love to see it.
+  - name: Report a security problem
+    url: https://github.com/talbs/tiny-tells/security/advisories/new
+    about: Privately, please. Not a public issue.
