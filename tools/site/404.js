@@ -109,11 +109,13 @@ rotateLines();
 
 on('pause', () => wall.querySelectorAll('tiny-tell').forEach(el => (el.paused = page.isPaused || el.state === 'idle')));
 
-let lastWidth = innerWidth;
+let lastWidth = innerWidth,
+  rebuild = 0;
 addEventListener('resize', () => {
   if (innerWidth === lastWidth) return;
   lastWidth = innerWidth;
-  build();
+  clearTimeout(rebuild);
+  rebuild = setTimeout(build, 200);
 });
 
 start();

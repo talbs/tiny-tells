@@ -255,25 +255,32 @@ document
   );
 
 let beatStart = 0,
-  beatOn = -1;
+  beatOn = -1,
+  beatFrame = 0,
+  isBeatVisible = false;
 const restartBeat = () => {
   $('beat-row').innerHTML = V1.map(s => tag(s, 'label=""')).join('');
   holdAll($('beat-row'));
   beatStart = performance.now();
 };
 const stepBeat = now => {
-  const on = isStill() ? -1 : Math.floor((now - beatStart) / (BEAT * 1000)) % 4;
-  if (on !== beatOn) [...$('beat-bar').children].forEach((li, i) => li.toggleAttribute('data-on', i === on));
-  beatOn = on;
-  requestAnimationFrame(stepBeat);
+  const lit = isStill() ? -1 : Math.floor((now - beatStart) / (BEAT * 1000)) % 4;
+  if (lit !== beatOn) [...$('beat-bar').children].forEach((li, i) => li.toggleAttribute('data-on', i === lit));
+  beatOn = lit;
+  beatFrame = isBeatVisible && lit !== -1 ? requestAnimationFrame(stepBeat) : 0;
 };
+const runBeat = () => (beatFrame ||= requestAnimationFrame(stepBeat));
 // The shared clock stops while tells are off-screen or the tab is hidden, so the bar restarts with them.
 restartBeat();
-new IntersectionObserver(([e]) => e.isIntersecting && restartBeat()).observe($('beat-row'));
+new IntersectionObserver(([e]) => {
+  isBeatVisible = e.isIntersecting;
+  if (isBeatVisible) restartBeat();
+  runBeat();
+}).observe($('beat-row'));
 document.addEventListener('visibilitychange', () => document.visibilityState === 'visible' && restartBeat());
 $('beat-restart').addEventListener('click', restartBeat);
 on('pause', () => page.isPaused || restartBeat());
-requestAnimationFrame(stepBeat);
+onMotionChange(runBeat);
 
 $('handoff-state').innerHTML = radios(STATES);
 const cut = state => ($('cut-slot').innerHTML = tag(page.skin, `state="${state}" data-follow label=""`));

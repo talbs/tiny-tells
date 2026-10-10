@@ -116,8 +116,13 @@ const runCels = isOn =>
       1600 + i * 530
     );
   });
-runCels(!isStill());
-onMotionChange(() => runCels(!isStill()));
+let isHeroVisible = true;
+const syncCels = () => runCels(isHeroVisible && !isStill());
+new IntersectionObserver(([e]) => {
+  isHeroVisible = e.isIntersecting;
+  syncCels();
+}).observe($('hero-cast'));
+onMotionChange(syncCels);
 const cast = $('hero-cast'),
   dots = $('cast-dots');
 dots.innerHTML = ['Chat', 'File upload', 'Terminal', 'CI checks']
