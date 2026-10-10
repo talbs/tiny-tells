@@ -4,6 +4,8 @@
 
 Eyes, Lens, and Blot no longer work out each frame's motion twice. Only Drones and Dekatron use the second pass, so the others draw with less work. A tell that switches away from Blot also lets go of Blot's offscreen canvases.
 
+Tells hand their colors to the canvas as `oklch()` instead of converting them to RGB first, which trims about 240 bytes. In Chromium, Lens's error highlight renders a touch brighter.
+
 ## 0.1.1
 
 On 120Hz and faster displays, tells now draw at 60fps or a little above instead of on every display frame. They look the same and cost half the work, and the play bundle's glance eases at the same speed on every display.
