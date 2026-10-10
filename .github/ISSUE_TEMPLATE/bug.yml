@@ -28,6 +28,18 @@ body:
     attributes:
       label: Tiny Tells version
       placeholder: 0.1.1
+  - type: input
+    id: size
+    attributes:
+      label: Size
+      description: Tells draw differently at 32px and under, so say how big it was.
+      placeholder: '--tell-size: 20px, or "inline in a sentence"'
+  - type: dropdown
+    id: settings
+    attributes:
+      label: Reduced motion or forced colors
+      description: Both change what a tell draws.
+      options: [Neither, Reduced motion, Forced colors (high contrast), Both, Not sure]
   - type: textarea
     id: saw
     attributes:
