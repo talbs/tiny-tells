@@ -4,7 +4,7 @@ export default defineConfig({
   testDir: 'tests',
   testMatch: '*.spec.js',
   reporter: 'list',
-  use: { baseURL: 'http://127.0.0.1:4173' },
+  use: { baseURL: 'http://127.0.0.1:4173', trace: 'retain-on-failure' },
   webServer: {
     command: 'node tests/serve.mjs 4173',
     url: 'http://127.0.0.1:4173/tests/fixture.html',
