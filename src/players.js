@@ -74,10 +74,10 @@ export class EPlayer {
   }
   draw(cv, T, opts) {
     const s = this.now(T),
-      s2 = this.now(T + 0.012),
-      vel = s.ents.map((e, i) =>
-        Object.fromEntries(SKINS[this.skin].keys.map(k => [k, (s2.ents[i][k] - e[k]) / 0.012]))
-      );
+      s2 = SKINS[this.skin].vel && this.now(T + 0.012),
+      vel =
+        s2 &&
+        s.ents.map((e, i) => Object.fromEntries(SKINS[this.skin].keys.map(k => [k, (s2.ents[i][k] - e[k]) / 0.012])));
     SKINS[this.skin].render(cv, s, cv._ink || s.color, vel, cv._ink ? { ...opts, ink: cv._ink } : opts);
   }
 }
