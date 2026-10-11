@@ -659,17 +659,17 @@ test.describe('site pages', () => {
     await expect(link, 'the drawer closes').toBeHidden();
   });
 
-  test('the tab underline slides on a first visit to a tab, not only on later ones', async ({ page }) => {
+  test('the tab underline keeps sliding while the new panel fills in', async ({ page }) => {
     await open(page, { path: '/docs/' });
     const group = page.locator('wa-tab-group:has(> .tab-bar)').first();
     await page.addStyleTag({ content: ':root, .wa-light, .wa-dark { --wa-transition-slow: 5s !important }' });
     await group.scrollIntoViewIfNeeded();
-    await group.locator(':scope > wa-tab').nth(1).click();
-    await expect(
-      group.locator('wa-tab-panel[active] pre wa-copy-button'),
-      'the new panel fills in its copy button'
-    ).toBeAttached();
     const isSliding = () => group.evaluate(g => g.querySelector(':scope > .tab-bar').getAnimations().length > 0);
+    await group.locator(':scope > wa-tab').nth(1).click();
+    await expect.poll(isSliding, { message: 'picking a tab slides the underline' }).toBe(true);
+    // Stands in for content that loads into the panel late, like a copy button.
+    await group.evaluate(g => g.querySelector(':scope > wa-tab-panel[active]').append(document.createElement('span')));
+    await twoFrames(page);
     expect(await isSliding(), 'the panel filling in mid-slide does not cut the slide short').toBe(true);
   });
 
