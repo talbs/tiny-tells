@@ -4,6 +4,9 @@ import { camMix } from './tells/drones.js';
 import { flipCells, frameAt, renderFlip } from './tells/flipdot.js';
 import { SKINS } from './registry.js';
 
+/* A wrapped key (dekatron's k) crosses its wrap point as a small step, not a jump back around the ring. */
+const unwrap = (sk, k, d) => (sk.wrap?.[k] ? mod(d + sk.wrap[k] / 2, sk.wrap[k]) - sk.wrap[k] / 2 : d);
+
 export class EPlayer {
   constructor(skin, id = 'working', mode = 'x') {
     Object.assign(this, { skin, id, mode, t0: 0, off: null, col0: null, cam0: null });
@@ -57,28 +60,26 @@ export class EPlayer {
       tg1 = this.base(id, dt).ents;
     this.off = {
       tg0,
-      d: a.ents.map((e, i) => Object.fromEntries(sk.keys.map(k => [k, e[k] - tg0[i][k]]))),
+      d: a.ents.map((e, i) => Object.fromEntries(sk.keys.map(k => [k, unwrap(sk, k, e[k] - tg0[i][k])]))),
       v: a.ents.map((e, i) =>
-        Object.fromEntries(sk.keys.map(k => [k, (e[k] - b.ents[i][k]) / dt - (tg1[i][k] - tg0[i][k]) / dt]))
+        Object.fromEntries(
+          sk.keys.map(k => [k, (unwrap(sk, k, e[k] - b.ents[i][k]) - unwrap(sk, k, tg1[i][k] - tg0[i][k])) / dt])
+        )
       ),
     };
-    Object.entries(sk.wrap || {}).forEach(([k, w]) =>
-      this.off.d.forEach(d => {
-        d[k] = mod(d[k] + w / 2, w) - w / 2;
-      })
-    );
     this.col0 = a.color;
     this.cam0 = a.cam;
     this.id = id;
     this.t0 = T;
   }
   draw(cv, T, opts) {
-    const s = this.now(T),
-      s2 = SKINS[this.skin].vel && this.now(T + 0.012),
+    const sk = SKINS[this.skin],
+      s = this.now(T),
+      s2 = sk.hasVel && this.now(T + 0.012),
       vel =
         s2 &&
-        s.ents.map((e, i) => Object.fromEntries(SKINS[this.skin].keys.map(k => [k, (s2.ents[i][k] - e[k]) / 0.012])));
-    SKINS[this.skin].render(cv, s, cv._ink || s.color, vel, cv._ink ? { ...opts, ink: cv._ink } : opts);
+        s.ents.map((e, i) => Object.fromEntries(sk.keys.map(k => [k, unwrap(sk, k, s2.ents[i][k] - e[k]) / 0.012])));
+    sk.render(cv, s, cv._ink || s.color, vel, cv._ink ? { ...opts, ink: cv._ink } : opts);
   }
 }
 export class FPlayer {

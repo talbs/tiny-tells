@@ -74,7 +74,7 @@
       "class": "TellAfterDanceEvent",
       "bundle": "play",
       "cancelable": false,
-      "description": "Fires when a dance ends, or when a state or skin change cuts it short."
+      "description": "Fires when a dance ends, or when a state change, skin change, or removing the tell cuts it short. A removed tell is off the page, so only listeners on the tell itself hear that one."
     }
   ],
   "statics": [
@@ -82,7 +82,7 @@
     {
       "name": "timeScale",
       "type": "number",
-      "description": "Experimental. Multiplies every tell’s clock: 1 is normal, 0.5 is half speed, 2 is double. 0, a negative, or anything that isn’t a number stops them."
+      "description": "Experimental. Multiplies every tell’s clock: 1 is normal, 0.5 is half speed, 2 is double. 0, a negative, or anything that isn’t a finite number stops them."
     }
   ],
   "cssProperties": [

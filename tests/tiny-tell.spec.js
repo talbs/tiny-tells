@@ -584,6 +584,21 @@ test.describe('play bundle', () => {
     await page.$eval('#eyes', el => (el.skin = 'drones'));
     expect(await page.evaluate(() => window.ended), 'so does a skin change').toBe(2);
   });
+
+  test('dance events: removing a tell mid-dance ends it with tell-after-dance on the tell', async ({ page }) => {
+    await page.evaluate(() => {
+      window.danced = false;
+      window.ended = 0;
+      const el = document.getElementById('eyes');
+      el.addEventListener('tell-dance', () => (window.danced = true));
+      el.addEventListener('tell-after-dance', () => window.ended++);
+    });
+    await tap5(page, '#eyes');
+    await expect.poll(() => page.evaluate(() => window.danced), { message: 'five taps start the dance' }).toBe(true);
+    expect(await page.evaluate(() => window.ended), 'the dance is still going').toBe(0);
+    await page.evaluate(() => document.getElementById('eyes').remove());
+    expect(await page.evaluate(() => window.ended), 'removing the tell reports the end right away').toBe(1);
+  });
 });
 
 test.describe('reserve.css', () => {
