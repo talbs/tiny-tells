@@ -15,11 +15,15 @@
         aria-hidden="true"
       ></div>
       <div class="hero-copy">
-        <wa-tag
-          class="hero-version"
-          appearance="outlined"
-          size="xs"
-          >v{{version}}</wa-tag
+        <a
+          class="hero-version version-link"
+          href="https://github.com/talbs/tiny-tells/blob/main/CHANGELOG.md"
+          aria-label="v{{version}} changelog"
+          ><wa-tag
+            appearance="outlined"
+            size="xs"
+            >v{{version}}</wa-tag
+          ></a
         >
         <h1 id="hero-title">
           <span class="wa-visually-hidden">Tiny Tells</span
