@@ -2,7 +2,8 @@
 //
 //   node tools/build.mjs           writes dist/ (both bundles, readable and minified, plus the API files) and site/ (the
 //                                  landing page, the docs, and the 404)
-//   node tools/build.mjs --check   also fails if a minified bundle is over its min + gzip budget, or play adds 1 KB or more
+//   node tools/build.mjs --check   also fails if a minified bundle is over its min + gzip budget, play adds 1 KB or more, or
+//                                  CHANGELOG.md has no section for package.json's version
 //   node tools/build.mjs --sizes   also prints each bundle's min + gzip size
 //
 // Web Awesome is only page chrome. The site self-hosts it from the npm package's dist-cdn build, along with its fonts.
@@ -414,5 +415,8 @@ if (args.includes('--sizes') || args.includes('--check')) {
   const playExtraKb = gzipKb(minified['tiny-tells-play']) - gzipKb(minified['tiny-tells']);
   isOver ||= playExtraKb >= 1;
   console.log(`budget: play adds ${playExtraKb.toFixed(2)} KB min + gzip (limit 1 KB)`);
-  if (args.includes('--check') && isOver) process.exit(1);
+  /* npm publish runs --check, so a version can't ship without its changelog section. */
+  const hasChangelog = new RegExp(`^## ${VERSION.replaceAll('.', '\\.')}( |$)`, 'm').test(read('CHANGELOG.md'));
+  console.log(`changelog: ${hasChangelog ? 'has' : 'MISSING'} a "## ${VERSION}" section`);
+  if (args.includes('--check') && (isOver || !hasChangelog)) process.exit(1);
 }

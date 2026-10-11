@@ -8,3 +8,4 @@
 - `src/` is ES modules. The engine's shared scene (`isDark`, `palette`, `gaze`) is only ever set through `withScene` in `core.js`.
 - Run `npm test` before calling anything done. It builds first, and `npm publish` runs it too.
 - Commit messages are lowercase, present participle ("adding x", "fixing y"), subject line only.
+- PRs don't edit `CHANGELOG.md`. The release PR writes the version's section from the PRs merged since the last tag, under Keep a Changelog's categories (Added, Changed, Deprecated, Removed, Fixed, Security), with any breaking change marked **Breaking** and listed first. `npm run check` fails if `CHANGELOG.md` has no section for `package.json`'s version.
