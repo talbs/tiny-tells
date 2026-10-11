@@ -93,11 +93,16 @@
     aria-labelledby="docs-title"
   >
     <div class="docs-title wa-stack wa-gap-s wa-align-items-start">
-      <wa-tag
-        class="studio"
-        appearance="outlined"
-        size="xs"
-        >v{{version}}</wa-tag
+      <a
+        class="version-link"
+        href="https://github.com/talbs/tiny-tells/blob/main/CHANGELOG.md"
+        aria-label="v{{version}} changelog"
+        ><wa-tag
+          class="studio"
+          appearance="outlined"
+          size="xs"
+          >v{{version}}</wa-tag
+        ></a
       >
       <h1
         class="section-title"

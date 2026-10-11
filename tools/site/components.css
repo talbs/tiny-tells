@@ -222,6 +222,14 @@ wa-tag::part(content) {
   font-size: inherit;
   letter-spacing: inherit;
 }
+.version-link {
+  display: inline-flex;
+  border-radius: var(--wa-border-radius-s);
+  text-decoration: none;
+}
+.version-link:hover wa-tag {
+  border-color: var(--tell-color-working, var(--working-default));
+}
 wa-button {
   --wa-form-control-height: var(--control-h);
 }
