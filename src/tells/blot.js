@@ -132,10 +132,13 @@ export const BLOT = {
     const { ctx, W, small, unit, o } = ctxFor(cv, 'blot'),
       N = small ? 34 : Math.min(256, Math.round(W / 2));
     const off = cv._blot || (cv._blot = { a: document.createElement('canvas'), b: document.createElement('canvas') });
-    off.a.width = off.a.height = N;
-    off.b.width = off.b.height = W;
+    if (off.n !== N) {
+      off.a.width = off.a.height = off.n = N;
+      off.img = off.a.getContext('2d').createImageData(N, N);
+    }
+    if (off.w !== W) off.b.width = off.b.height = off.w = W;
     const actx = off.a.getContext('2d'),
-      img = actx.createImageData(N, N),
+      img = off.img,
       blobs = s.ents.filter(b => b.r > 0.01);
     /* The edge fades over one sample, measured as a distance (field over its slope), so it stays crisp at any size. The slope only matters near the edge, so it's skipped elsewhere. */
     const sample = W / N / unit;
