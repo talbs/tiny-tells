@@ -74,7 +74,7 @@
       "class": "TellAfterDanceEvent",
       "bundle": "play",
       "cancelable": false,
-      "description": "Fires when a dance ends, or when a state or skin change cuts it short."
+      "description": "Fires when a dance ends, or when a state change, skin change, or removing the tell cuts it short. A removed tell is off the page, so only listeners on the tell itself hear that one."
     }
   ],
   "statics": [

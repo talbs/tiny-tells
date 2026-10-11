@@ -228,6 +228,7 @@ class TinyTell extends (typeof HTMLElement === 'undefined' ? class {} : HTMLElem
   }
 
   disconnectedCallback() {
+    this.#endDance();
     all.delete(this);
     clock.live.delete(this);
     env?.seen?.unobserve(this);
