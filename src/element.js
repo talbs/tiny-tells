@@ -126,7 +126,7 @@ class TinyTell extends (typeof HTMLElement === 'undefined' ? class {} : HTMLElem
     return clock.scale;
   }
   static set timeScale(v) {
-    clock.scale = Math.max(0, +v || 0);
+    clock.scale = Number.isFinite(+v) ? Math.max(0, +v) : 0;
   }
 
   #canvas = Object.assign(document.createElement('canvas'), { width: 0, height: 0 });

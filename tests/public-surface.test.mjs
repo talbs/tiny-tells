@@ -79,3 +79,15 @@ describe('the public surface matches custom-elements.json', () => {
     }
   });
 });
+
+describe('statics', () => {
+  test('timeScale stops the tells for anything that is not a finite number', () => {
+    for (const value of [Infinity, -Infinity, NaN, -1, 'fast', undefined]) {
+      TinyTell.timeScale = value;
+      assert.equal(TinyTell.timeScale, 0, `timeScale = ${String(value)} reads back as 0`);
+    }
+    TinyTell.timeScale = 2;
+    assert.equal(TinyTell.timeScale, 2, 'a finite speed reads back as set');
+    TinyTell.timeScale = 1;
+  });
+});
