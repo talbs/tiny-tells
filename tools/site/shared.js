@@ -2,6 +2,7 @@ import '../../src/tiny-tells-play.js';
 import { DANCE } from '../../src/element.js';
 import { LABEL, QUIET, STATES, STATE_COLOR, toSrgb } from '../../src/core.js';
 import { NAMES, V1 } from '../shared/copy.js';
+import { setScheme } from './scheme.js';
 import { track } from './track.js';
 
 export const $ = id => document.getElementById(id);
@@ -36,11 +37,7 @@ export const holdAll = root => root.querySelectorAll('tiny-tell').forEach(t => (
 
 const systemDark = matchMedia('(prefers-color-scheme: dark)');
 const applyTheme = () => {
-  const override = store.get('tells-site-theme'),
-    isDark = override ? override === 'dark' : systemDark.matches;
-  document.documentElement.classList.toggle('wa-dark', isDark);
-  document.documentElement.classList.toggle('wa-light', !isDark);
-  document.documentElement.dataset.theme = isDark ? 'dark' : 'light';
+  const isDark = setScheme();
   const [moon, lamp] = $('theme').querySelectorAll('wa-icon');
   moon.label = isDark ? '' : 'Switch to Dark';
   lamp.label = isDark ? 'Switch to Light' : '';
