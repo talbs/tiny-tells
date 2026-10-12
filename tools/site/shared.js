@@ -2,6 +2,7 @@ import '../../src/tiny-tells-play.js';
 import { DANCE } from '../../src/element.js';
 import { LABEL, QUIET, STATES, STATE_COLOR, toSrgb } from '../../src/core.js';
 import { NAMES, V1 } from '../shared/copy.js';
+import { track } from './track.js';
 
 export const $ = id => document.getElementById(id);
 export const store = {
@@ -67,6 +68,7 @@ $('page-tell')?.insertAdjacentHTML(
   V1.map(s => `<wa-option value="${s}">${NAMES[s]}</wa-option>`).join('')
 );
 export const setSkin = next => {
+  if (next !== page.skin) track('pick-tell', { tell: next });
   page.skin = next;
   store.set('tells-site-skin', next === 'drones' ? null : next);
   if ($('page-tell')) $('page-tell').value = next;
@@ -353,14 +355,18 @@ const addCopyButtons = () => {
 };
 
 export const syncInstallTabs = groups => {
+  let current = store.get('tells-site-install') || 'npm';
   const set = name =>
     groups.forEach(g => {
       if (g.querySelector(`wa-tab-panel[name="${name}"]`) && g.active !== name) g.active = name;
     });
   groups.forEach(g =>
     g.addEventListener('wa-tab-show', e => {
-      store.set('tells-site-install', e.detail.name === 'npm' ? null : e.detail.name);
-      set(e.detail.name);
+      const name = e.detail.name;
+      if (name !== current) track('install-tab', { tab: name });
+      current = name;
+      store.set('tells-site-install', name === 'npm' ? null : name);
+      set(name);
     })
   );
   /* wa-tab-group shows no panel until it scrolls into view, so the page grew under the reader. Opening the panel up front keeps its height fixed. */
