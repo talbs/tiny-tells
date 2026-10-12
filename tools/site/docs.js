@@ -250,13 +250,14 @@ document.querySelectorAll('main section[id] > h2, main section h3[id]').forEach(
     className: 'heading-anchor',
     href: `#${h.localName === 'h2' ? h.parentElement.id : h.id}`,
   });
-  const icon = Object.assign(document.createElement('wa-icon'), {
-    family: 'sharp',
-    variant: 'regular',
-    name: 'anchor',
-  });
-  icon.label = `Link to ${h.textContent.trim()}`;
-  link.append(icon);
+  link.append(
+    Object.assign(document.createElement('wa-icon'), {
+      family: 'sharp',
+      variant: 'regular',
+      name: 'anchor',
+      label: `Link to ${h.textContent.trim()}`,
+    })
+  );
   h.append(link);
 });
 
