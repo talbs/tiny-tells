@@ -143,6 +143,7 @@
     <div class="wa-stack wa-gap-0">
       <p class="label">Integrate</p>
       <a href="#frameworks-and-editors">Frameworks and Editors</a>
+      <a href="#agent-status">Agent Status</a>
       <a href="#testing">Testing Your App</a>
       <a href="#before-it-loads">Before It Loads</a>
     </div>
@@ -1029,6 +1030,136 @@ button.addEventListener('click', async () => {
   Queued
 &lt;/wa-tag&gt;</code></pre>
         </figure>
+      </section>
+      <section
+        id="agent-status"
+        aria-labelledby="agent-status-title"
+      >
+        <h2 id="agent-status-title">Agent Status</h2>
+        <p>
+          An agent run is doing one of five things, and those are the five states. A spinner can show one of them. The
+          one it can't is <code>warning</code>: the run stopped and it's waiting on a person. Map your SDK's status to a
+          state, set it on the tell, and put the words in a <code>role="status"</code> region so screen readers hear the
+          change. A chat reply is a run too. If someone stops a run, that's your call. Most apps go back to
+          <code>idle</code>.
+        </p>
+        <wa-scroller orientation="horizontal"
+          ><table>
+            <thead>
+              <tr>
+                <th scope="col">State</th>
+                <th scope="col">The run is</th>
+                <th scope="col">AI SDK</th>
+                <th scope="col">LangGraph.js</th>
+                <th scope="col">OpenAI Agents</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row"><code>working</code></th>
+                <td>thinking or streaming</td>
+                <td><code>status</code> is <code>submitted</code> or <code>streaming</code></td>
+                <td><code>invoke()</code> hasn't returned</td>
+                <td><code>run()</code> hasn't settled</td>
+              </tr>
+              <tr>
+                <th scope="row"><code>done</code></th>
+                <td>finished</td>
+                <td><code>status</code> is <code>ready</code> after a reply</td>
+                <td>returned with no <code>__interrupt__</code></td>
+                <td>returned with no <code>interruptions</code></td>
+              </tr>
+              <tr>
+                <th scope="row"><code>error</code></th>
+                <td>failed</td>
+                <td><code>status</code> is <code>error</code></td>
+                <td><code>invoke()</code> threw</td>
+                <td><code>run()</code> threw</td>
+              </tr>
+              <tr>
+                <th scope="row"><code>warning</code></th>
+                <td>waiting on a person</td>
+                <td>a tool part in <code>approval-requested</code></td>
+                <td><code>__interrupt__</code> in the result</td>
+                <td><code>result.interruptions</code> has entries</td>
+              </tr>
+              <tr>
+                <th scope="row"><code>idle</code></th>
+                <td>not started</td>
+                <td><code>status</code> is <code>ready</code> before any reply</td>
+                <td>nothing started yet</td>
+                <td>nothing started yet</td>
+              </tr>
+            </tbody>
+          </table></wa-scroller
+        >
+        <h3 id="ai-sdk">AI SDK</h3>
+        <p>
+          <code>ready</code> means idle. It's also where <code>status</code> lands after a reply, or after
+          <code>stop()</code>, so your app decides when ready means done. Here it's done once any reply exists.
+          <code>sendAutomaticallyWhen</code> sends the approval back, so done means the tool actually ran:
+        </p>
+        <pre data-copy><code class="language-jsx">import { useChat } from '@ai-sdk/react';
+import { lastAssistantMessageIsCompleteWithApprovalResponses } from 'ai';
+
+const WORDS = { working: 'Thinking…', done: 'Done', error: 'Something broke', warning: 'Needs your OK', idle: '' };
+
+function RunStatus() {
+  const { status, messages } = useChat({
+    sendAutomaticallyWhen: lastAssistantMessageIsCompleteWithApprovalResponses,
+  });
+  const parts = messages.at(-1)?.parts ?? [];
+  const state = parts.some(p => p.state === 'approval-requested')
+    ? 'warning'
+    : status === 'error'
+      ? 'error'
+      : status === 'ready'
+        ? messages.length ? 'done' : 'idle'
+        : 'working';
+  return (
+    &lt;p&gt;
+      &lt;tiny-tell state={state} label="" /&gt; &lt;span role="status"&gt;{WORDS[state]}&lt;/span&gt;
+    &lt;/p&gt;
+  );
+}</code></pre>
+        <h3 id="langgraph">LangGraph.js</h3>
+        <p>
+          A paused graph comes back with <code>__interrupt__</code> set. Answer with
+          <code>new Command({ resume })</code> and it's working again:
+        </p>
+        <pre data-copy><code class="language-javascript">const tell = document.querySelector('tiny-tell');
+const status = document.querySelector('[role="status"]');
+
+tell.state = 'working';
+status.textContent = 'Thinking…';
+try {
+  const result = await graph.invoke(input, config);
+  tell.state = result.__interrupt__ ? 'warning' : 'done';
+  status.textContent = result.__interrupt__ ? 'Needs your OK' : 'Done';
+} catch {
+  tell.state = 'error';
+  status.textContent = 'Something broke';
+}</code></pre>
+        <h3 id="openai-agents">OpenAI Agents SDK</h3>
+        <p>
+          A run that needs approval stops and fills <code>result.interruptions</code>. Approve or reject each one on
+          <code>result.state</code>, then run again:
+        </p>
+        <pre data-copy><code class="language-javascript">import { run } from '@openai/agents';
+
+const tell = document.querySelector('tiny-tell');
+const status = document.querySelector('[role="status"]');
+
+tell.state = 'working';
+status.textContent = 'Thinking…';
+try {
+  const result = await run(agent, input);
+  tell.state = result.interruptions.length ? 'warning' : 'done';
+  status.textContent = result.interruptions.length ? 'Needs your OK' : 'Done';
+} catch {
+  tell.state = 'error';
+  status.textContent = 'Something broke';
+}</code></pre>
       </section>
       <section
         id="testing"
