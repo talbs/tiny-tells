@@ -705,4 +705,37 @@ test.describe('site pages', () => {
     await tap.click();
     await expect(status, 'a new round clears it, so the same tempo is announced again').toBeEmpty();
   });
+
+  test('a builder link restores the tag it was copied from, and ignores values it does not know', async ({ page }) => {
+    const code = page.locator('.b-code');
+    const link = () => page.evaluate(() => document.getElementById('b-link').value);
+    const linkParams = async () => Object.fromEntries(new URL(await link()).searchParams);
+
+    await open(page, { path: '/?tell=lens&state=done&size=24&words=Backed%20up%2012%20photos.#drop-one-in' });
+    await expect(code, 'the linked tell').toContainText('skin="lens"');
+    await expect(code, 'the linked state').toContainText('state="done"');
+    await expect(code, 'the linked size').toContainText('--tell-size: 1.5rem');
+    await expect(code, 'the linked words').toContainText('Backed up 12 photos.');
+    await expect
+      .poll(linkParams, { message: 'the copy link reproduces the same setup' })
+      .toEqual({ tell: 'lens', state: 'done', size: '24', words: 'Backed up 12 photos.' });
+    expect(new URL(await link()).hash, 'the copy link lands on the builder').toBe('#drop-one-in');
+    await page.locator('#b-state wa-radio[value="error"]').click();
+    await expect(code, 'linked words survive a state change').toContainText('Backed up 12 photos.');
+
+    await open(page, { path: '/#drop-one-in' });
+    await page.locator('#b-state wa-radio[value="done"]').click();
+    const picked = await page.locator('#b-words').evaluate(el => el.value);
+    await open(page, { path: new URL(await link()).pathname + new URL(await link()).search });
+    await expect(code, 'a link copied after picking a state shows the same example words').toContainText(picked);
+
+    await open(page, {
+      path: '/?tell=nope&state=nope&size=999&words=%3Cimg%20src%3Dx%20onerror%3Dalert(1)%3E#drop-one-in',
+    });
+    await expect(code, 'an unknown tell falls back to the default').toContainText('skin="drones"');
+    await expect(code, 'an unknown state falls back to working').toContainText('state="working"');
+    await expect(code, 'an unknown size falls back to matching the text').not.toContainText('--tell-size');
+    await expect(code, 'markup in linked words shows as text').toContainText('&lt;img src=x onerror=alert(1)&gt;');
+    expect(await page.locator('#b-preview img').count(), 'markup in linked words never renders').toBe(0);
+  });
 });

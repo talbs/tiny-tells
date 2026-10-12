@@ -379,7 +379,22 @@ const renderWild = () => {
   holdAll($('wild-grid'));
 };
 
-const builder = { tell: page.skin, state: 'working', size: 'text', words: 'Syncing 3 files…' };
+const SIZES = ['text', '20', '24', '32', '48'];
+const shared = new URLSearchParams(location.search);
+const fromLink = (key, allowed, fallback) => (allowed.includes(shared.get(key)) ? shared.get(key) : fallback);
+const builder = {
+  tell: fromLink('tell', V1, page.skin),
+  state: fromLink('state', STATES, 'working'),
+  size: fromLink('size', SIZES, 'text'),
+  words: shared.has('words') ? [...shared.get('words')].slice(0, 120).join('') : 'Syncing 3 files…',
+};
+const builderLink = () => {
+  const { tell, state, size, words } = builder,
+    params = new URLSearchParams({ tell, state });
+  if (size !== 'text') params.set('size', size);
+  if (words !== firstIdea(state)) params.set('words', words);
+  return `${location.origin}${location.pathname}?${params}#drop-one-in`;
+};
 const esc = t => t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 const builderHTML = () => {
   const { tell, state, size } = builder,
@@ -395,6 +410,7 @@ const renderBuilder = ({ isTyping = false } = {}) => {
   document.querySelectorAll('.b-code').forEach(code => fillCode(code, html));
   morphInto($('b-preview'), html, { isTextAnimated: !isTyping });
   holdAll($('b-preview'));
+  $('b-link').value = builderLink();
 };
 $('b-tell').innerHTML = radios(
   V1,
@@ -406,7 +422,7 @@ $('b-state').innerHTML = radios(
   STATES.map(s => LABEL[s])
 );
 $('b-state').value = builder.state;
-$('b-size').innerHTML = radios(['text', '20', '24', '32', '48'], ['Match Text', '20', '24', '32', '48']);
+$('b-size').innerHTML = radios(SIZES, ['Match Text', ...SIZES.slice(1)]);
 $('b-size').value = builder.size;
 [
   ['b-tell', 'tell', 'change'],
@@ -419,11 +435,16 @@ $('b-size').value = builder.size;
   })
 );
 const ideas = state => $('b-ideas').querySelector(`[data-state="${state}"]`);
+/* The shuffled pick is random, so links leave out only the first idea, the one a recipient can rebuild without the words param. */
+const firstIdea = state => ideas(state).firstElementChild.textContent;
 const setWords = text => {
   builder.words = $('b-words').value = text;
   builder.isCanned = true;
 };
-builder.isCanned = true;
+if (shared.has('words')) {
+  builder.isCanned = [...ideas(builder.state).children].some(idea => idea.textContent === builder.words);
+  $('b-words').value = builder.words;
+} else setWords(firstIdea(builder.state));
 $('b-words').addEventListener('input', e => {
   builder.words = e.target.value;
   builder.isCanned = false;
