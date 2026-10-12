@@ -194,7 +194,7 @@
   background: var(--well-light);
 }
 .sw-well.wa-dark {
-  background: var(--well-dark);
+  background: var(--dark-well);
 }
 .sw-ratio {
   font: var(--wa-font-weight-normal) var(--wa-font-size-xs) / 1 var(--font-mono);

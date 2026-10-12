@@ -267,7 +267,6 @@ body {
 :root {
   --well-light: var(--off-white);
   --well-light-muted: #69655d;
-  --well-dark: var(--dark-well);
   --pencil: light-dark(#d0574a, #ff8473);
   --working-default: light-dark(#787ccc, #aeb3ff);
   --brand-font-awesome: #528dd7;
