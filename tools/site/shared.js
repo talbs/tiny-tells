@@ -22,7 +22,7 @@ export const store = {
 export const radios = (values, labels = values) =>
   values.map((v, i) => `<wa-radio appearance="button" value="${v}">${labels[i]}</wa-radio>`).join('');
 export const tag = (skin, attrs = '') => `<tiny-tell skin="${skin}" ${attrs}></tiny-tell>`;
-export const isDarkPage = () => document.documentElement.classList.contains('wa-dark');
+const isDarkPage = () => document.documentElement.classList.contains('wa-dark');
 
 const listeners = { skin: [], theme: [], pause: [], palette: [] };
 export const on = (event, fn) => listeners[event].push(fn);
@@ -549,7 +549,7 @@ const ms = name => {
   const v = token(name);
   return (parseFloat(v) || 0) * (v.endsWith('ms') ? 1 : 1000);
 };
-export const settleIn = el => {
+const settleIn = el => {
   if (page.isPaused || !el?.animate) return;
   el.animate(
     [

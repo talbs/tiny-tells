@@ -236,7 +236,6 @@ const sitePage = async ({
   description,
   path,
   size,
-  isPickerInHeader,
   isNoindex,
   isHandLettered,
   css = SITE_CSS,
@@ -244,10 +243,7 @@ const sitePage = async ({
   const js = await bundle(`tools/site/${script}`, { minify: true });
   const { code: styles } = await transform(css.map(path => read(...path)).join('\n'), { loader: 'css', minify: true });
   const fills = {
-    header: read('tools', 'site', 'header.html').replace(
-      '{{picker}}',
-      isPickerInHeader ? read('tools', 'site', 'picker.html').trim() : ''
-    ),
+    header: read('tools', 'site', 'header.html'),
     footer: read('tools', 'site', 'footer.html'),
   };
   const values = { root, version: VERSION, size };
@@ -369,7 +365,6 @@ for (const [out, opts] of [
       title: 'Tiny Tells: give your app’s status a face',
       description:
         'A spinner only says busy. A tell shows whether your app is working, done, failed, or waiting on you. Six tiny characters, one <tiny-tell> element.',
-      isPickerInHeader: true,
       isHandLettered: true,
       css: [...SITE_CSS, ...LANDING_CSS],
     },
