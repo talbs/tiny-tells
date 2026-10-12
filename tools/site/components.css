@@ -718,40 +718,47 @@ wa-button:has(.swap-icons)::part(base) {
 }
 .swap-icons > wa-icon {
   grid-area: 1 / 1;
-  transition:
-    opacity var(--wa-transition-normal) var(--wa-transition-easing),
-    scale var(--wa-transition-normal) var(--wa-transition-easing),
-    rotate var(--wa-transition-normal) var(--wa-transition-easing);
+  transition: opacity var(--wa-transition-normal) var(--wa-transition-easing);
 }
 .swap-icons > :last-child,
 :is(.nav-toggle:is(:hover, :focus-visible), :root[data-theme='dark'] #theme, .is-paused #pause)
   .swap-icons
   > :first-child {
   opacity: 0;
-  scale: 0.6;
-}
-.swap-icons > :last-child {
-  rotate: -25deg;
-}
-:is(.nav-toggle:is(:hover, :focus-visible), :root[data-theme='dark'] #theme, .is-paused #pause)
-  .swap-icons
-  > :first-child {
-  rotate: 25deg;
 }
 :is(.nav-toggle:is(:hover, :focus-visible), :root[data-theme='dark'] #theme, .is-paused #pause)
   .swap-icons
   > :last-child {
   opacity: 1;
-  scale: 1;
-  rotate: 0deg;
 }
 .nav-toggle:is(:hover, :focus-visible) .swap-icons > :last-child {
   color: var(--fg);
 }
-@media (prefers-reduced-motion: reduce) {
+@media (prefers-reduced-motion: no-preference) {
   .swap-icons > wa-icon {
-    scale: 1 !important;
-    rotate: 0deg !important;
-    transition: opacity var(--wa-transition-normal) var(--wa-transition-easing);
+    transition:
+      opacity var(--wa-transition-normal) var(--wa-transition-easing),
+      scale var(--wa-transition-normal) var(--wa-transition-easing),
+      rotate var(--wa-transition-normal) var(--wa-transition-easing);
+  }
+  .swap-icons > :last-child,
+  :is(.nav-toggle:is(:hover, :focus-visible), :root[data-theme='dark'] #theme, .is-paused #pause)
+    .swap-icons
+    > :first-child {
+    scale: 0.6;
+  }
+  .swap-icons > :last-child {
+    rotate: -25deg;
+  }
+  :is(.nav-toggle:is(:hover, :focus-visible), :root[data-theme='dark'] #theme, .is-paused #pause)
+    .swap-icons
+    > :first-child {
+    rotate: 25deg;
+  }
+  :is(.nav-toggle:is(:hover, :focus-visible), :root[data-theme='dark'] #theme, .is-paused #pause)
+    .swap-icons
+    > :last-child {
+    scale: 1;
+    rotate: 0deg;
   }
 }
