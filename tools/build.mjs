@@ -276,7 +276,8 @@ const sitePage = async ({
 <title>${title}</title>
 ${favicon(root)}
 ${pageMeta({ title, description, path })}${isNoindex ? '\n<meta name="robots" content="noindex">' : ''}
-<script>const d = document.documentElement.dataset; d.loading = d.upgrading = ''; setTimeout(() => { delete d.loading; delete d.upgrading; }, 2000);</script>
+<script>const d = document.documentElement.dataset; d.loading = d.upgrading = ''; setTimeout(() => { delete d.loading; delete d.upgrading; }, 2000);
+{let t = null; try { t = localStorage.getItem('tells-site-theme'); } catch {} const isDark = t ? t === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches, c = document.documentElement.classList; c.toggle('wa-dark', isDark); c.toggle('wa-light', !isDark); d.theme = isDark ? 'dark' : 'light';}</script>
 <link rel="stylesheet" href="${root}assets/vendor.css">${isHandLettered ? `\n<link rel="stylesheet" href="${root}assets/hand.css">` : ''}
 <script type="module" src="${root}assets/webawesome/webawesome.loader.js" data-webawesome="${root}assets/webawesome"></script>${umamiTag()}
 ${preloads}
