@@ -951,6 +951,84 @@ declare module 'react' {
     }
   }
 }</code></pre>
+        <h3 id="web-awesome">Web Awesome</h3>
+        <p>
+          We build this site on <a href="https://webawesome.com/">Web Awesome</a>, so here's how the two fit. A tell
+          goes in a slot like anything else. Give it <code>color="current"</code> and it takes the component's text
+          color. That's what keeps it readable on a loud button. For the state colors, pick the Web Awesome preset under
+          <a href="#other-systems">Using Another System's Colors</a>.
+        </p>
+        <p>In a button's <code>start</code> slot. Click it.</p>
+        <figure class="example wa-not-prose">
+          <div class="example-preview studio wa-cluster wa-gap-m">
+            <wa-button
+              id="wa-save"
+              variant="brand"
+            >
+              <tiny-tell
+                slot="start"
+                id="wa-save-tell"
+                skin="eyes"
+                data-follow
+                state="idle"
+                color="current"
+                label=""
+              ></tiny-tell>
+              <span id="wa-save-label">Save</span>
+            </wa-button>
+          </div>
+          <pre data-copy><code class="language-html" data-skin-code>&lt;wa-button variant="brand"&gt;
+  &lt;tiny-tell slot="start" skin="eyes" state="idle" color="current" label=""&gt;&lt;/tiny-tell&gt;
+  Save
+&lt;/wa-button&gt;</code></pre>
+        </figure>
+        <p>On click: <code>working</code> while the save runs, then <code>done</code>.</p>
+        <pre data-copy><code class="language-javascript">const button = document.querySelector('wa-button');
+const tell = button.querySelector('tiny-tell');
+button.addEventListener('click', async () => {
+  tell.state = 'working';
+  await save();
+  tell.state = 'done';
+});</code></pre>
+        <p>In a callout's <code>icon</code> slot:</p>
+        <figure class="example wa-not-prose">
+          <div class="example-preview studio">
+            <wa-callout variant="warning">
+              <tiny-tell
+                slot="icon"
+                skin="eyes"
+                data-follow
+                state="warning"
+                color="current"
+                label=""
+              ></tiny-tell>
+              Two copies of this file changed. Pick the one to keep.
+            </wa-callout>
+          </div>
+          <pre data-copy><code class="language-html" data-skin-code>&lt;wa-callout variant="warning"&gt;
+  &lt;tiny-tell slot="icon" skin="eyes" state="warning" color="current" label=""&gt;&lt;/tiny-tell&gt;
+  Two copies of this file changed. Pick the one to keep.
+&lt;/wa-callout&gt;</code></pre>
+        </figure>
+        <p>Inline in a tag:</p>
+        <figure class="example wa-not-prose">
+          <div class="example-preview studio wa-cluster wa-gap-m">
+            <wa-tag>
+              <tiny-tell
+                skin="eyes"
+                data-follow
+                state="idle"
+                color="current"
+                label=""
+              ></tiny-tell>
+              Queued
+            </wa-tag>
+          </div>
+          <pre data-copy><code class="language-html" data-skin-code>&lt;wa-tag&gt;
+  &lt;tiny-tell skin="eyes" state="idle" color="current" label=""&gt;&lt;/tiny-tell&gt;
+  Queued
+&lt;/wa-tag&gt;</code></pre>
+        </figure>
       </section>
       <section
         id="testing"

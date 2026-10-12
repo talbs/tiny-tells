@@ -196,7 +196,7 @@ const renderStateTells = () => {
   document.querySelectorAll('#state-rows tiny-tell, tiny-tell[data-follow]').forEach(t => (t.skin = page.skin));
   document
     .querySelectorAll('[data-skin-code]')
-    .forEach(code => fillCode(code, code.textContent.replace(/skin="[a-z]+"/, `skin="${page.skin}"`)));
+    .forEach(code => fillCode(code, code.textContent.replace(/skin="[a-z]+"/g, `skin="${page.skin}"`)));
 };
 const measureTextSizes = () =>
   document.querySelectorAll('.text-sizes p').forEach(p => {
@@ -371,6 +371,25 @@ $('start-run').addEventListener('click', () => {
     startTell.state = 'working';
     $('start-status').textContent = 'Syncing 3 files…';
   }, 2400);
+});
+
+const saveTell = $('wa-save-tell'),
+  saveLabel = $('wa-save-label');
+let saveTimers = [];
+$('wa-save').addEventListener('click', () => {
+  saveTimers.forEach(clearTimeout);
+  saveTell.state = 'working';
+  saveLabel.textContent = 'Saving…';
+  saveTimers = [
+    setTimeout(() => {
+      saveTell.state = 'done';
+      saveLabel.textContent = 'Saved';
+    }, 1600),
+    setTimeout(() => {
+      saveTell.state = 'idle';
+      saveLabel.textContent = 'Save';
+    }, 4000),
+  ];
 });
 
 const SYSTEM_TOKENS = {
