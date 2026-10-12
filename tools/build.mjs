@@ -27,6 +27,7 @@ const { version: VERSION, homepage: HOMEPAGE } = JSON.parse(read('package.json')
 const API = JSON.parse(read('src', 'api.json'));
 const REPO = 'https://github.com/talbs/tiny-tells';
 const FA_KIT = '3572f3662e';
+const UMAMI_WEBSITE_ID = '9f2cb342-dd92-4387-b96a-cf0b52f5ec76';
 const WA_CDN = join(ROOT, 'node_modules', '@awesome.me', 'webawesome', 'dist-cdn');
 /* The site asks the kit for Web Awesome's own icons, so it has to use the Font Awesome release Web Awesome was built with. */
 const FA_VERSION = readdirSync(join(WA_CDN, 'chunks'))
@@ -54,6 +55,11 @@ const bundle = async (entry, { minify = false, banner = '' } = {}) => {
 };
 
 const gzipKb = text => gzipSync(text, { level: 9 }).length / 1024;
+/* data-domains keeps local serves, previews, and Playwright out of the numbers. */
+const umamiTag = () =>
+  UMAMI_WEBSITE_ID
+    ? `\n<script async src="https://cloud.umami.is/script.js" data-website-id="${UMAMI_WEBSITE_ID}" data-domains="tinytells.dev" data-do-not-track="true" data-exclude-search="true"></script>`
+    : '';
 
 const tsType = attr =>
   attr.values
@@ -276,7 +282,7 @@ ${favicon(root)}
 ${pageMeta({ title, description, path })}${isNoindex ? '\n<meta name="robots" content="noindex">' : ''}
 <script>const d = document.documentElement.dataset; d.loading = d.upgrading = ''; setTimeout(() => { delete d.loading; delete d.upgrading; }, 2000);</script>
 <link rel="stylesheet" href="${root}assets/vendor.css">${isHandLettered ? `\n<link rel="stylesheet" href="${root}assets/hand.css">` : ''}
-<script type="module" src="${root}assets/webawesome/webawesome.loader.js" data-webawesome="${root}assets/webawesome"></script>
+<script type="module" src="${root}assets/webawesome/webawesome.loader.js" data-webawesome="${root}assets/webawesome"></script>${umamiTag()}
 ${preloads}
 <script type="module" src="${root}assets/microlighter/microlighter.min.js"></script>
 <style>
