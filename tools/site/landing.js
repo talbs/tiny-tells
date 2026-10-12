@@ -4,6 +4,7 @@ import API from '../../src/api.json';
 import { version as VERSION } from '../../package.json';
 import { GOES, MODEL, NAMES, NOTES, V1 } from '../shared/copy.js';
 import { onionSkin } from '../shared/onion.js';
+import { track } from './track.js';
 import {
   $,
   PROMPT,
@@ -485,6 +486,7 @@ const setMethod = method => {
   $('b-method').value = method;
 };
 $('b-method').addEventListener('change', e => {
+  track('install-tab', { tab: e.target.value });
   store.set('tells-site-install', e.target.value === 'npm' ? null : e.target.value);
   setMethod(e.target.value);
 });
