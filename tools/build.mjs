@@ -126,6 +126,97 @@ const manifest = () => {
   };
 };
 
+/* A plain-text brief for coding assistants (llmstxt.org). The reference sections come from api.json; the rules are written by hand and mirror the docs' Your Part list. */
+const llmsTxt = sizeKb => {
+  const docs = `${HOMEPAGE}docs/`;
+  const skins = Object.keys(API.attributes.find(a => a.name === 'skin').values).length;
+  const list = (items, line) => items.map(line).join('\n');
+  const attr = a =>
+    `- \`${a.name}\`${a.default == null || a.type === 'boolean' ? '' : ` (default \`${a.default}\`)`}: ${a.description}` +
+    (a.values ? '\n' + list(Object.entries(a.values), ([v, d]) => `  - \`${v}\`: ${d}`) : '');
+  return `# Tiny Tells
+
+> \`<tiny-tell>\` is one custom element for app status: working, done, error, warning, or idle. Pick from ${skins} small animated characters. No dependencies, ${sizeKb} KB min+gzip. Chrome 99+, Firefox 112+, Safari 16.4+.
+
+This file describes version ${VERSION}. Tiny Tells is pre-1.0, so pin the version.
+
+## Install
+
+With a bundler:
+
+\`\`\`bash
+npm i tiny-tells
+\`\`\`
+
+\`\`\`js
+import 'tiny-tells';
+\`\`\`
+
+Without one:
+
+\`\`\`html
+<script type="module" src="https://cdn.jsdelivr.net/npm/tiny-tells@${VERSION}/dist/tiny-tells.min.js"></script>
+\`\`\`
+
+The play bundle adds pointer notice and a five-tap dance. Use it only if asked. Import \`tiny-tells/play\` instead of \`tiny-tells\`, or load \`tiny-tells-play.min.js\` from the same CDN path. Types ship with the package, and the element class is exported as \`TinyTell\`.
+
+## Use
+
+\`\`\`html
+<p><tiny-tell skin="dekatron" state="working" label=""></tiny-tell> <span role="status">Syncing 3 files…</span></p>
+\`\`\`
+
+\`\`\`js
+document.querySelector('tiny-tell').state = 'done';
+document.querySelector('[role="status"]').textContent = 'Synced 3 files.';
+\`\`\`
+
+Rules:
+
+- Put words next to a tell, in a \`role="status"\` region. A state change doesn't announce on its own.
+- When the words beside it already say the state, set \`label=""\`. Otherwise give it a more specific \`label\`, like \`label="Uploading photos"\`.
+- \`warning\` means stuck until a person acts. Not for soft errors.
+- Size follows the text. Set \`--tell-size\` to pin it.
+- If a tell can move for more than five seconds, add a pause button that sets \`paused\`.
+- \`paused\` is a boolean attribute. Any value pauses, \`paused="false"\` included. Remove it to resume.
+- If you override \`--tell-color-*\`, keep 3:1 contrast against the surface behind it.
+- Reduced motion and forced colors are handled for you.
+- Custom tells aren't supported.
+
+## Attributes
+
+${list(API.attributes, attr)}
+
+## CSS
+
+${list(API.cssProperties, p => `- \`${p.name}\`${p.default != null ? ` (default \`${p.default}\`)` : ''}: ${p.description}`)}
+${list(API.cssParts, p => `- \`::part(${p.name})\`: ${p.description}`)}
+
+## Statics
+
+${list(API.statics ?? [], s => `- \`TinyTell.${s.name}\`: ${s.description}`)}
+
+## Events
+
+${list(API.events ?? [], e => `- \`${e.name}\`${e.cancelable ? ' (cancelable)' : ''}${e.bundle ? `, ${e.bundle} bundle only` : ''}: ${e.description}`)}
+
+## Docs
+
+- [Get Started](${docs}#get-started)
+- [Play Bundle](${docs}#play)
+- [States](${docs}#states)
+- [Accessibility](${docs}#accessibility)
+- [Pausing](${docs}#pausing)
+- [Size](${docs}#size)
+- [Color](${docs}#color)
+- [Frameworks and Editors](${docs}#frameworks-and-editors)
+- [React](${docs}#react)
+- [Testing Your App](${docs}#testing)
+- [Before It Loads](${docs}#before-it-loads)
+- [API](${docs}#api)
+`;
+};
+
 const vscodeData = () => ({
   version: 1.1,
   tags: [
@@ -356,6 +447,7 @@ cpSync(join(ROOT, 'node_modules', 'microlighter', 'dist'), join(ROOT, 'site', 'a
   filter: path => !skipCopy(path),
 });
 
+const SIZE_KB = gzipKb(minified['tiny-tells']).toFixed(1);
 for (const [out, opts] of [
   [
     ['site', 'index.html'],
@@ -397,7 +489,7 @@ for (const [out, opts] of [
     },
   ],
 ]) {
-  const html = await sitePage({ ...opts, size: gzipKb(minified['tiny-tells']).toFixed(1) });
+  const html = await sitePage({ ...opts, size: SIZE_KB });
   console.log('wrote', write(html, ...out), `(${Math.round(html.length / 1024)} KB)`);
 }
 ['og.png', 'readme.gif', 'readme-dark.gif'].forEach(name =>
@@ -405,6 +497,13 @@ for (const [out, opts] of [
 );
 ICONS.forEach(name => copyFileSync(join(ROOT, 'tools', 'favicon', name), join(ROOT, 'site', name)));
 console.log('wrote site/og.png, the README strips, and the favicons');
+const llms = llmsTxt(SIZE_KB);
+const builtDocs = read('site', 'docs', 'index.html');
+const deadAnchors = [...llms.matchAll(/docs\/#([\w-]+)\)/g)]
+  .map(m => m[1])
+  .filter(id => !builtDocs.includes(`id="${id}"`));
+if (deadAnchors.length) throw new Error(`llms.txt links to docs anchors that don't exist: ${deadAnchors.join(', ')}`);
+console.log('wrote', write(llms, 'site', 'llms.txt'));
 
 const args = process.argv.slice(2);
 if (args.includes('--sizes') || args.includes('--check')) {

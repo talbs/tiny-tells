@@ -166,7 +166,10 @@
         aria-labelledby="get-started-title"
       >
         <h2 id="get-started-title">Get Started</h2>
-        <p>Three steps: load it, add a tell, and change its state.</p>
+        <p>
+          Three steps: load it, add a tell, and change its state. Using a coding assistant?
+          <a href="#with-an-assistant">Start it here instead</a>.
+        </p>
         <h3 id="load">1. Load It</h3>
         <p>
           Tiny Tells loads three ways, and each one defines the same <code>&lt;tiny-tell&gt;</code> element, so pick
@@ -304,6 +307,15 @@ const words = document.querySelector('[role="status"]');
 tell.state = 'done';
 words.textContent = 'Synced 3 files.';</code></pre>
         </figure>
+        <h3 id="with-an-assistant">With an AI Assistant</h3>
+        <p>
+          Paste this into your coding assistant. It points at <a href="{{root}}llms.txt">llms.txt</a>, a short
+          plain-text version of these docs, written for assistants.
+        </p>
+        <pre
+          class="is-prompt"
+          data-copy
+        ><code>Add Tiny Tells to this project. Read https://tinytells.dev/llms.txt first, and follow its rules for pairing each tell with status text. Ask me where it should go before adding any.</code></pre>
       </section>
       <section
         id="play"
