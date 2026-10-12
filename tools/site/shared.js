@@ -309,6 +309,7 @@ export const bindPaletteSelect = el => {
   el.setAttribute('value', palette.preset);
   el.addEventListener('change', e => {
     if (e.target.value === palette.preset) return;
+    track('pick-palette', { preset: e.target.value });
     palette.preset = e.target.value;
     applyPalette();
   });
