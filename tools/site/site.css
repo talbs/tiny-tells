@@ -80,9 +80,6 @@ wa-scroller > table {
 .wa-prose tr:has(> .tell-cell) > * {
   vertical-align: middle;
 }
-header #page-tell {
-  inline-size: 8.5rem;
-}
 .studio {
   --paper-tint: color-mix(in oklab, var(--paper) 50%, var(--paper-edge));
 }
@@ -138,11 +135,6 @@ wa-select wa-icon[slot='start'] {
 }
 .palette-probe i {
   background: var(--wa-color-surface-default);
-}
-@media (max-width: 860px) {
-  header #page-tell {
-    inline-size: 7rem;
-  }
 }
 main > section {
   padding-block: var(--section-pad);
@@ -258,14 +250,10 @@ wa-page[view='desktop'].is-docs {
 .wa-prose :is(h2, h3) + :is(.wa-not-prose, wa-tab-group, wa-scroller, .install-head) {
   margin-block-start: 0;
 }
-wa-page:not(.is-docs) #page-tell {
-  display: none;
-}
 @media (max-width: 699px) {
   .sections,
   .palette-tabs,
-  .header-docs[aria-current],
-  header #page-tell {
+  .header-docs[aria-current] {
     display: none;
   }
 }
