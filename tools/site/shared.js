@@ -664,7 +664,7 @@ customElements
   .whenDefined('wa-radio')
   .then(() =>
     document
-      .querySelectorAll('wa-radio-group:not(.cast-pick, .notes)')
+      .querySelectorAll('wa-radio-group:not(.cast-pick)')
       .forEach(group => follow(group, ':scope > wa-radio', 'aria-checked', placePill))
   );
 customElements

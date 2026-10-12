@@ -196,22 +196,10 @@ new ResizeObserver(placeNotes).observe(stage);
 let castState = 'working',
   anySize = 36;
 const live = (skin, attrs = '') => tag(skin, `state="${castState}" data-live ${attrs}`);
-const placeNotesHl = isInstant => {
-  const hl = $('notes').querySelector('.notes-hl'),
-    on = $('notes').querySelector(`wa-radio[value="${castState}"]`);
-  if (!hl || !on) return;
-  if (isInstant) hl.style.transition = 'none';
-  const shift = new DOMMatrix(getComputedStyle(hl).transform).m42;
-  hl.style.transform = `translateY(${on.getBoundingClientRect().top - (hl.getBoundingClientRect().top - shift)}px)`;
-  hl.style.blockSize = `${on.offsetHeight}px`;
-  if (isInstant) requestAnimationFrame(() => (hl.style.transition = ''));
-};
-new ResizeObserver(() => placeNotesHl(true)).observe($('notes'));
 const setCastState = s => {
   castState = s;
   document.querySelectorAll('tiny-tell[data-live]').forEach(t => (t.state = s));
   if ($('notes').value !== s) $('notes').value = s;
-  placeNotesHl();
   if ($('wild-state').value !== s) $('wild-state').value = s;
   renderWild();
 };
@@ -241,14 +229,11 @@ const renderCast = () => {
   $('any-size-tell').innerHTML = live(skin, `style="--tell-size: ${anySize}px" label=""`);
   $('cast-goes').innerHTML =
     `<span class="wa-visually-hidden">Best for: </span><span class="wa-cluster wa-gap-s">${GOES[skin].map((use, i) => `<wa-tag appearance="outlined" size="xs">${i ? '<span class="wa-visually-hidden">, </span>' : ''}${use}</wa-tag>`).join('')}</span>`;
-  $('notes').innerHTML =
-    '<span class="notes-hl" aria-hidden="true"></span>' +
-    STATES.map(
-      s =>
-        `<wa-radio appearance="button" value="${s}"><span class="notes-row">${tag(skin, `state="${s}" label=""`)}<span class="notes-key">${LABEL[s]}</span><span>${NOTES[skin][s]}</span></span></wa-radio>`
-    ).join('');
+  $('notes').innerHTML = STATES.map(
+    s =>
+      `<wa-radio appearance="button" value="${s}"><span class="notes-row">${tag(skin, `state="${s}" label=""`)}<span class="notes-key">${LABEL[s]}</span><span>${NOTES[skin][s]}</span></span></wa-radio>`
+  ).join('');
   $('notes').value = castState;
-  placeNotesHl(true);
   $('cast-build').innerHTML = [
     ['Made of', m.made],
     ['Notices You', m.notice],

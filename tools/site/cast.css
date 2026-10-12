@@ -219,17 +219,10 @@ main > #tells {
 }
 
 .cast .notes {
-  position: relative;
-  display: grid;
   margin-inline-start: -14px;
-  border: 0;
 }
 .cast .notes wa-radio[appearance='button'] {
-  position: relative;
-  z-index: 1;
   display: block;
-  inline-size: 100%;
-  block-size: auto;
   min-block-size: 44px;
   margin: 0;
   padding: var(--wa-space-s) 14px;
@@ -247,7 +240,7 @@ main > #tells {
 .cast .notes wa-radio::part(label) {
   display: block;
 }
-.notes-row {
+.cast .notes-row {
   display: grid;
   grid-template-columns: 32px minmax(0, 1fr);
   align-items: center;
@@ -256,7 +249,7 @@ main > #tells {
   white-space: normal;
   text-align: start;
 }
-.notes-row tiny-tell {
+.cast .notes-row tiny-tell {
   grid-row: span 2;
 }
 .cast .notes wa-radio[appearance='button']:not(:state(checked)):hover {
@@ -269,21 +262,8 @@ main > #tells {
   outline: var(--wa-focus-ring);
   outline-offset: calc(-1 * var(--wa-focus-ring-width));
 }
-.notes-hl {
-  position: absolute;
-  inset-inline: 0;
-  inset-block-start: 0;
-  border-radius: var(--wa-border-radius-l);
+.cast .notes > .seg-pill {
   background: color-mix(in oklab, var(--paper) 40%, var(--paper-edge));
-  pointer-events: none;
-  transition:
-    transform var(--wa-transition-slow) var(--ease-detent),
-    block-size var(--wa-transition-slow) var(--ease-move);
-}
-@media (prefers-reduced-motion: reduce) {
-  .notes-hl {
-    transition: none;
-  }
 }
 .cast .notes-key {
   font-weight: var(--wa-font-weight-bold);
