@@ -257,7 +257,6 @@ wa-page[view='desktop'].is-docs {
 }
 /* Type: the WA size tokens at WA's own scale, plus a 6rem cap on the hero title. Label is mono 2xs caps, data and controls mono xs, hand lettering is Nanum Pen for the hero notes only, section titles 3xl bold, subheads xl bold. */
 body {
-  font-size: var(--wa-font-size-m);
   font-kerning: normal;
   text-rendering: optimizeLegibility;
 }
@@ -308,14 +307,11 @@ wa-page::part(header) {
 wa-page::part(footer) {
   border-block-start: var(--wa-border-width-s) solid var(--line);
 }
-/* Chromium drops ligatures on letter-spaced text, so this keeps headings like "Handoffs" joined. Not a restated default. */
+/* Browsers drop ligatures on letter-spaced text, so this keeps headings like "Handoffs" joined. */
 :is(h1, h2, h3, [class*='wa-heading']) {
-  text-wrap: balance;
-  font-feature-settings:
-    'kern' 1,
-    'liga' 1;
+  font-feature-settings: 'liga' 1;
 }
-:is(p, li, dd) {
+:is(li, dd) {
   text-wrap: pretty;
 }
 :root.wa-dark {

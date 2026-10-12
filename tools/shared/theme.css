@@ -95,8 +95,6 @@
 }
 body {
   background: var(--bg);
-  color: var(--fg);
-  font-family: var(--font-body);
 }
 @layer wa-base {
   h2 {
