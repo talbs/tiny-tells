@@ -432,6 +432,7 @@ $('b-size').value = builder.size;
 ].forEach(([id, key, type]) =>
   $(id).addEventListener(type, () => {
     builder[key] = $(id).value;
+    if (key === 'tell') track('pick-tell', { tell: builder.tell });
     renderBuilder();
   })
 );
