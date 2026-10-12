@@ -198,10 +198,11 @@ let castState = 'working',
 const live = (skin, attrs = '') => tag(skin, `state="${castState}" data-live ${attrs}`);
 const placeNotesHl = isInstant => {
   const hl = $('notes').querySelector('.notes-hl'),
-    on = $('notes').querySelector('[aria-pressed="true"]');
+    on = $('notes').querySelector(`wa-radio[value="${castState}"]`);
   if (!hl || !on) return;
   if (isInstant) hl.style.transition = 'none';
-  hl.style.transform = `translateY(${on.offsetTop}px)`;
+  const shift = new DOMMatrix(getComputedStyle(hl).transform).m42;
+  hl.style.transform = `translateY(${on.getBoundingClientRect().top - (hl.getBoundingClientRect().top - shift)}px)`;
   hl.style.blockSize = `${on.offsetHeight}px`;
   if (isInstant) requestAnimationFrame(() => (hl.style.transition = ''));
 };
@@ -209,9 +210,7 @@ new ResizeObserver(() => placeNotesHl(true)).observe($('notes'));
 const setCastState = s => {
   castState = s;
   document.querySelectorAll('tiny-tell[data-live]').forEach(t => (t.state = s));
-  $('notes')
-    .querySelectorAll('[data-state]')
-    .forEach(b => b.setAttribute('aria-pressed', b.dataset.state === s));
+  if ($('notes').value !== s) $('notes').value = s;
   placeNotesHl();
   if ($('wild-state').value !== s) $('wild-state').value = s;
   renderWild();
@@ -246,8 +245,9 @@ const renderCast = () => {
     '<span class="notes-hl" aria-hidden="true"></span>' +
     STATES.map(
       s =>
-        `<button type="button" data-state="${s}" aria-pressed="${s === castState}">${tag(skin, `state="${s}" label=""`)}<span class="notes-key">${LABEL[s]}</span><span>${NOTES[skin][s]}</span></button>`
+        `<wa-radio appearance="button" value="${s}"><span class="notes-row">${tag(skin, `state="${s}" label=""`)}<span class="notes-key">${LABEL[s]}</span><span>${NOTES[skin][s]}</span></span></wa-radio>`
     ).join('');
+  $('notes').value = castState;
   placeNotesHl(true);
   $('cast-build').innerHTML = [
     ['Made of', m.made],
@@ -260,10 +260,7 @@ const renderCast = () => {
   holdAll($('tells'));
   holdAll($('install'));
 };
-$('notes').addEventListener('click', e => {
-  const btn = e.target.closest('[data-state]');
-  if (btn) setCastState(btn.dataset.state);
-});
+$('notes').addEventListener('change', e => setCastState(e.target.value));
 
 const onion = { isOn: false, skin: onionSkin() };
 const onionFrame = () => {
