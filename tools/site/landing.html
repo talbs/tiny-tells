@@ -26,8 +26,8 @@
           ></a
         >
         <h1
+          class="hero-title wordmark"
           id="hero-title"
-          class="wordmark"
         >
           <span class="wa-visually-hidden">Tiny Tells</span>{{wordmark}}
         </h1>
@@ -140,7 +140,7 @@
     </section>
 
     <section
-      class="studio band wa-stack wa-gap-xl"
+      class="cast-band studio band wa-stack wa-gap-xl"
       id="tells"
       aria-labelledby="cast-title"
     >
@@ -334,6 +334,7 @@
                 Ratios use the library’s default palette.
               </p>
               <wa-button
+                class="palette-reset"
                 id="palette-reset"
                 appearance="plain"
                 size="s"
@@ -471,7 +472,7 @@
         ></wa-radio-group>
       </div>
       <div
-        class="wa-grid wa-gap-l"
+        class="wild-grid wa-grid wa-gap-l"
         id="wild-grid"
       ></div>
     </section>
@@ -535,6 +536,7 @@
           <div class="step-body builder">
             <div class="builder-controls wa-stack wa-gap-l">
               <wa-radio-group
+                class="builder-tell"
                 id="b-tell"
                 label="Tell"
                 orientation="horizontal"
@@ -597,6 +599,7 @@
                 </wa-random-content>
               </div>
               <wa-radio-group
+                class="builder-state"
                 id="b-state"
                 label="State"
                 orientation="horizontal"
@@ -615,6 +618,7 @@
               <div class="example-preview studio">
                 <div id="b-preview"></div>
                 <wa-copy-button
+                  class="builder-link"
                   id="b-link"
                   copy-label="Copy Link to This Setup"
                   success-label="Link copied"

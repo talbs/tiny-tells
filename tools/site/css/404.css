@@ -42,7 +42,7 @@
     padding-block: var(--wa-space-xl) var(--wa-space-3xl);
     color: var(--muted);
   }
-  #lost-lines:not(:defined) > :not(:first-child) {
+  .lost-lines:not(:defined) > :not(:first-child) {
     display: none;
   }
   .lost-note p {
