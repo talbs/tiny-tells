@@ -431,8 +431,11 @@ words.textContent = 'Synced 3 files.';</code></pre>
                 <th scope="col">Who It Is</th>
               </tr>
             </thead>
-            <tbody id="tell-rows"></tbody></table
-        ></wa-scroller>
+            <tbody id="tell-rows">
+              {{tell-rows}}
+            </tbody>
+          </table></wa-scroller
+        >
       </section>
       <section
         id="states"
@@ -450,8 +453,11 @@ words.textContent = 'Synced 3 files.';</code></pre>
                 <th scope="col">Use It</th>
               </tr>
             </thead>
-            <tbody id="state-rows"></tbody></table
-        ></wa-scroller>
+            <tbody id="state-rows">
+              {{state-rows}}
+            </tbody>
+          </table></wa-scroller
+        >
         <p>
           Warning means a person has to act, while idle means nobody’s waiting. Whatever the state, pair the tell with
           words, and put them in a
@@ -516,7 +522,17 @@ words.textContent = 'Synced 3 files.';</code></pre>
           </li>
         </ol>
         <h3 id="handled-for-you">Handled for You</h3>
-        <ul id="a11y"></ul>
+        <ul id="a11y">
+          <li>
+            <strong>A name.</strong> Shows up as an image named by its state, or by the <code>label</code> attribute.
+          </li>
+          <li><strong>Reduced motion.</strong> Holds one still pose per state, and play turns off.</li>
+          <li><strong>Forced colors.</strong> Draws in the system text color under Windows high contrast.</li>
+          <li><strong>Contrast.</strong> Meets 3:1 with the built-in palette.<span id="a11y-contrast-now"></span></li>
+          <li><strong>Flashing.</strong> Never flashes more than three times a second.</li>
+          <li><strong>Off-screen.</strong> Stops animating while it’s scrolled out of view.</li>
+          <li><strong>Pausing.</strong> Holds its current frame with the <code>paused</code> attribute.</li>
+        </ul>
         <h3 id="labels">Labels</h3>
         <p>
           Screen readers announce a tell as an image named after its state, like “Working”. Set <code>label</code> to
@@ -534,7 +550,40 @@ words.textContent = 'Synced 3 files.';</code></pre>
                   <th scope="col">Screen readers hear</th>
                 </tr>
               </thead>
-              <tbody id="label-cases"></tbody>
+              <tbody id="label-cases">
+                <tr>
+                  <td>
+                    <tiny-tell
+                      skin="drones"
+                      data-follow
+                    ></tiny-tell>
+                  </td>
+                  <th scope="row">no <code>label</code></th>
+                  <td>“Working”, an image</td>
+                </tr>
+                <tr>
+                  <td>
+                    <tiny-tell
+                      skin="drones"
+                      data-follow
+                      label="Uploading photos"
+                    ></tiny-tell>
+                  </td>
+                  <th scope="row"><code>label="Uploading photos"</code></th>
+                  <td>“Uploading photos”, an image</td>
+                </tr>
+                <tr>
+                  <td>
+                    <tiny-tell
+                      skin="drones"
+                      data-follow
+                      label=""
+                    ></tiny-tell>
+                  </td>
+                  <th scope="row"><code>label=""</code></th>
+                  <td>Nothing. The tell is hidden.</td>
+                </tr>
+              </tbody>
             </table>
           </div>
           <pre data-copy><code class="language-html">&lt;tiny-tell state="working"&gt;&lt;/tiny-tell&gt;
@@ -845,7 +894,82 @@ words.textContent = 'Synced 3 files.';</code></pre>
             class="example-preview studio wa-grid wa-gap-s"
             style="--min-column-size: 260px"
             id="schemes"
-          ></div>
+          >
+            <div class="wa-light scheme-box wa-stack wa-gap-s">
+              <p>In a light region</p>
+              <div class="wa-cluster wa-gap-m">
+                <figure class="wa-stack wa-gap-2xs wa-align-items-center">
+                  <tiny-tell
+                    skin="drones"
+                    scheme="auto"
+                    data-follow
+                  ></tiny-tell>
+                  <figcaption><code>auto</code></figcaption>
+                </figure>
+                <figure class="wa-stack wa-gap-2xs wa-align-items-center">
+                  <tiny-tell
+                    skin="drones"
+                    scheme="light"
+                    data-follow
+                  ></tiny-tell>
+                  <figcaption><code>light</code></figcaption>
+                </figure>
+                <figure class="wa-stack wa-gap-2xs wa-align-items-center">
+                  <tiny-tell
+                    skin="drones"
+                    scheme="dark"
+                    data-follow
+                  ></tiny-tell>
+                  <figcaption><code>dark</code></figcaption>
+                </figure>
+                <figure class="wa-stack wa-gap-2xs wa-align-items-center">
+                  <tiny-tell
+                    skin="drones"
+                    scheme="invert"
+                    data-follow
+                  ></tiny-tell>
+                  <figcaption><code>invert</code></figcaption>
+                </figure>
+              </div>
+            </div>
+            <div class="wa-dark scheme-box wa-stack wa-gap-s">
+              <p>In a dark region</p>
+              <div class="wa-cluster wa-gap-m">
+                <figure class="wa-stack wa-gap-2xs wa-align-items-center">
+                  <tiny-tell
+                    skin="drones"
+                    scheme="auto"
+                    data-follow
+                  ></tiny-tell>
+                  <figcaption><code>auto</code></figcaption>
+                </figure>
+                <figure class="wa-stack wa-gap-2xs wa-align-items-center">
+                  <tiny-tell
+                    skin="drones"
+                    scheme="light"
+                    data-follow
+                  ></tiny-tell>
+                  <figcaption><code>light</code></figcaption>
+                </figure>
+                <figure class="wa-stack wa-gap-2xs wa-align-items-center">
+                  <tiny-tell
+                    skin="drones"
+                    scheme="dark"
+                    data-follow
+                  ></tiny-tell>
+                  <figcaption><code>dark</code></figcaption>
+                </figure>
+                <figure class="wa-stack wa-gap-2xs wa-align-items-center">
+                  <tiny-tell
+                    skin="drones"
+                    scheme="invert"
+                    data-follow
+                  ></tiny-tell>
+                  <figcaption><code>invert</code></figcaption>
+                </figure>
+              </div>
+            </div>
+          </div>
           <pre data-copy><code class="language-html">&lt;tiny-tell scheme="auto"&gt;&lt;/tiny-tell&gt;
 &lt;tiny-tell scheme="light"&gt;&lt;/tiny-tell&gt;
 &lt;tiny-tell scheme="dark"&gt;&lt;/tiny-tell&gt;
@@ -1288,8 +1412,11 @@ tiny-tell:not(:defined)[state="warning"]::before { content: "!"; }</code></pre>
                 <th scope="col">Default</th>
               </tr>
             </thead>
-            <tbody id="attr-rows"></tbody></table
-        ></wa-scroller>
+            <tbody id="attr-rows">
+              {{attr-rows}}
+            </tbody>
+          </table></wa-scroller
+        >
         <h3 id="events">Events</h3>
         <p>
           The core fires no events, since it only shows the state you set. The play bundle fires two around a dance,
@@ -1305,8 +1432,11 @@ tiny-tell:not(:defined)[state="warning"]::before { content: "!"; }</code></pre>
                 <th scope="col">Fires</th>
               </tr>
             </thead>
-            <tbody id="event-rows"></tbody></table
-        ></wa-scroller>
+            <tbody id="event-rows">
+              {{event-rows}}
+            </tbody>
+          </table></wa-scroller
+        >
         <p>
           A dance lasts two loops, about 6.4 seconds. <code>tell-dance</code> doesn’t fire while a tell is paused, while
           reduced motion is on, or while the tell is already dancing. Pausing mid-dance holds it, and
@@ -1371,8 +1501,11 @@ tell.addEventListener('tell-after-dance', event => {
                 <th scope="col">Does</th>
               </tr>
             </thead>
-            <tbody id="static-rows"></tbody></table
-        ></wa-scroller>
+            <tbody id="static-rows">
+              {{static-rows}}
+            </tbody>
+          </table></wa-scroller
+        >
         <p>Custom tells aren’t supported yet, because the internals will keep changing.</p>
       </section>
       <section
