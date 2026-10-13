@@ -6,7 +6,7 @@
 //                                  CHANGELOG.md has no section for package.json's version
 //   node tools/build.mjs --sizes   also prints each bundle's min + gzip size
 //
-// Web Awesome is only page chrome. The site self-hosts it from the npm package's dist-cdn build, along with its fonts.
+// Web Awesome is only page chrome. The site bundles the components it uses from the npm package's dist build, and self-hosts its fonts.
 import { build, transform } from 'esbuild';
 import { copyFileSync, cpSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join, relative } from 'node:path';
