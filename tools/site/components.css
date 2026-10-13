@@ -201,7 +201,7 @@ wa-color-picker::part(slider-handle) {
   padding-block: var(--code-pad-y);
   overflow-x: auto;
 }
-pre.is-prompt > code {
+pre.is-paste-in > code {
   white-space: pre-wrap;
 }
 [data-syntax-theme='drafting'] pre[data-copy] > code:focus-visible {

@@ -706,6 +706,30 @@ test.describe('site pages', () => {
     await expect(status, 'a new round clears it, so the same tempo is announced again').toBeEmpty();
   });
 
+  test('the Prompt install method shows the paste-in prompt, and the docs fall back to npm', async ({ page }) => {
+    await open(page, { path: '/#install' });
+    await page.locator('#b-method wa-radio[value="prompt"]').click();
+    await expect(page.locator('#b-install'), 'the prompt replaces the install command').toContainText('llms.txt');
+    await expect(page.locator('#b-install'), 'a paste-in prompt gets no code grammar').not.toHaveClass(/language-/);
+    await expect(page.locator('pre:has(> #b-install)'), 'a paste-in prompt wraps instead of scrolling').toHaveClass(
+      /is-paste-in/
+    );
+    await expect(
+      page.locator('.self-host'),
+      'self-hosting is beside the point once an assistant installs it'
+    ).toBeHidden();
+
+    await open(page, { path: '/docs/' });
+    await expect
+      .poll(() => page.evaluate(() => document.querySelector('#docs-install wa-tab-panel[name="npm"]').active), {
+        message: 'the docs have no Prompt tab, so they open on npm instead of showing no panel',
+      })
+      .toBe(true);
+
+    await open(page, { path: '/#install' });
+    await expect(page.locator('#b-install'), 'visiting the docs keeps the landing on Prompt').toContainText('llms.txt');
+  });
+
   test('a builder link restores the tag it was copied from, and ignores values it does not know', async ({ page }) => {
     const code = page.locator('.b-code');
     const link = () => page.evaluate(() => document.getElementById('b-link').value);
