@@ -696,18 +696,8 @@
     white-space: nowrap;
   }
   #hero-title {
-    margin: 0;
+    margin: 0 0 0 -0.035em;
     font-size: clamp(3.5rem, 7vw, 6rem);
-    line-height: 0.92;
-    letter-spacing: -0.045em;
-    word-spacing: -0.06em;
-    margin-inline-start: -0.035em;
-  }
-  .mark-t {
-    margin-inline-end: -0.035em;
-  }
-  .mark-gap {
-    margin-inline-start: -0.02em;
   }
   .hero-cast {
     position: relative;
@@ -1010,16 +1000,6 @@
   }
   .hand-notes:not([data-placed]) {
     visibility: hidden;
-  }
-  .tittle {
-    position: relative;
-  }
-  .tittle tiny-tell {
-    position: absolute;
-    inset-block-start: 0.07em;
-    inset-inline-start: 50%;
-    translate: -50% 0;
-    --tell-size: 0.35em;
   }
   .hero-actions {
     display: grid;
