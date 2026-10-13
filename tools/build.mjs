@@ -431,6 +431,7 @@ const preparePage = async ({ body, script, root, size, hasAnchors, name }) => {
   const fills = {
     header: read('tools', 'site', 'header.html'),
     footer: read('tools', 'site', 'footer.html'),
+    wordmark: read('tools', 'site', 'wordmark.html'),
     ...docsTables(),
   };
   const values = {

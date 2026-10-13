@@ -1,4 +1,14 @@
 @layer page {
+  #docs-title {
+    margin: 0 0 var(--wa-space-s) -0.035em;
+    font-size: clamp(2.75rem, 5vw, 4rem);
+  }
+  .mark-docs {
+    margin-inline-start: 0.08em;
+    font-weight: var(--wa-font-weight-normal);
+    letter-spacing: -0.03em;
+    color: var(--muted);
+  }
   .note {
     color: var(--muted);
   }
