@@ -30,10 +30,10 @@ const API = JSON.parse(read('src', 'api.json'));
 const REPO = 'https://github.com/talbs/tiny-tells';
 const FA_KIT = '3572f3662e';
 const UMAMI_WEBSITE_ID = '9f2cb342-dd92-4387-b96a-cf0b52f5ec76';
-const WA_CDN = join(ROOT, 'node_modules', '@awesome.me', 'webawesome', 'dist-cdn');
+const WA_DIST = join(ROOT, 'node_modules', '@awesome.me', 'webawesome', 'dist');
 /* The site asks the kit for Web Awesome's own icons, so it has to use the Font Awesome release Web Awesome was built with. */
-const FA_VERSION = readdirSync(join(WA_CDN, 'chunks'))
-  .map(file => readFileSync(join(WA_CDN, 'chunks', file), 'utf8').match(/FA_VERSION = "([\d.]+)"/)?.[1])
+const FA_VERSION = readdirSync(join(WA_DIST, 'chunks'))
+  .map(file => readFileSync(join(WA_DIST, 'chunks', file), 'utf8').match(/FA_VERSION = "([\d.]+)"/)?.[1])
   .find(Boolean);
 if (!FA_VERSION) throw new Error('Could not find the Font Awesome version inside @awesome.me/webawesome');
 const BUNDLES = [
@@ -338,18 +338,7 @@ const pageMeta = ({ title, description, path }) => {
 <meta name="twitter:card" content="summary_large_image">`;
 };
 
-const sitePage = async ({
-  body,
-  script,
-  root,
-  title,
-  description,
-  path,
-  size,
-  isNoindex,
-  isHandLettered,
-  css = SITE_CSS,
-}) => {
+const preparePage = async ({ body, script, root, size, css = SITE_CSS }) => {
   const js = await bundle(`tools/site/${script}`, { minify: true });
   const { code: styles } = await transform(css.map(path => read(...path)).join('\n'), { loader: 'css', minify: true });
   const fills = {
@@ -365,24 +354,40 @@ const sitePage = async ({
   const html = read('tools', 'site', body)
     .replace(/\{\{(header|footer)\}\}/g, (_, name) => fills[name])
     .replace(/\{\{(root|version|size|prompt)\}\}/g, (_, name) => values[name]);
-  const components = [
-    ...new Set(
-      [...(html + js).matchAll(/<(wa-[a-z-]+)|createElement\(['"](wa-[a-z-]+)['"]\)/g)].map(m =>
-        (m[1] || m[2]).slice(3)
-      )
-    ),
-  ];
-  const preloads = components
-    .map(name => `<link rel="modulepreload" href="${root}assets/webawesome/components/${name}/${name}.js">`)
-    .join('\n');
+  const leftover = html.match(/\{\{\w+\}\}/);
+  if (leftover) throw new Error(`${body}: unfilled placeholder ${leftover[0]}`);
+  const components = [...(html + js).matchAll(/<(wa-[a-z-]+)|createElement\(['"](wa-[a-z-]+)['"]\)/g)].map(m =>
+    (m[1] || m[2]).slice(3)
+  );
+  return { js, styles, html, components };
+};
+
+/* Web Awesome's guide for bundlers: cherry-pick each component from dist. The list is every wa-* tag any page uses, so one file serves and caches across pages. */
+const waBundle = async components => {
+  const contents = [
+    ...components.map(name => `import '@awesome.me/webawesome/dist/components/${name}/${name}.js';`),
+    "export { allDefined, getKitCode, registerIconLibrary } from '@awesome.me/webawesome';",
+  ].join('\n');
+  const { metafile } = await build({
+    stdin: { contents, resolveDir: ROOT, loader: 'js' },
+    bundle: true,
+    format: 'esm',
+    minify: true,
+    outdir: join(ROOT, 'site', 'assets'),
+    entryNames: 'webawesome-[hash]',
+    metafile: true,
+    logLevel: 'warning',
+  });
+  return Object.keys(metafile.outputs)[0].split('/').pop();
+};
+
+const sitePage = ({ root, title, description, path, isNoindex, isHandLettered }, { js, styles, html }, waFile) => {
   /* wa-page renders as desktop until its resize observer runs, then jumps to mobile; setting its view before it upgrades skips the jump. */
   const page = html.replace(
     /<wa-page\b[^>]*>/,
     tag =>
       `${tag}<script>{const p = document.currentScript.parentElement; p.setAttribute('view', document.documentElement.clientWidth >= parseFloat(p.getAttribute('mobile-breakpoint') ?? 768) ? 'desktop' : 'mobile'); document.currentScript.remove();}</script>`
   );
-  const leftover = html.match(/\{\{\w+\}\}/);
-  if (leftover) throw new Error(`${body}: unfilled placeholder ${leftover[0]}`);
   return `<!doctype html>
 <html lang="en" data-fa-kit-code="${FA_KIT}">
 <head>
@@ -394,8 +399,7 @@ ${pageMeta({ title, description, path })}${isNoindex ? '\n<meta name="robots" co
 <script>const d = document.documentElement.dataset; d.loading = d.upgrading = ''; setTimeout(() => { delete d.loading; delete d.upgrading; }, 2000);
 (${setScheme})();</script>
 <link rel="stylesheet" href="${root}assets/vendor.css">${isHandLettered ? `\n<link rel="stylesheet" href="${root}assets/hand.css">` : ''}
-<script type="module" src="${root}assets/webawesome/webawesome.loader.js" data-webawesome="${root}assets/webawesome"></script>${umamiTag()}
-${preloads}
+<script type="module" src="${root}assets/${waFile}" data-webawesome="${root}assets"></script>${umamiTag()}
 <style>
 ${styles}</style>
 </head>
@@ -444,7 +448,7 @@ write(JSON.stringify(vscodeData(), null, 2) + '\n', 'dist', 'vscode.html-custom-
 write(dts(), 'dist', 'tiny-tells.d.ts');
 write(playDts(), 'dist', 'tiny-tells-play.d.ts');
 console.log('wrote dist/custom-elements.json, dist/vscode.html-custom-data.json, dist/*.d.ts');
-/* Web Awesome's stylesheet is a chain of @imports, so it's bundled into one file with the fonts. data-webawesome on the loader tells it where its components are, because it can't resolve a relative script path itself. */
+/* Web Awesome's stylesheet is a chain of @imports, so it's bundled into one file with the fonts. */
 rmSync(join(ROOT, 'site', 'assets'), { recursive: true, force: true });
 const vendorCss = (name, imports) =>
   build({
@@ -461,17 +465,13 @@ await vendorCss('vendor', [
 ]);
 await vendorCss('hand', ['@fontsource/nanum-pen-script/latin-400.css']);
 const skipCopy = path => /[\\/](react|ssr|skills)([\\/]|$)|\.d\.ts$/.test(path);
-cpSync(WA_CDN, join(ROOT, 'site', 'assets', 'webawesome'), {
-  recursive: true,
-  filter: path => !skipCopy(path),
-});
 cpSync(join(ROOT, 'node_modules', 'microlighter', 'dist'), join(ROOT, 'site', 'assets', 'microlighter'), {
   recursive: true,
   filter: path => !skipCopy(path),
 });
 
 const SIZE_KB = gzipKb(minified['tiny-tells']).toFixed(1);
-for (const [out, opts] of [
+const PAGES = [
   [
     ['site', 'index.html'],
     {
@@ -511,10 +511,14 @@ for (const [out, opts] of [
       isNoindex: true,
     },
   ],
-]) {
-  const html = await sitePage({ ...opts, size: SIZE_KB });
+];
+const prepared = await Promise.all(PAGES.map(([, opts]) => preparePage({ ...opts, size: SIZE_KB })));
+const waFile = await waBundle([...new Set(prepared.flatMap(({ components }) => components))].sort());
+console.log(`wrote site/assets/${waFile}`);
+PAGES.forEach(([out, opts], i) => {
+  const html = sitePage(opts, prepared[i], waFile);
   console.log('wrote', write(html, ...out), `(${Math.round(html.length / 1024)} KB)`);
-}
+});
 ['og.png', 'readme.gif', 'readme-dark.gif'].forEach(name =>
   copyFileSync(join(ROOT, 'tools', 'og', name), join(ROOT, 'site', name))
 );
