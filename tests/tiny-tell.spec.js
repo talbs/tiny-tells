@@ -700,6 +700,14 @@ test.describe('site pages', () => {
   test('pages load Web Awesome as one file, define every wa-* element, and keep the kit’s system icons', async ({
     page,
   }) => {
+    await page.addInitScript(() => {
+      window.builtInIcons = 0;
+      const load = window.fetch;
+      window.fetch = (url, ...rest) => {
+        if (String(url).startsWith('data:image/svg')) window.builtInIcons++;
+        return load(url, ...rest);
+      };
+    });
     const kit = [];
     page.on('request', request => {
       if (request.url().startsWith('https://ka-p.fontawesome.com/')) kit.push(new URL(request.url()).pathname);
@@ -726,6 +734,10 @@ test.describe('site pages', () => {
           .filter(pathname => /\/assets\/webawesome[/-]/.test(pathname))
       );
       expect(files, `${path} loads Web Awesome as one file`).toHaveLength(1);
+      expect(
+        await page.evaluate(() => window.builtInIcons),
+        `${path} never draws Web Awesome's built-in icons before the kit's`
+      ).toBe(0);
     }
     expect(
       kit.some(pathname => pathname.endsWith('/sharp-regular/chevron-down.svg')),

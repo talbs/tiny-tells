@@ -366,7 +366,8 @@ const preparePage = async ({ body, script, root, size, css = SITE_CSS }) => {
 const waBundle = async components => {
   const contents = [
     ...components.map(name => `import '@awesome.me/webawesome/dist/components/${name}/${name}.js';`),
-    "export { allDefined, getKitCode, registerIconLibrary } from '@awesome.me/webawesome';",
+    "import './tools/site/wa-system-icons.js';",
+    "export { allDefined } from '@awesome.me/webawesome';",
   ].join('\n');
   const { metafile } = await build({
     stdin: { contents, resolveDir: ROOT, loader: 'js' },
@@ -375,10 +376,13 @@ const waBundle = async components => {
     minify: true,
     outdir: join(ROOT, 'site', 'assets'),
     entryNames: 'webawesome-[hash]',
+    define: { __FA_VERSION__: JSON.stringify(FA_VERSION) },
     metafile: true,
     logLevel: 'warning',
   });
-  return Object.keys(metafile.outputs)[0].split('/').pop();
+  const files = Object.keys(metafile.outputs).filter(file => file.endsWith('.js'));
+  if (files.length !== 1) throw new Error(`Expected one Web Awesome bundle, got ${files.join(', ') || 'none'}`);
+  return files[0].split('/').pop();
 };
 
 const sitePage = ({ root, title, description, path, isNoindex, isHandLettered }, { js, styles, html }, waFile) => {
@@ -464,10 +468,9 @@ await vendorCss('vendor', [
   ...FONTS.map(font => `@fontsource/${font}.css`),
 ]);
 await vendorCss('hand', ['@fontsource/nanum-pen-script/latin-400.css']);
-const skipCopy = path => /[\\/](react|ssr|skills)([\\/]|$)|\.d\.ts$/.test(path);
 cpSync(join(ROOT, 'node_modules', 'microlighter', 'dist'), join(ROOT, 'site', 'assets', 'microlighter'), {
   recursive: true,
-  filter: path => !skipCopy(path),
+  filter: path => !path.endsWith('.d.ts'),
 });
 
 const SIZE_KB = gzipKb(minified['tiny-tells']).toFixed(1);

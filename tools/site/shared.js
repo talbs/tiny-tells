@@ -470,16 +470,6 @@ const addTooltips = () =>
     });
 
 const waBundle = document.querySelector('script[data-webawesome]')?.src;
-/* Serve Web Awesome's own icons (chevrons, the drawer's ×, checks) in sharp regular from the kit. */
-const SYSTEM_ALIASES = { indeterminate: 'minus' };
-if (waBundle)
-  import(waBundle).then(({ registerIconLibrary, getKitCode }) =>
-    registerIconLibrary('system', {
-      resolver: name =>
-        `https://ka-p.fontawesome.com/releases/v${__FA_VERSION__}/svgs/sharp-regular/${SYSTEM_ALIASES[name] ?? name}.svg?token=${encodeURIComponent(getKitCode())}`,
-      mutator: svg => svg.hasAttribute('fill') || svg.setAttribute('fill', 'currentColor'),
-    })
-  );
 
 export const start = async () => {
   applyPalette();
