@@ -294,16 +294,12 @@
     scale: var(--shrink);
     rotate: calc(-1 * var(--turn));
   }
-  :is(.nav-toggle:is(:hover, :focus-visible), :root[data-theme='dark'] #theme, .is-paused #pause)
-    .swap-icons
-    > :first-child {
+  :is(.nav-toggle:is(:hover, :focus-visible), :root.wa-dark #theme, .is-paused #pause) .swap-icons > :first-child {
     opacity: 0;
     scale: var(--shrink);
     rotate: var(--turn);
   }
-  :is(.nav-toggle:is(:hover, :focus-visible), :root[data-theme='dark'] #theme, .is-paused #pause)
-    .swap-icons
-    > :last-child {
+  :is(.nav-toggle:is(:hover, :focus-visible), :root.wa-dark #theme, .is-paused #pause) .swap-icons > :last-child {
     opacity: 1;
     scale: 1;
     rotate: 0deg;

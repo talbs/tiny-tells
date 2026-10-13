@@ -17,11 +17,11 @@
     --slate-950: #0d0f13;
     --off-white: #fdfcfa;
     --off-black: #12110f;
-    --bg: var(--slate-50);
-    --field: var(--slate-100);
-    --fg: var(--slate-900);
-    --muted: var(--slate-700);
-    --line: var(--slate-200);
+    --bg: light-dark(var(--slate-50), var(--dark-bg));
+    --field: light-dark(var(--slate-100), var(--dark-field));
+    --fg: light-dark(var(--slate-900), var(--dark-fg));
+    --muted: light-dark(var(--slate-700), var(--dark-muted));
+    --line: light-dark(var(--slate-200), var(--dark-line));
     --dark-bg: var(--slate-900);
     --dark-field: var(--slate-950);
     --dark-fg: var(--slate-100);
@@ -30,24 +30,6 @@
     --dark-well: color-mix(in oklab, var(--slate-900) 63%, var(--slate-950));
     --font-body: 'Schibsted Grotesk', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
     --font-mono: 'Martian Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme='light']) {
-      --bg: var(--dark-bg);
-      --field: var(--dark-field);
-      --fg: var(--dark-fg);
-      --muted: var(--dark-muted);
-      --line: var(--dark-line);
-      color-scheme: dark;
-    }
-  }
-  :root[data-theme='dark'] {
-    --bg: var(--dark-bg);
-    --field: var(--dark-field);
-    --fg: var(--dark-fg);
-    --muted: var(--dark-muted);
-    --line: var(--dark-line);
-    color-scheme: dark;
   }
   :root,
   .force-dark {
@@ -87,10 +69,6 @@
   }
   .force-dark {
     --bg: var(--dark-well);
-    --field: var(--dark-field);
-    --fg: var(--dark-fg);
-    --muted: var(--dark-muted);
-    --line: var(--dark-line);
     color-scheme: dark;
   }
   /* In and move curves, plus a detent: sliding toggles pass their mark by about 2% and settle. */
@@ -101,8 +79,9 @@
   }
   /* Drafting blue. Ink is for guide text (4.5:1); the ring is the guide's own hue, darkened only to the 3:1 a focus ring needs on the docs paper. */
   :root {
-    --guide-ink: light-dark(#2269a1, #86bfe8);
-    --guide-ring: light-dark(#4989bb, #86bfe8);
+    --guide-on-dark: #86bfe8;
+    --guide-ink: light-dark(#2269a1, var(--guide-on-dark));
+    --guide-ring: light-dark(#4989bb, var(--guide-on-dark));
   }
   /* The studio's warm grays are named materials, not a scale: its surfaces sit too close together to share Quiet's step spacing. */
   .studio {
@@ -115,14 +94,14 @@
     --peg: #edeae2;
     color: var(--ink);
   }
-  :root[data-theme='dark'] .studio,
+  /* Keyed to the page, not light-dark(): the swatch wells force their own scheme but keep the sheet's edge. */
   .wa-dark .studio,
   .studio.force-dark {
     --paper: #171614;
     --paper-edge: #2d2b28;
     --ink: #ebe7df;
     --muted: #a39f96;
-    --guide: #86bfe8;
+    --guide: var(--guide-on-dark);
     --accent: #ff8473;
     --peg: #24221f;
   }
@@ -165,6 +144,7 @@
     --wa-color-text-link: var(--fg);
     --wa-form-control-border-color: var(--control-edge);
   }
+  /* Keyed to the page, not light-dark(): code blocks are always dark, so they'd never pick the light branch. */
   :root.wa-dark {
     --code-bg: color-mix(in oklab, var(--slate-900) 50%, var(--slate-950));
   }
