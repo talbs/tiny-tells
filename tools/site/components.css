@@ -201,6 +201,9 @@ wa-color-picker::part(slider-handle) {
   padding-block: var(--code-pad-y);
   overflow-x: auto;
 }
+pre.is-prompt > code {
+  white-space: pre-wrap;
+}
 [data-syntax-theme='drafting'] pre[data-copy] > code:focus-visible {
   outline: var(--wa-focus-ring);
   outline-offset: calc(-1 * var(--wa-focus-ring-width));
