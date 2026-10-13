@@ -13,6 +13,7 @@ import { dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { gzipSync } from 'node:zlib';
 import { BOX } from '../src/box.js';
+import { ASSISTANT_PROMPT } from './shared/copy.js';
 import { setScheme } from './site/scheme.js';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -337,10 +338,15 @@ const sitePage = async ({
     header: read('tools', 'site', 'header.html'),
     footer: read('tools', 'site', 'footer.html'),
   };
-  const values = { root, version: VERSION, size };
+  const values = {
+    root,
+    version: VERSION,
+    size,
+    prompt: ASSISTANT_PROMPT.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'),
+  };
   const html = read('tools', 'site', body)
     .replace(/\{\{(header|footer)\}\}/g, (_, name) => fills[name])
-    .replace(/\{\{(root|version|size)\}\}/g, (_, name) => values[name]);
+    .replace(/\{\{(root|version|size|prompt)\}\}/g, (_, name) => values[name]);
   const components = [
     ...new Set(
       [...(html + js).matchAll(/<(wa-[a-z-]+)|createElement\(['"](wa-[a-z-]+)['"]\)/g)].map(m =>

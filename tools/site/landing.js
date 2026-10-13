@@ -2,7 +2,7 @@ import { LABEL, STATES } from '../../src/core.js';
 import { DANCE, HOOKS } from '../../src/element.js';
 import API from '../../src/api.json';
 import { version as VERSION } from '../../package.json';
-import { GOES, MODEL, NAMES, NOTES, V1 } from '../shared/copy.js';
+import { ASSISTANT_PROMPT, GOES, MODEL, NAMES, NOTES, V1 } from '../shared/copy.js';
 import { onionSkin } from '../shared/onion.js';
 import { track } from './track.js';
 import {
@@ -477,12 +477,19 @@ const INSTALL = {
     play: `<script type="module" src="https://cdn.jsdelivr.net/npm/tiny-tells@${VERSION}/dist/tiny-tells-play.min.js"></script>`,
     note: 'Add it to your page once, or load <a href="#play">the play bundle</a> instead for extras.',
   },
+  prompt: {
+    code: ASSISTANT_PROMPT,
+    play: "import 'tiny-tells/play'; // instead of 'tiny-tells'",
+    note: 'Paste it into your coding assistant. It reads <a href="llms.txt">llms.txt</a>, then asks where the tell goes.',
+  },
 };
-$('b-method').innerHTML = radios(['npm', 'cdn'], ['npm', 'CDN']);
+$('b-method').innerHTML = radios(['npm', 'cdn', 'prompt'], ['npm', 'CDN', 'Prompt']);
 const setMethod = method => {
   const m = INSTALL[method] || INSTALL.npm,
     code = $('b-install');
-  code.className = `language-${m.lang}`;
+  code.className = m.lang ? `language-${m.lang}` : '';
+  code.closest('pre').classList.toggle('is-paste-in', !m.lang);
+  document.querySelector('.self-host').hidden = method === 'prompt';
   fillCode(code, m.code);
   $('play-install').className = method === 'cdn' ? 'language-html' : 'language-javascript';
   fillCode($('play-install'), m.play);
@@ -506,7 +513,7 @@ on('palette', renderSheet);
 on('theme', renderSheet);
 spy([...document.querySelectorAll('.sections a[href*="#"]')], ['tells', 'color', 'wild', 'install'].map($));
 start();
-setMethod(store.get('tells-site-install') === 'cdn' ? 'cdn' : 'npm');
+setMethod(Object.hasOwn(INSTALL, store.get('tells-site-install')) ? store.get('tells-site-install') : 'npm');
 renderCast();
 renderWild();
 renderBuilder();

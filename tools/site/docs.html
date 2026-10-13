@@ -308,15 +308,15 @@ const words = document.querySelector('[role="status"]');
 tell.state = 'done';
 words.textContent = 'Synced 3 files.';</code></pre>
         </figure>
-        <h3 id="with-an-assistant">With an AI Assistant</h3>
+        <h3 id="with-an-assistant">With a Coding Assistant</h3>
         <p>
           Paste this into your coding assistant. It points at <a href="{{root}}llms.txt">llms.txt</a>, a short
           plain-text version of these docs, written for assistants.
         </p>
         <pre
-          class="is-prompt"
+          class="is-paste-in"
           data-copy
-        ><code>Add Tiny Tells to this project. Read https://tinytells.dev/llms.txt first, and follow its rules for pairing each tell with status text. Ask me where it should go before adding any.</code></pre>
+        ><code>{{prompt}}</code></pre>
       </section>
       <section
         id="play"

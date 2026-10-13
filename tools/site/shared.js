@@ -353,7 +353,9 @@ const addCopyButtons = () => {
 };
 
 export const syncInstallTabs = groups => {
-  let current = store.get('tells-site-install') || 'npm';
+  const stored = store.get('tells-site-install'),
+    remembered = groups.some(g => g.querySelector(`wa-tab-panel[name="${stored}"]`)) ? stored : 'npm';
+  let current = remembered;
   const set = name =>
     groups.forEach(g => {
       if (g.querySelector(`wa-tab-panel[name="${name}"]`) && g.active !== name) g.active = name;
@@ -361,7 +363,8 @@ export const syncInstallTabs = groups => {
   groups.forEach(g =>
     g.addEventListener('wa-tab-show', e => {
       const name = e.detail.name;
-      if (name !== current) track('install-tab', { tab: name });
+      if (name === current) return;
+      track('install-tab', { tab: name });
       current = name;
       store.set('tells-site-install', name === 'npm' ? null : name);
       set(name);
@@ -377,9 +380,8 @@ export const syncInstallTabs = groups => {
     .whenDefined('wa-tab-group')
     .then(() => Promise.all(groups.map(g => g.updateComplete)))
     .then(() => {
-      const name = store.get('tells-site-install') || 'npm';
-      set(name);
-      open(name);
+      set(remembered);
+      open(remembered);
     });
 };
 
