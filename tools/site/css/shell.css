@@ -1,0 +1,314 @@
+@layer shell {
+  wa-page > main {
+    padding: 0;
+  }
+  wa-page::part(main),
+  wa-page::part(main-content),
+  wa-page::part(main-header) {
+    min-inline-size: 0;
+  }
+  wa-page::part(main-content),
+  wa-page::part(main-header) {
+    inline-size: 100%;
+    max-inline-size: var(--page-width);
+    margin-inline: auto;
+    padding-inline: var(--gutter);
+    box-sizing: border-box;
+  }
+  wa-page::part(main-content) {
+    padding-block: var(--space-section) var(--space-page);
+  }
+  @media (max-width: 699px) {
+    wa-page::part(main-content) {
+      padding-block-end: var(--section-pad);
+    }
+  }
+  wa-page::part(main-header) {
+    padding-block-start: var(--wa-space-2xl);
+  }
+  wa-page:not(.is-docs)::part(main-header) {
+    display: none;
+  }
+  [slot='header'],
+  [slot='footer'] {
+    box-sizing: border-box;
+    inline-size: 100%;
+    padding: var(--space-related) var(--gutter);
+  }
+  wa-page > :is([slot='header'], [slot='footer']) {
+    max-inline-size: var(--page-width);
+    margin-inline: auto;
+  }
+  [slot='footer'] {
+    padding-block: var(--space-group);
+  }
+  wa-page[view='desktop']::part(body) {
+    box-sizing: border-box;
+    inline-size: 100%;
+    max-inline-size: var(--page-width);
+    margin-inline: auto;
+    padding-inline: var(--gutter);
+  }
+  wa-page[view='desktop']:not(.is-docs)::part(main-content),
+  wa-page[view='desktop']:not(.is-docs)::part(main-header) {
+    padding-inline: 0;
+  }
+  wa-page[view='desktop']::part(navigation-header) {
+    padding-inline: 0;
+  }
+  wa-page[view='mobile']::part(header) {
+    flex-wrap: nowrap;
+    align-items: center;
+  }
+  wa-page[view='mobile'] > [slot='header'] {
+    flex: 1 1 0;
+    min-inline-size: 0;
+  }
+  @media (max-width: 699px) {
+    .sections,
+    .palette-tabs,
+    .header-docs[aria-current] {
+      display: none;
+    }
+  }
+  wa-page::part(header) {
+    background: var(--bg);
+    border-block-end: var(--wa-border-width-s) solid var(--line);
+    -webkit-backdrop-filter: blur(0) saturate(1);
+    backdrop-filter: blur(0) saturate(1);
+    transition:
+      background-color var(--wa-transition-slow) var(--wa-transition-easing),
+      backdrop-filter var(--wa-transition-slow) var(--wa-transition-easing);
+  }
+  :root.is-scrolled wa-page::part(header) {
+    background: color-mix(in oklab, var(--bg) 85%, transparent);
+    -webkit-backdrop-filter: blur(12px) saturate(1.4);
+    backdrop-filter: blur(12px) saturate(1.4);
+  }
+  wa-page::part(footer) {
+    border-block-start: var(--wa-border-width-s) solid var(--line);
+  }
+  :is(.sections, .foot-links) a,
+  .header-docs {
+    white-space: nowrap;
+    font: var(--wa-font-weight-semibold) var(--wa-font-size-xs)/1 var(--font-mono);
+    color: var(--muted);
+    text-decoration: none;
+  }
+  :is(.sections, .foot-links) a:hover,
+  .header-docs:hover,
+  .header-docs[aria-current],
+  .sections a[aria-current] {
+    color: var(--fg);
+  }
+  .sections a,
+  .header-docs {
+    position: relative;
+    padding: var(--wa-space-s) var(--wa-space-2xs);
+    margin: calc(-1 * var(--wa-space-s)) calc(-1 * var(--wa-space-2xs));
+  }
+  .header-docs {
+    margin-inline-end: calc(var(--wa-space-s) - var(--wa-space-2xs));
+  }
+  .sections a::after,
+  .header-docs::after,
+  .docs-index a::after {
+    content: '';
+    position: absolute;
+    inset-inline: calc(var(--wa-space-2xs) - 2px);
+    inset-block-end: calc(var(--wa-space-s) - 7px);
+    block-size: 6px;
+    background: var(--pencil);
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 8' preserveAspectRatio='none'%3E%3Cpath d='M1.5 4.4C30 3.7 64 3.6 98.5 4.1' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round' vector-effect='non-scaling-stroke'/%3E%3C/svg%3E")
+      center / 100% 100% no-repeat;
+    pointer-events: none;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform var(--wa-transition-fast) var(--ease-in);
+  }
+  .sections a[aria-current]::after,
+  .header-docs[aria-current]::after,
+  .docs-index a[aria-current]::after {
+    transform: none;
+    transition: transform var(--wa-transition-slow) var(--wa-transition-easing);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .sections a::after,
+    .header-docs::after,
+    .docs-index a::after {
+      transform: none;
+      opacity: 0;
+      transition: opacity var(--wa-transition-fast);
+    }
+    .sections a[aria-current]::after,
+    .header-docs[aria-current]::after,
+    .docs-index a[aria-current]::after {
+      opacity: 1;
+    }
+  }
+  .site-footer {
+    gap: var(--space-related) var(--space-group);
+  }
+  .site-footer .title-block {
+    row-gap: var(--wa-space-s);
+  }
+  [slot='footer'].site-footer {
+    padding-block: var(--wa-space-xl);
+  }
+  @media (max-width: 999px) {
+    .site-footer {
+      flex-direction: column;
+      align-items: stretch;
+      gap: var(--wa-space-m);
+    }
+    .foot-links {
+      padding-block-start: var(--wa-space-m);
+      border-block-start: var(--wa-border-width-s) dashed var(--line);
+    }
+  }
+  .title-block > * {
+    padding-inline: var(--wa-space-m);
+    border-inline-start: var(--wa-border-width-s) solid var(--paper-edge);
+  }
+  .title-block > :first-child {
+    padding-inline-start: 0;
+    border-inline-start: 0;
+  }
+  .title-block a {
+    color: inherit;
+  }
+  @media (max-width: 519px) {
+    .title-block > * {
+      padding-inline: var(--wa-space-s);
+    }
+  }
+  @media (max-width: 479px) {
+    .title-block {
+      gap: var(--wa-space-2xs) var(--wa-space-m);
+    }
+    .title-block > * {
+      padding-inline: 0;
+      border-inline-start: 0;
+    }
+  }
+  /* Web Awesome 3.14 styles a .skip-to-content class its link doesn't carry, so its own styles are applied here through the part. */
+  wa-page::part(skip-to-content):focus {
+    position: absolute;
+    inset-block-start: var(--wa-space-m);
+    inset-inline-start: var(--wa-space-m);
+    z-index: 6;
+    padding: var(--wa-space-s) var(--wa-space-m);
+    border-radius: var(--wa-border-radius-m);
+    background: var(--wa-color-surface-default);
+    box-shadow: var(--wa-shadow-l);
+    color: var(--fg);
+    font: var(--wa-font-weight-semibold) var(--wa-font-size-xs) / 1 var(--font-mono);
+    text-decoration: none;
+    outline: var(--wa-focus-ring);
+    outline-offset: var(--wa-focus-ring-offset);
+  }
+  :where(main, .site-footer, [slot='main-header']) a {
+    color: inherit;
+    text-decoration-line: underline;
+    text-decoration-style: solid;
+    text-decoration-color: color-mix(in oklab, currentColor 34%, transparent);
+    text-decoration-skip-ink: none;
+    text-underline-offset: 0.35em;
+  }
+  :where(main, .site-footer, [slot='main-header']) a:hover {
+    text-decoration-thickness: 2px;
+    text-decoration-color: var(--tell-color-working, var(--working-default));
+  }
+  :where(main, .site-footer, [slot='main-header']) a:active {
+    color: var(--code-working);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    :where(main, .site-footer, [slot='main-header']) a,
+    wa-button.doc-link::part(label) {
+      transition-property: text-decoration-color;
+      transition-duration: var(--wa-transition-fast);
+      transition-timing-function: var(--wa-transition-easing);
+    }
+  }
+  /* The page waits only for the layout; each component stays invisible, holding its space, until it loads. */
+  [data-loading] wa-page > :not([slot='header']) {
+    opacity: 0;
+  }
+  [data-upgrading] {
+    scroll-behavior: auto;
+  }
+  [data-upgrading] :not(:defined) {
+    visibility: hidden;
+  }
+  wa-page > :not([slot='header']) {
+    transition: opacity var(--wa-transition-fast) var(--wa-transition-easing);
+  }
+  wa-page::part(header) {
+    view-transition-name: site-header;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    @view-transition {
+      navigation: auto;
+    }
+    ::view-transition-old(root),
+    ::view-transition-new(root) {
+      animation-duration: var(--wa-transition-normal);
+    }
+  }
+  @keyframes skip-in {
+    from {
+      opacity: 0;
+      translate: 0 calc(-1 * var(--wa-space-s));
+    }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    wa-page::part(skip-to-content):focus {
+      animation: skip-in var(--wa-transition-normal) var(--wa-transition-easing);
+    }
+  }
+  /* Two icons share one spot and hand off with a turn: bars to burger on hover, moon to lamp with the theme. */
+  .swap-icons {
+    display: grid;
+    --shrink: 1;
+    --turn: 0deg;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .swap-icons {
+      --shrink: 0.6;
+      --turn: 25deg;
+    }
+  }
+  wa-button:has(.swap-icons)::part(base) {
+    inline-size: 2rem;
+    padding-inline: 0;
+  }
+  .swap-icons > wa-icon {
+    grid-area: 1 / 1;
+    transition:
+      opacity var(--wa-transition-normal) var(--wa-transition-easing),
+      scale var(--wa-transition-normal) var(--wa-transition-easing),
+      rotate var(--wa-transition-normal) var(--wa-transition-easing);
+  }
+  .swap-icons > :last-child {
+    opacity: 0;
+    scale: var(--shrink);
+    rotate: calc(-1 * var(--turn));
+  }
+  :is(.nav-toggle:is(:hover, :focus-visible), :root[data-theme='dark'] #theme, .is-paused #pause)
+    .swap-icons
+    > :first-child {
+    opacity: 0;
+    scale: var(--shrink);
+    rotate: var(--turn);
+  }
+  :is(.nav-toggle:is(:hover, :focus-visible), :root[data-theme='dark'] #theme, .is-paused #pause)
+    .swap-icons
+    > :last-child {
+    opacity: 1;
+    scale: 1;
+    rotate: 0deg;
+  }
+  .nav-toggle:is(:hover, :focus-visible) .swap-icons > :last-child {
+    color: var(--fg);
+  }
+}

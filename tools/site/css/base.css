@@ -1,0 +1,41 @@
+/* In Web Awesome's own base layer, so its utilities and heading classes still win over these. */
+@layer wa-base {
+  h2,
+  h3,
+  p {
+    margin: 0;
+  }
+  h2 {
+    letter-spacing: -0.015em;
+  }
+}
+@layer base {
+  body {
+    background: var(--bg);
+    font-kerning: normal;
+    text-rendering: optimizeLegibility;
+  }
+  html,
+  body {
+    min-height: 100%;
+  }
+  html {
+    overflow-x: clip;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+    }
+  }
+  a {
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+    text-decoration-skip-ink: auto;
+  }
+  pre {
+    position: relative;
+  }
+  :where(a:focus-visible, pre > code:focus-visible) {
+    border-radius: var(--wa-form-control-border-radius);
+  }
+}
