@@ -636,14 +636,17 @@ test.describe('reserve.css', () => {
 
 test.describe('site pages', () => {
   test.skip(({ browserName }) => browserName !== 'chromium', 'the page wiring is the same in every engine');
-  // Font Awesome's kit only serves its allowed hosts (locally, just port 4173), and an outage there isn't our bug.
+  // Font Awesome's kit only serves its allowed hosts (locally, just port 4173), and outages there or at Umami aren't our bug.
   test.beforeEach(({ page }) =>
-    page.route('https://ka-p.fontawesome.com/**', route =>
-      route.fulfill({
-        contentType: 'image/svg+xml',
-        body: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"/>',
-      })
-    )
+    Promise.all([
+      page.route('https://ka-p.fontawesome.com/**', route =>
+        route.fulfill({
+          contentType: 'image/svg+xml',
+          body: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"/>',
+        })
+      ),
+      page.route('https://cloud.umami.is/**', route => route.fulfill({ contentType: 'text/javascript', body: '' })),
+    ])
   );
   test.afterEach(noProblems);
 
