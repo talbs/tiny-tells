@@ -311,20 +311,7 @@ const FONTS = [
 /* Gzip limits for each page's inline CSS, about 10% over what each shipped with. */
 const CSS_BUDGET_KB = { landing: 12.8, docs: 9.8, 404: 7.6 };
 /* Every width a site @media query may use, so breakpoints can't drift apart. */
-const BREAKPOINTS = [
-  '408px',
-  '480px',
-  '520px',
-  '600px',
-  '700px',
-  '768px',
-  '860px',
-  '960px',
-  '1000px',
-  '1200px',
-  '30rem',
-  '40rem',
-];
+const BREAKPOINTS = ['480px', '600px', '860px', '1200px'];
 
 const attr = text => text.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
 const pageMeta = ({ title, description, path }) => {

@@ -18,7 +18,7 @@
   wa-page::part(main-content) {
     padding-block: var(--space-section) var(--space-page);
   }
-  @media (width < 700px) {
+  @media (width < 600px) {
     wa-page::part(main-content) {
       padding-block-end: var(--section-pad);
     }
@@ -64,7 +64,7 @@
     flex: 1 1 0;
     min-inline-size: 0;
   }
-  @media (width < 700px) {
+  @media (width < 600px) {
     .sections,
     .palette-tabs,
     .header-docs[aria-current] {
@@ -155,7 +155,7 @@
   [slot='footer'].site-footer {
     padding-block: var(--wa-space-xl);
   }
-  @media (width < 1000px) {
+  @media (width < 860px) {
     .site-footer {
       flex-direction: column;
       align-items: stretch;
@@ -177,7 +177,7 @@
   .title-block a {
     color: inherit;
   }
-  @media (width < 520px) {
+  @media (width < 480px) {
     .title-block > * {
       padding-inline: var(--wa-space-s);
     }
