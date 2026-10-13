@@ -507,6 +507,7 @@ ${favicon(root)}
 ${pageMeta({ title, description, path })}${isNoindex ? '\n<meta name="robots" content="noindex">' : ''}
 <script>const d = document.documentElement.dataset; d.loading = d.upgrading = ''; setTimeout(() => { delete d.loading; delete d.upgrading; }, 2000);
 (${setScheme})();</script>
+<link rel="preconnect" href="https://ka-p.fontawesome.com" crossorigin>
 <link rel="stylesheet" href="${root}assets/vendor.css">${isHandLettered ? `\n<link rel="stylesheet" href="${root}assets/hand.css">` : ''}
 <script type="module" src="${root}assets/${waFile}" data-webawesome="${root}assets"></script>${umamiTag()}
 <style>
