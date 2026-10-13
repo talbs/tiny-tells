@@ -153,6 +153,7 @@ class TinyTell extends (typeof HTMLElement === 'undefined' ? class {} : HTMLElem
   );
   #colors = null;
   #states = null;
+  #internals = null;
   #player = null;
   #isVisible = true;
   #isDark = false;
@@ -169,11 +170,18 @@ class TinyTell extends (typeof HTMLElement === 'undefined' ? class {} : HTMLElem
     this.#probe.className = 'probe';
     this.#palettes.forEach(p => p.append(...STATES.map(() => document.createElement('span'))));
     this.#canvas.setAttribute('part', 'tell');
-    this.#canvas.setAttribute('role', 'img');
     root.append(this.#probe, ...this.#palettes, this.#canvas);
     try {
-      this.#states = this.attachInternals().states;
+      const internals = this.attachInternals();
+      this.#states = internals.states;
+      /* Chrome before 103 and Firefox before 119 can't set a role on internals, so the canvas carries the role and name there. */
+      if ('role' in internals) {
+        internals.role = 'img';
+        this.#internals = internals;
+      }
     } catch {}
+    if (this.#internals) this.#canvas.setAttribute('aria-hidden', 'true');
+    else this.#canvas.setAttribute('role', 'img');
   }
 
   get skin() {
@@ -399,7 +407,10 @@ class TinyTell extends (typeof HTMLElement === 'undefined' ? class {} : HTMLElem
   }
 
   #mark(label) {
-    if (label === '') {
+    if (this.#internals) {
+      this.#internals.ariaHidden = label === '' ? 'true' : null;
+      this.#internals.ariaLabel = label === '' ? null : (label ?? LABEL[this.state]);
+    } else if (label === '') {
       this.#canvas.setAttribute('aria-hidden', 'true');
       this.#canvas.removeAttribute('aria-label');
     } else {
