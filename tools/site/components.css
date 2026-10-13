@@ -711,6 +711,14 @@ wa-callout.note::part(icon) {
 /* Two icons share one spot and hand off with a turn: bars to burger on hover, moon to lamp with the theme. */
 .swap-icons {
   display: grid;
+  --shrink: 1;
+  --turn: 0deg;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .swap-icons {
+    --shrink: 0.6;
+    --turn: 25deg;
+  }
 }
 wa-button:has(.swap-icons)::part(base) {
   inline-size: 2rem;
@@ -723,20 +731,17 @@ wa-button:has(.swap-icons)::part(base) {
     scale var(--wa-transition-normal) var(--wa-transition-easing),
     rotate var(--wa-transition-normal) var(--wa-transition-easing);
 }
-.swap-icons > :last-child,
+.swap-icons > :last-child {
+  opacity: 0;
+  scale: var(--shrink);
+  rotate: calc(-1 * var(--turn));
+}
 :is(.nav-toggle:is(:hover, :focus-visible), :root[data-theme='dark'] #theme, .is-paused #pause)
   .swap-icons
   > :first-child {
   opacity: 0;
-  scale: 0.6;
-}
-.swap-icons > :last-child {
-  rotate: -25deg;
-}
-:is(.nav-toggle:is(:hover, :focus-visible), :root[data-theme='dark'] #theme, .is-paused #pause)
-  .swap-icons
-  > :first-child {
-  rotate: 25deg;
+  scale: var(--shrink);
+  rotate: var(--turn);
 }
 :is(.nav-toggle:is(:hover, :focus-visible), :root[data-theme='dark'] #theme, .is-paused #pause)
   .swap-icons
@@ -747,11 +752,4 @@ wa-button:has(.swap-icons)::part(base) {
 }
 .nav-toggle:is(:hover, :focus-visible) .swap-icons > :last-child {
   color: var(--fg);
-}
-@media (prefers-reduced-motion: reduce) {
-  .swap-icons > wa-icon {
-    scale: 1 !important;
-    rotate: 0deg !important;
-    transition: opacity var(--wa-transition-normal) var(--wa-transition-easing);
-  }
 }
