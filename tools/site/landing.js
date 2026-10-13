@@ -196,23 +196,10 @@ new ResizeObserver(placeNotes).observe(stage);
 let castState = 'working',
   anySize = 36;
 const live = (skin, attrs = '') => tag(skin, `state="${castState}" data-live ${attrs}`);
-const placeNotesHl = isInstant => {
-  const hl = $('notes').querySelector('.notes-hl'),
-    on = $('notes').querySelector('[aria-pressed="true"]');
-  if (!hl || !on) return;
-  if (isInstant) hl.style.transition = 'none';
-  hl.style.transform = `translateY(${on.offsetTop}px)`;
-  hl.style.blockSize = `${on.offsetHeight}px`;
-  if (isInstant) requestAnimationFrame(() => (hl.style.transition = ''));
-};
-new ResizeObserver(() => placeNotesHl(true)).observe($('notes'));
 const setCastState = s => {
   castState = s;
   document.querySelectorAll('tiny-tell[data-live]').forEach(t => (t.state = s));
-  $('notes')
-    .querySelectorAll('[data-state]')
-    .forEach(b => b.setAttribute('aria-pressed', b.dataset.state === s));
-  placeNotesHl();
+  if ($('notes').value !== s) $('notes').value = s;
   if ($('wild-state').value !== s) $('wild-state').value = s;
   renderWild();
 };
@@ -242,13 +229,11 @@ const renderCast = () => {
   $('any-size-tell').innerHTML = live(skin, `style="--tell-size: ${anySize}px" label=""`);
   $('cast-goes').innerHTML =
     `<span class="wa-visually-hidden">Best for: </span><span class="wa-cluster wa-gap-s">${GOES[skin].map((use, i) => `<wa-tag appearance="outlined" size="xs">${i ? '<span class="wa-visually-hidden">, </span>' : ''}${use}</wa-tag>`).join('')}</span>`;
-  $('notes').innerHTML =
-    '<span class="notes-hl" aria-hidden="true"></span>' +
-    STATES.map(
-      s =>
-        `<button type="button" data-state="${s}" aria-pressed="${s === castState}">${tag(skin, `state="${s}" label=""`)}<span class="notes-key">${LABEL[s]}</span><span>${NOTES[skin][s]}</span></button>`
-    ).join('');
-  placeNotesHl(true);
+  $('notes').innerHTML = STATES.map(
+    s =>
+      `<wa-radio appearance="button" value="${s}"><span class="notes-row">${tag(skin, `state="${s}" label=""`)}<span class="notes-key">${LABEL[s]}</span><span>${NOTES[skin][s]}</span></span></wa-radio>`
+  ).join('');
+  $('notes').value = castState;
   $('cast-build').innerHTML = [
     ['Made of', m.made],
     ['Notices You', m.notice],
@@ -260,10 +245,7 @@ const renderCast = () => {
   holdAll($('tells'));
   holdAll($('install'));
 };
-$('notes').addEventListener('click', e => {
-  const btn = e.target.closest('[data-state]');
-  if (btn) setCastState(btn.dataset.state);
-});
+$('notes').addEventListener('change', e => setCastState(e.target.value));
 
 const onion = { isOn: false, skin: onionSkin() };
 const onionFrame = () => {

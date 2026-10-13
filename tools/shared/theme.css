@@ -149,8 +149,3 @@ body {
   --accent: #ff8473;
   --peg: #24221f;
 }
-.notes {
-  margin: 0;
-  display: grid;
-  border-block-start: var(--wa-border-width-s) solid var(--paper-edge);
-}

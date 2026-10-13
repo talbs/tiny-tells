@@ -219,22 +219,10 @@ main > #tells {
 }
 
 .cast .notes {
-  position: relative;
-  display: grid;
   margin-inline-start: -14px;
-  border: 0;
 }
-.cast .notes > button {
-  appearance: none;
-  position: relative;
-  z-index: 1;
-  display: grid;
-  grid-template-columns: 32px minmax(0, 1fr);
-  align-items: center;
-  column-gap: 14px;
-  row-gap: var(--wa-space-3xs);
-  inline-size: 100%;
-  block-size: auto;
+.cast .notes wa-radio[appearance='button'] {
+  display: block;
   min-block-size: 44px;
   margin: 0;
   padding: var(--wa-space-s) 14px;
@@ -244,42 +232,38 @@ main > #tells {
   color: var(--muted);
   font: inherit;
   font-size: var(--wa-font-size-s);
-  white-space: normal;
-  text-align: start;
-  cursor: pointer;
   --tell-size: 28px;
   transition:
     background-color var(--wa-transition-normal) var(--wa-transition-easing),
     color var(--wa-transition-normal) var(--wa-transition-easing);
 }
-.cast .notes > button tiny-tell {
+.cast .notes wa-radio::part(label) {
+  display: block;
+}
+.cast .notes-row {
+  display: grid;
+  grid-template-columns: 32px minmax(0, 1fr);
+  align-items: center;
+  column-gap: 14px;
+  row-gap: var(--wa-space-3xs);
+  white-space: normal;
+  text-align: start;
+}
+.cast .notes-row tiny-tell {
   grid-row: span 2;
 }
-.cast .notes > button:not([aria-pressed='true']):hover {
+.cast .notes wa-radio[appearance='button']:not(:state(checked)):hover {
   background: color-mix(in oklab, var(--paper) 85%, var(--paper-edge));
 }
-.cast .notes > button[aria-pressed='true'] {
+.cast .notes wa-radio[appearance='button']:state(checked) {
   color: var(--ink);
 }
-.cast .notes > button:focus-visible {
+.cast .notes wa-radio[appearance='button']:focus-visible {
   outline: var(--wa-focus-ring);
   outline-offset: calc(-1 * var(--wa-focus-ring-width));
 }
-.notes-hl {
-  position: absolute;
-  inset-inline: 0;
-  inset-block-start: 0;
-  border-radius: var(--wa-border-radius-l);
+.cast .notes > .seg-pill {
   background: color-mix(in oklab, var(--paper) 40%, var(--paper-edge));
-  pointer-events: none;
-  transition:
-    transform var(--wa-transition-slow) var(--ease-detent),
-    block-size var(--wa-transition-slow) var(--ease-move);
-}
-@media (prefers-reduced-motion: reduce) {
-  .notes-hl {
-    transition: none;
-  }
 }
 .cast .notes-key {
   font-weight: var(--wa-font-weight-bold);
@@ -355,7 +339,7 @@ main > #tells {
   .cast .notes {
     margin-inline: calc(-1 * var(--wa-space-xs));
   }
-  .cast .notes > button {
+  .cast .notes wa-radio[appearance='button'] {
     padding-inline: var(--wa-space-xs);
   }
   .cast-controls {
@@ -365,7 +349,7 @@ main > #tells {
 
 @media (forced-colors: active) {
   .cast-pick wa-radio[appearance='button']:state(checked) .cast-field,
-  .cast .notes > button[aria-pressed='true'] {
+  .cast .notes wa-radio[appearance='button']:state(checked) {
     outline: 2px solid Highlight;
     outline-offset: -2px;
   }
