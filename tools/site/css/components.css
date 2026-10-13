@@ -703,7 +703,7 @@
   .sw-name wa-color-picker::part(trigger)::before {
     border-radius: var(--wa-border-radius-m);
   }
-  @container (max-width: 28rem) {
+  @container (width <= 28rem) {
     .sw-row {
       gap: var(--wa-space-m);
     }
