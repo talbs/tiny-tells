@@ -597,18 +597,18 @@ words.textContent = 'Synced 3 files.';</code></pre>
               id="pause-demo-button"
               size="s"
               appearance="outlined"
-              aria-pressed="false"
               >Pause Animations</wa-button
             >
           </div>
           <pre
             data-copy
-          ><code class="language-html">&lt;button type="button" id="pause-tells" aria-pressed="false"&gt;Pause animations&lt;/button&gt;
+          ><code class="language-html">&lt;button type="button" id="pause-tells"&gt;Pause animations&lt;/button&gt;
 
 &lt;script&gt;
+  let isPaused = false;
   document.getElementById('pause-tells').addEventListener('click', event =&gt; {
-    const isPaused = event.currentTarget.getAttribute('aria-pressed') !== 'true';
-    event.currentTarget.setAttribute('aria-pressed', isPaused);
+    isPaused = !isPaused;
+    event.currentTarget.textContent = isPaused ? 'Play animations' : 'Pause animations';
     document.querySelectorAll('tiny-tell').forEach(tell =&gt; (tell.paused = isPaused));
   });
 &lt;/script&gt;</code></pre>
