@@ -22,14 +22,14 @@
     position: relative;
     inline-size: 14px;
     block-size: 14px;
-    border: var(--wa-border-width-s) solid color-mix(in oklab, var(--guide) 55%, transparent);
+    border: var(--wa-border-width-s) solid var(--guide-line);
     border-radius: var(--wa-border-radius-circle);
   }
   .foot-reg::before,
   .foot-reg::after {
     content: '';
     position: absolute;
-    background: color-mix(in oklab, var(--guide) 55%, transparent);
+    background: var(--guide-line);
   }
   .foot-reg::before {
     inset-inline: -5px;
@@ -147,7 +147,7 @@
   .label-cases thead th,
   .label {
     font: var(--wa-font-weight-normal) var(--wa-font-size-2xs) / var(--wa-line-height-normal) var(--font-mono);
-    letter-spacing: 0.08em;
+    letter-spacing: var(--label-tracking);
     text-transform: uppercase;
     color: var(--muted);
   }
@@ -262,11 +262,11 @@
     justify-self: start;
     block-size: auto;
     padding: 3px var(--wa-space-xs);
-    border-color: color-mix(in oklab, var(--guide) 45%, transparent);
+    border-color: var(--guide-soft);
     border-radius: var(--wa-border-radius-s);
     background: transparent;
     font: var(--wa-font-weight-normal) var(--wa-font-size-2xs)/1.4 var(--font-mono);
-    letter-spacing: 0.08em;
+    letter-spacing: var(--label-tracking);
     color: color-mix(in oklab, var(--guide-ink) 72%, var(--fg));
   }
   wa-tag::part(content) {
@@ -588,7 +588,7 @@
   wa-color-picker::part(format-button__base) {
     font: var(--wa-font-weight-semibold) var(--wa-font-size-2xs) / 1 var(--font-mono);
     text-transform: uppercase;
-    letter-spacing: 0.08em;
+    letter-spacing: var(--label-tracking);
   }
   wa-slider::part(thumb) {
     transition: scale var(--wa-transition-fast) var(--wa-transition-easing);

@@ -240,7 +240,7 @@
     block-size: 60px;
     overflow: visible;
     fill: none;
-    stroke: color-mix(in oklab, var(--guide) 75%, transparent);
+    stroke: var(--guide-strong);
     stroke-width: 1;
     stroke-dasharray: 3 3;
   }
@@ -509,9 +509,9 @@
     position: absolute;
     inset: 0;
     background-image:
-      linear-gradient(color-mix(in oklab, var(--guide) 15%, transparent) 1px, transparent 1px),
-      linear-gradient(90deg, color-mix(in oklab, var(--guide) 15%, transparent) 1px, transparent 1px),
-      radial-gradient(circle, color-mix(in oklab, var(--guide) 18%, transparent) 0.7px, transparent 1.1px);
+      linear-gradient(var(--guide-faint) 1px, transparent 1px),
+      linear-gradient(90deg, var(--guide-faint) 1px, transparent 1px),
+      radial-gradient(circle, var(--guide-faint) 0.7px, transparent 1.1px);
     background-size:
       var(--grid) var(--grid),
       var(--grid) var(--grid),
@@ -532,14 +532,14 @@
     z-index: 1;
     inline-size: 22px;
     block-size: 22px;
-    border: var(--wa-border-width-s) solid color-mix(in oklab, var(--guide) 50%, transparent);
+    border: var(--wa-border-width-s) solid var(--guide-line);
     border-radius: var(--wa-border-radius-circle);
   }
   .reg::before,
   .reg::after {
     content: '';
     position: absolute;
-    background: color-mix(in oklab, var(--guide) 50%, transparent);
+    background: var(--guide-line);
   }
   .reg::before {
     inset-inline: -8px;
@@ -563,7 +563,7 @@
   .plan-note,
   .hero-cast::before {
     font: var(--wa-font-weight-normal) var(--wa-font-size-2xs)/1 var(--font-mono);
-    letter-spacing: 0.08em;
+    letter-spacing: var(--label-tracking);
     text-transform: uppercase;
     color: var(--guide-ink);
   }
@@ -642,11 +642,9 @@
     margin-inline: calc(-1 * var(--frame-l, 0px)) calc(-1 * var(--frame-r, 0px));
     block-size: 14px;
     background:
-      repeating-linear-gradient(90deg, color-mix(in oklab, var(--guide) 55%, transparent) 0 1px, transparent 1px 96px)
-        bottom / 100% 14px no-repeat,
-      repeating-linear-gradient(90deg, color-mix(in oklab, var(--guide) 35%, transparent) 0 1px, transparent 1px 24px)
-        bottom / 100% 7px no-repeat;
-    border-block-end: var(--wa-border-width-s) solid color-mix(in oklab, var(--guide) 45%, transparent);
+      repeating-linear-gradient(90deg, var(--guide-line) 0 1px, transparent 1px 96px) bottom / 100% 14px no-repeat,
+      repeating-linear-gradient(90deg, var(--guide-soft) 0 1px, transparent 1px 24px) bottom / 100% 7px no-repeat;
+    border-block-end: var(--wa-border-width-s) solid var(--guide-soft);
   }
   /* A full-width strip with the line on its end edge, so the sweep can use translate (no layout or paint per frame) instead of moving the 1px line's own position. */
   .playhead {
@@ -712,7 +710,7 @@
     inset: calc(-1 * var(--frame-t, 0px)) calc(-1 * var(--frame-r, 0px)) calc(-1 * var(--frame-b, 0px))
       calc(-1 * var(--frame-l, 0px));
     padding: 10px var(--wa-space-s);
-    border: var(--wa-border-width-s) dashed color-mix(in oklab, var(--guide) 45%, transparent);
+    border: var(--wa-border-width-s) dashed var(--guide-soft);
     pointer-events: none;
   }
   .cel {
@@ -1157,7 +1155,7 @@
   .guide {
     position: absolute;
     inset: calc(13% + 74% * 0.08);
-    border: var(--wa-border-width-s) dashed color-mix(in oklab, var(--guide) 40%, transparent);
+    border: var(--wa-border-width-s) dashed var(--guide-soft);
     border-radius: var(--wa-border-radius-s);
     pointer-events: none;
   }
@@ -1165,7 +1163,7 @@
   .guide::after {
     content: '';
     position: absolute;
-    background: color-mix(in oklab, var(--guide) 25%, transparent);
+    background: var(--guide-wash);
   }
   .guide::before {
     inset-inline: -6%;
@@ -1222,7 +1220,7 @@
   .proof-table .model figcaption::before {
     content: '';
     inline-size: 10px;
-    border-block-start: var(--wa-border-width-s) dashed color-mix(in oklab, var(--guide) 55%, transparent);
+    border-block-start: var(--wa-border-width-s) dashed var(--guide-line);
   }
   .proof-table .any-size {
     display: grid;
