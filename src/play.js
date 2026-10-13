@@ -1,5 +1,5 @@
 /* ---- Play: tells notice a nearby pointer, and dance after five quick taps. Only in the play bundle; the core leaves HOOKS empty. ---- */
-import { DANCE, HOOKS } from './element.js';
+import { DANCE, HOOKS, TinyTell } from './element.js';
 
 const pointer = { x: 0, y: 0, isHere: false };
 if (typeof window !== 'undefined') {
@@ -34,7 +34,7 @@ if (typeof window !== 'undefined')
   addEventListener(
     'pointerdown',
     e => {
-      const el = e.composedPath().find(n => n.localName === 'tiny-tell');
+      const el = e.composedPath().find(n => n instanceof TinyTell);
       if (!el) return;
       const now = performance.now(),
         log = (taps.get(el) || []).filter(t => now - t < 1500).concat(now);

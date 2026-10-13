@@ -577,6 +577,26 @@ test.describe('play bundle', () => {
     ]);
   });
 
+  test('a subclass under its own tag dances and names its own tag in warnings', async ({ page }) => {
+    const warnings = [];
+    page.on('console', msg => {
+      if (msg.type() === 'warning') warnings.push(msg.text());
+    });
+    await page.evaluate(() => {
+      customElements.define('sub-tell', class extends customElements.get('tiny-tell') {});
+      document.body.insertAdjacentHTML('beforeend', '<sub-tell id="sub" style="--tell-size: 48px"></sub-tell>');
+      window.danced = false;
+      document.addEventListener('tell-dance', e => (window.danced = e.target.id === 'sub'));
+    });
+    await drawn(page);
+    await tap5(page, '#sub');
+    await expect.poll(() => page.evaluate(() => window.danced), { message: 'five taps make it dance' }).toBe(true);
+    await page.$eval('#sub', el => (el.state = 'nope'));
+    await expect
+      .poll(() => warnings.join('\n'), { message: 'the warning names the subclass tag' })
+      .toContain('<sub-tell>: unknown state "nope"');
+  });
+
   test('dance events: canceling tell-dance keeps the tell from dancing', async ({ page }) => {
     await page.evaluate(() => {
       customElements.get('tiny-tell').timeScale = 4;
