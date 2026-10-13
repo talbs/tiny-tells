@@ -310,14 +310,16 @@ class TinyTell extends (typeof HTMLElement === 'undefined' ? class {} : HTMLElem
   #validate() {
     const s = this.getAttribute('state');
     if (s != null && !STATES.includes(s))
-      console.warn(`<tiny-tell>: unknown state "${s}". Known: ${STATES.join(', ')}. Showing "working". ${DOCS}states`);
+      console.warn(
+        `<${this.localName}>: unknown state "${s}". Known: ${STATES.join(', ')}. Showing "working". ${DOCS}states`
+      );
   }
 
   #build() {
     const skin = this.getAttribute('skin');
     if (skin && !Object.hasOwn(SKINS, skin))
       console.warn(
-        `<tiny-tell>: unknown skin "${skin}". Known: ${Object.keys(SKINS).join(', ')}. Showing "drones". ${DOCS}tells`
+        `<${this.localName}>: unknown skin "${skin}". Known: ${Object.keys(SKINS).join(', ')}. Showing "drones". ${DOCS}tells`
       );
     this.#validate();
     this.#canvas._blot = null;
@@ -435,7 +437,7 @@ class TinyTell extends (typeof HTMLElement === 'undefined' ? class {} : HTMLElem
       );
     } catch (err) {
       clock.live.delete(this);
-      console.error('<tiny-tell> failed to draw', err);
+      console.error(`<${this.localName}> failed to draw`, err);
     }
   }
 
