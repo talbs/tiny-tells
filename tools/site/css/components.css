@@ -1,0 +1,701 @@
+@layer components {
+  wa-select wa-icon[slot='start'] {
+    color: var(--muted);
+  }
+  .palette-probe {
+    position: absolute;
+    inline-size: 0;
+    block-size: 0;
+    overflow: hidden;
+  }
+  .palette-probe i {
+    background: var(--wa-color-surface-default);
+  }
+  /* Browsers drop ligatures on letter-spaced text, so this keeps headings like "Handoffs" joined. */
+  :is(h1, h2, h3, [class*='wa-heading']) {
+    font-feature-settings: 'liga' 1;
+  }
+  :is(li, dd) {
+    text-wrap: pretty;
+  }
+  .foot-reg {
+    position: relative;
+    inline-size: 14px;
+    block-size: 14px;
+    border: var(--wa-border-width-s) solid color-mix(in oklab, var(--guide) 55%, transparent);
+    border-radius: var(--wa-border-radius-circle);
+  }
+  .foot-reg::before,
+  .foot-reg::after {
+    content: '';
+    position: absolute;
+    background: color-mix(in oklab, var(--guide) 55%, transparent);
+  }
+  .foot-reg::before {
+    inset-inline: -5px;
+    inset-block-start: 50%;
+    block-size: 1px;
+  }
+  .foot-reg::after {
+    inset-block: -5px;
+    inset-inline-start: 50%;
+    inline-size: 1px;
+  }
+  .made-by {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5ch;
+    font: var(--wa-font-size-xs) / var(--wa-line-height-normal) var(--font-body);
+    letter-spacing: normal;
+    text-transform: none;
+  }
+  .made-with {
+    display: inline-grid;
+    place-items: center;
+    margin: calc(-1 * var(--wa-space-xs));
+    margin-inline-start: calc(-1.5 * var(--wa-space-2xs));
+    padding: var(--wa-space-xs);
+    border: 0;
+    border-radius: var(--wa-border-radius-circle);
+    background: none;
+    color: var(--accent);
+    font-size: var(--wa-font-size-s);
+    vertical-align: baseline;
+    cursor: pointer;
+  }
+  .made-with wa-icon[family='sharp-duotone'] {
+    --secondary-opacity: 1;
+  }
+  .made-with wa-icon[name^='face-'] {
+    --primary-color: var(--wa-color-yellow-10);
+    --secondary-color: var(--wa-color-yellow-80);
+  }
+  .made-with wa-icon[name='rectangle-terminal'] {
+    --primary-color: var(--wa-color-cyan-80);
+    --secondary-color: var(--wa-color-gray-10);
+  }
+  .made-with wa-icon[name='pencil'] {
+    --primary-color: var(--wa-color-yellow-80);
+    --secondary-color: var(--wa-color-pink-70);
+  }
+  .made-with wa-icon[name='heart'] {
+    --primary-color: var(--wa-color-red-30);
+    --secondary-color: var(--wa-color-red-60);
+  }
+  .made-with .is-fa {
+    color: var(--brand-font-awesome);
+  }
+  .made-with .is-wa {
+    color: var(--brand-web-awesome);
+  }
+  .tb-name {
+    user-select: none;
+    touch-action: manipulation;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--wa-space-s);
+    color: var(--ink);
+    font-weight: var(--wa-font-weight-semibold);
+  }
+  :is(p, li, blockquote) {
+    hanging-punctuation: first last;
+  }
+  :is(main, [slot='main-header']) :not(pre) > code {
+    font-size: max(0.75em, var(--wa-font-size-2xs));
+  }
+  ::selection {
+    background: color-mix(in oklab, var(--tell-color-working, var(--working-default)) 30%, transparent);
+  }
+  [data-syntax-theme] {
+    color-scheme: inherit;
+  }
+  .example {
+    display: grid;
+    margin: 0;
+    border-radius: var(--wa-panel-border-radius);
+    box-shadow: var(--wa-shadow-s);
+    overflow: hidden;
+  }
+  .example pre {
+    margin: 0;
+    border-start-start-radius: 0;
+    border-start-end-radius: 0;
+  }
+  .example-preview {
+    container-type: inline-size;
+    padding: var(--wa-space-l);
+    border: var(--wa-panel-border-width) var(--wa-panel-border-style) var(--paper-edge);
+    background: var(--paper);
+    color: var(--ink);
+  }
+  .example:has(> pre) > .example-preview {
+    border-block-end: 0;
+  }
+  wa-color-picker::part(grid-handle),
+  wa-color-picker::part(slider-handle) {
+    border-color: var(--off-white);
+  }
+  .builder-controls wa-radio-group::part(form-control-label),
+  .builder-controls wa-input::part(form-control-label),
+  .palette-select::part(form-control-label),
+  .wa-prose > .label,
+  .lab-notes::part(header),
+  .lab-grid dt,
+  .cast-name,
+  .title-block,
+  .proof-table .any-size wa-slider::part(label),
+  .label-cases thead th,
+  .label {
+    font: var(--wa-font-weight-normal) var(--wa-font-size-2xs) / var(--wa-line-height-normal) var(--font-mono);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  /* Code is always dark. Colors per state come from the palette's own scale (Quiet UI 400 here), all 4.5:1 on --code-bg. The background is Slate 900, or halfway to 950 when the page itself is dark. */
+  [data-syntax-theme='drafting'] {
+    --syntax-background: var(--code-bg);
+    --syntax-foreground: var(--code-ink);
+    --syntax-operator: var(--code-ink);
+    --syntax-comment: var(--code-idle);
+    --syntax-keyword: var(--code-working);
+    --syntax-function: var(--code-working);
+    --syntax-type: var(--code-working);
+    --syntax-selector: var(--code-working);
+    --syntax-string: var(--code-done);
+    --syntax-inserted: var(--code-done);
+    --syntax-tag: var(--code-error);
+    --syntax-property: var(--code-error);
+    --syntax-deleted: var(--code-error);
+    --syntax-constant: var(--code-warning);
+    --syntax-variable: var(--code-warning);
+  }
+  ::highlight(comment),
+  ::highlight(quote) {
+    color: var(--syntax-comment);
+  }
+  ::highlight(keyword),
+  ::highlight(storage),
+  ::highlight(at-rule),
+  ::highlight(doctype),
+  ::highlight(important),
+  ::highlight(section) {
+    color: var(--syntax-keyword);
+  }
+  ::highlight(operator),
+  ::highlight(punctuation) {
+    color: var(--syntax-operator);
+  }
+  ::highlight(string),
+  ::highlight(regexp),
+  ::highlight(attribute-value),
+  ::highlight(link),
+  ::highlight(raw) {
+    color: var(--syntax-string);
+  }
+  ::highlight(numeric),
+  ::highlight(boolean),
+  ::highlight(constant),
+  ::highlight(symbol),
+  ::highlight(character-entity),
+  ::highlight(anchor),
+  ::highlight(entity) {
+    color: var(--syntax-constant);
+  }
+  ::highlight(function),
+  ::highlight(decorator),
+  ::highlight(animation) {
+    color: var(--syntax-function);
+  }
+  ::highlight(type),
+  ::highlight(support) {
+    color: var(--syntax-type);
+  }
+  ::highlight(variable),
+  ::highlight(interpolation) {
+    color: var(--syntax-variable);
+  }
+  ::highlight(property),
+  ::highlight(key) {
+    color: var(--syntax-property);
+  }
+  ::highlight(attribute-name) {
+    color: var(--code-warning);
+  }
+  ::highlight(tag) {
+    color: var(--syntax-tag);
+  }
+  ::highlight(selector) {
+    color: var(--syntax-selector);
+  }
+  ::highlight(inserted) {
+    color: var(--syntax-inserted);
+  }
+  ::highlight(deleted) {
+    color: var(--syntax-deleted);
+  }
+  [data-syntax-theme='drafting'] pre:has(code) {
+    color-scheme: dark;
+    --code-pad-y: var(--wa-space-m);
+    --code-pad-x: var(--wa-space-l);
+    padding: var(--code-pad-y) var(--code-pad-x);
+    background: var(--code-bg);
+    color: var(--code-ink);
+    font: var(--wa-font-weight-normal) var(--wa-font-size-xs) / 1.9 var(--font-mono);
+  }
+  [data-syntax-theme='drafting'] pre[data-copy]:has(code) {
+    padding-block: 0;
+    padding-inline-end: calc(var(--code-pad-x) + 2rem);
+    overflow: hidden;
+  }
+  [data-syntax-theme='drafting'] pre[data-copy] > code {
+    display: block;
+    padding-block: var(--code-pad-y);
+    overflow-x: auto;
+  }
+  [data-syntax-theme='drafting'] pre[data-copy] > code:focus-visible {
+    outline: var(--wa-focus-ring);
+    outline-offset: calc(-1 * var(--wa-focus-ring-width));
+  }
+  wa-tag,
+  wa-tag.studio {
+    align-self: start;
+    justify-self: start;
+    block-size: auto;
+    padding: 3px var(--wa-space-xs);
+    border-color: color-mix(in oklab, var(--guide) 45%, transparent);
+    border-radius: var(--wa-border-radius-s);
+    background: transparent;
+    font: var(--wa-font-weight-normal) var(--wa-font-size-2xs)/1.4 var(--font-mono);
+    letter-spacing: 0.08em;
+    color: color-mix(in oklab, var(--guide-ink) 72%, var(--fg));
+  }
+  wa-tag::part(content) {
+    font-size: inherit;
+    letter-spacing: inherit;
+  }
+  .version-link {
+    display: inline-flex;
+    border-radius: var(--wa-border-radius-s);
+    text-decoration: none;
+  }
+  .version-link:hover wa-tag {
+    border-color: var(--tell-color-working, var(--working-default));
+  }
+  wa-button {
+    --wa-form-control-height: var(--control-h);
+  }
+  wa-button[size='s'] {
+    --wa-form-control-height: var(--control-h-s);
+  }
+  wa-button::part(base) {
+    min-block-size: var(--wa-form-control-height);
+    transition:
+      background-color var(--wa-transition-normal) var(--wa-transition-easing),
+      color var(--wa-transition-normal) var(--wa-transition-easing),
+      border-color var(--wa-transition-normal) var(--wa-transition-easing),
+      translate var(--wa-transition-fast) var(--wa-transition-easing);
+  }
+  wa-button:not([disabled]):active::part(base) {
+    translate: 0 1px;
+  }
+  :is(wa-button, wa-color-picker)[disabled] {
+    opacity: 0.45;
+  }
+  wa-button[variant='brand']::part(base) {
+    background: var(--control-ink);
+    border-color: var(--control-ink);
+    color: var(--control-on);
+  }
+  wa-button[variant='brand']:hover::part(base) {
+    background: color-mix(in oklab, var(--control-ink) 86%, var(--control-on));
+  }
+  wa-button[appearance='outlined']::part(base) {
+    background: transparent;
+    border-color: var(--control-edge);
+    color: var(--control-ink);
+  }
+  wa-button[appearance='outlined']:hover::part(base) {
+    background: var(--control-hover);
+    border-color: color-mix(in oklab, var(--control-ink) 35%, var(--control-edge));
+  }
+  wa-button[appearance='plain']::part(base) {
+    color: var(--control-quiet);
+  }
+  wa-button[appearance='plain']:hover::part(base) {
+    background: var(--control-hover);
+    color: var(--control-ink);
+  }
+  wa-input wa-button[appearance='plain']:hover::part(base),
+  wa-button.doc-link:hover::part(base) {
+    background: transparent;
+  }
+  wa-button.doc-link::part(label) {
+    text-decoration: underline 2px transparent;
+    text-decoration-skip-ink: none;
+    text-underline-offset: 0.35em;
+  }
+  wa-button.doc-link:hover::part(label) {
+    text-decoration-color: var(--accent);
+  }
+  wa-radio[appearance='button'] {
+    min-block-size: var(--control-h-s);
+    font: var(--wa-font-weight-semibold) var(--wa-font-size-xs)/1 var(--font-mono);
+    color: var(--control-quiet);
+    background: transparent;
+    border-color: var(--control-edge);
+    transition:
+      background-color var(--wa-transition-normal) var(--wa-transition-easing),
+      color var(--wa-transition-normal) var(--wa-transition-easing);
+  }
+  wa-radio[appearance='button']:hover {
+    background: var(--control-hover);
+    color: var(--control-ink);
+  }
+  wa-radio[appearance='button']:state(checked) {
+    background: var(--control-ink);
+    color: var(--control-on);
+    border-color: var(--control-ink);
+  }
+  wa-radio-group::part(form-control-input) {
+    position: relative;
+  }
+  wa-radio-group:has(> .seg-pill) wa-radio[appearance='button'] {
+    position: relative;
+    z-index: 1;
+  }
+  wa-radio-group[data-pill] wa-radio[appearance='button'] {
+    transition: color var(--wa-transition-normal) var(--wa-transition-easing);
+  }
+  wa-radio-group[data-pill] wa-radio[appearance='button']:state(checked) {
+    background: transparent;
+    border-color: transparent;
+  }
+  .seg-pill {
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-start: 0;
+    border-radius: var(--wa-border-radius-m);
+    background: var(--control-ink);
+    opacity: 0;
+    pointer-events: none;
+    transition:
+      transform var(--wa-transition-slow) var(--ease-detent),
+      inline-size var(--wa-transition-slow) var(--ease-detent),
+      block-size var(--wa-transition-slow) var(--ease-move),
+      border-radius var(--wa-transition-slow) var(--ease-move);
+  }
+  wa-switch::part(thumb) {
+    transition:
+      translate var(--wa-transition-slow) var(--ease-detent),
+      background var(--wa-transition-normal) var(--wa-transition-easing),
+      border-color var(--wa-transition-normal) var(--wa-transition-easing),
+      box-shadow var(--wa-transition-normal) var(--wa-transition-easing);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .seg-pill,
+    .tab-bar {
+      transition: none;
+    }
+    wa-switch::part(thumb) {
+      transition-duration: 0s;
+    }
+  }
+  wa-radio[appearance='button']:focus-visible {
+    z-index: 1;
+  }
+  wa-switch,
+  wa-slider {
+    --wa-form-control-activated-color: var(--control-ink);
+  }
+  pre wa-copy-button {
+    position: absolute;
+    inset-block-start: var(--code-pad-y);
+    inset-inline-end: var(--wa-space-s);
+    white-space: normal;
+    font: var(--wa-font-weight-semibold) var(--wa-font-size-xs) / 1.3 var(--font-body);
+    --wa-tooltip-background-color: var(--code-ink);
+    --wa-tooltip-content-color: var(--code-bg);
+  }
+  pre wa-copy-button::part(button) {
+    background: transparent;
+    color: var(--code-idle);
+  }
+  pre wa-copy-button::part(button):hover {
+    background: color-mix(in oklab, var(--code-ink) 8%, transparent);
+    color: var(--code-ink);
+  }
+  pre wa-copy-button wa-icon {
+    font-size: var(--wa-font-size-m);
+  }
+  pre wa-copy-button::part(copy-icon),
+  pre wa-copy-button::part(success-icon),
+  pre wa-copy-button::part(error-icon) {
+    animation: copy-in var(--wa-transition-normal) var(--wa-transition-easing);
+  }
+  @keyframes copy-in {
+    from {
+      opacity: 0;
+      transform: translateY(3px);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    @keyframes copy-in {
+      from {
+        opacity: 0;
+      }
+    }
+  }
+  pre wa-copy-button::part(success-icon) {
+    color: var(--code-done);
+  }
+  pre wa-copy-button::part(error-icon) {
+    color: var(--code-error);
+  }
+  .section-title {
+    font-size: var(--wa-font-size-3xl);
+    font-weight: var(--wa-font-weight-bold);
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+  }
+  .doc-arrow {
+    inline-size: 18px;
+    block-size: 17px;
+    margin-inline-start: var(--wa-space-s);
+    translate: 0 -2px;
+    overflow: visible;
+    fill: none;
+    stroke: var(--accent);
+    stroke-width: 1.7;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition: translate var(--wa-transition-normal) var(--wa-transition-easing);
+  }
+  wa-button.doc-link:hover .doc-arrow {
+    translate: 2px -3px;
+  }
+  .info-link {
+    display: inline-grid;
+    place-items: center;
+    margin-block: calc(-1 * var(--wa-space-xs));
+    padding: var(--wa-space-xs);
+    border-radius: var(--wa-border-radius-circle);
+    color: var(--control-quiet);
+    text-decoration: none;
+  }
+  .info-link:hover {
+    color: var(--control-ink);
+  }
+  /* Entrance only: Web Awesome hides the skip link with !important, and a lingering ring would blur where focus is. */
+  @keyframes ring-in {
+    from {
+      outline-width: 0;
+      outline-color: transparent;
+    }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    :focus-visible {
+      animation: ring-in var(--wa-transition-fast) var(--wa-transition-easing);
+    }
+    wa-button:focus-within::part(base),
+    wa-tab:focus-visible::part(base),
+    wa-switch:focus-within::part(control),
+    wa-slider:focus-within::part(thumb),
+    wa-details:focus-within::part(header),
+    wa-input:focus-within::part(base),
+    wa-select:focus-within::part(combobox),
+    wa-copy-button:focus-within::part(button) {
+      animation: ring-in var(--wa-transition-fast) var(--wa-transition-easing);
+    }
+  }
+  .prompt {
+    display: none;
+    flex: none;
+    align-items: center;
+    gap: 0.15em;
+    margin-inline-end: 1ch;
+    color: var(--code-working);
+    user-select: none;
+  }
+  .prompt wa-icon:last-child {
+    color: var(--code-idle);
+  }
+  .caret {
+    display: none;
+    flex: none;
+    inline-size: 0.6em;
+    block-size: 1.15em;
+    margin-inline-start: 0.5ch;
+    background: var(--code-ink);
+  }
+  pre:has(> code.language-bash) {
+    display: flex;
+    align-items: center;
+  }
+  pre:has(> code.language-bash) > code {
+    flex: 0 1 auto;
+    min-inline-size: 0;
+  }
+  pre:has(> code.language-bash) > :is(.prompt, .caret),
+  .cel-cmd .prompt {
+    display: inline-flex;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    :root:not(.is-paused) .caret {
+      animation: caret-blink 1.1s steps(1) infinite;
+    }
+  }
+  @keyframes caret-blink {
+    50% {
+      opacity: 0;
+    }
+  }
+  wa-select::part(display-input),
+  wa-option {
+    font-family: var(--font-mono);
+    font-size: var(--wa-font-size-xs);
+  }
+  wa-color-picker::part(color-picker) {
+    border: var(--wa-border-width-s) solid var(--line);
+    border-radius: var(--wa-border-radius-l);
+    background: var(--bg);
+    overflow: hidden;
+  }
+  wa-color-picker::part(input) {
+    font-family: var(--font-mono);
+    font-size: var(--wa-font-size-xs);
+  }
+  wa-color-picker::part(format-button__base) {
+    font: var(--wa-font-weight-semibold) var(--wa-font-size-2xs) / 1 var(--font-mono);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  wa-slider::part(thumb) {
+    transition: scale var(--wa-transition-fast) var(--wa-transition-easing);
+  }
+  wa-slider:hover::part(thumb) {
+    scale: 1.25;
+  }
+  .studio wa-slider::part(track) {
+    background: var(--paper-edge);
+  }
+  .studio wa-switch {
+    --studio-line: color-mix(in oklab, var(--ink) 32%, var(--paper));
+  }
+  .studio wa-switch::part(control) {
+    border-color: var(--studio-line);
+  }
+  .studio wa-switch:not(:state(checked))::part(thumb) {
+    background: var(--studio-line);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    wa-slider::part(thumb) {
+      transition: box-shadow var(--wa-transition-normal) var(--wa-transition-easing);
+    }
+  }
+  wa-tooltip {
+    --wa-tooltip-background-color: var(--fg);
+    --wa-tooltip-content-color: var(--bg);
+    --wa-tooltip-border-radius: var(--wa-border-radius-s);
+    --wa-tooltip-arrow-size: 4px;
+    --max-width: none;
+  }
+  wa-tooltip::part(body) {
+    padding: 0.4em 0.65em;
+    white-space: nowrap;
+    font: var(--wa-font-weight-semibold) var(--wa-font-size-xs) / 1.3 var(--font-body);
+  }
+  wa-tooltip[open]::part(body) {
+    animation: tip-in var(--wa-transition-fast) var(--wa-transition-easing);
+  }
+  @keyframes tip-in {
+    from {
+      opacity: 0;
+      translate: 0 3px;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    @keyframes tip-in {
+      from {
+        opacity: 0;
+      }
+    }
+  }
+  .swatch-sheet {
+    container-type: inline-size;
+    display: grid;
+    border: var(--wa-border-width-s) solid var(--paper-edge);
+    border-radius: var(--wa-border-radius-s);
+    background: var(--paper);
+    color: var(--ink);
+  }
+  .sw-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr) minmax(0, 1fr);
+    align-items: center;
+    gap: var(--wa-space-l);
+    padding: var(--wa-space-xs) var(--wa-space-m);
+    border-block-start: var(--wa-border-width-s) solid var(--paper-edge);
+  }
+  .sw-heads {
+    padding-block: var(--wa-space-s);
+    border-block-start: 0;
+  }
+  .sw-cell {
+    --tell-size: 24px;
+  }
+  .sw-well {
+    flex: none;
+    display: grid;
+    place-items: center;
+    inline-size: 52px;
+    block-size: 36px;
+    border-radius: var(--wa-border-radius-m);
+    box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--paper-edge) 70%, transparent);
+  }
+  .sw-well.wa-light {
+    background: var(--well-light);
+  }
+  .sw-well.wa-dark {
+    background: var(--dark-well);
+  }
+  .sw-ratio {
+    font: var(--wa-font-weight-normal) var(--wa-font-size-xs) / 1 var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    color: var(--muted);
+  }
+  .sw-ratio.is-low {
+    color: var(--wa-color-danger-on-quiet);
+  }
+  .sw-chip,
+  .sw-name wa-color-picker::part(trigger) {
+    inline-size: 20px;
+    block-size: 20px;
+    border-radius: var(--wa-border-radius-m);
+    box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--ink) 15%, transparent);
+  }
+  .sw-chip {
+    flex: none;
+  }
+  .sw-name wa-color-picker::part(trigger) {
+    border: 0;
+  }
+  .sw-name wa-color-picker::part(trigger)::before {
+    border-radius: var(--wa-border-radius-m);
+  }
+  @container (max-width: 28rem) {
+    .sw-row {
+      gap: var(--wa-space-m);
+    }
+    .sw-cell {
+      flex-direction: column;
+      align-items: start;
+      gap: var(--wa-space-2xs);
+    }
+  }
+  @media (forced-colors: active) {
+    .swatch-sheet,
+    .sw-well {
+      border: var(--wa-border-width-s) solid CanvasText;
+    }
+  }
+}

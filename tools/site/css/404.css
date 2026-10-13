@@ -1,0 +1,52 @@
+@layer page {
+  wa-page.is-lost::part(main-content) {
+    padding-block: var(--wa-space-3xl) 0;
+  }
+  .wall {
+    --tell-size: calc(var(--pitch) * 0.56);
+    display: grid;
+    grid-template-columns: repeat(var(--cols), var(--pitch));
+    grid-auto-rows: var(--pitch);
+    place-items: center;
+    justify-content: center;
+  }
+  .wall .cell {
+    display: grid;
+    place-items: center;
+    inline-size: calc(var(--pitch) - 4px);
+    aspect-ratio: 1;
+    border-radius: var(--wa-border-radius-s);
+    background: color-mix(in oklab, var(--paper-edge) 40%, transparent);
+    --mood: var(--accent);
+    transition:
+      background-color var(--wa-transition-normal) var(--wa-transition-easing),
+      box-shadow var(--wa-transition-normal) var(--wa-transition-easing);
+  }
+  .wall .cell[data-mood='dance'] {
+    --mood: var(--dance);
+  }
+  .wall .cell:is([data-lit], [data-mood]) {
+    background: color-mix(in oklab, var(--mood) 18%, transparent);
+    box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--mood) 50%, transparent);
+  }
+  .wall .cell:not([data-lit]) tiny-tell {
+    transition: opacity var(--wa-transition-normal) var(--wa-transition-easing);
+  }
+  .wall .cell:not([data-lit]) tiny-tell[color='current'] {
+    color: var(--muted);
+    opacity: 0.65;
+  }
+  .lost-note {
+    inline-size: calc(var(--cols) * var(--pitch) - 4px);
+    margin-inline: auto;
+    padding-block: var(--wa-space-xl) var(--wa-space-3xl);
+    color: var(--muted);
+  }
+  #lost-lines:not(:defined) > :not(:first-child) {
+    display: none;
+  }
+  .lost-note p {
+    margin: 0;
+    white-space: nowrap;
+  }
+}

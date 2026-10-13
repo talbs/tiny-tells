@@ -2,8 +2,9 @@
 //
 //   node tools/build.mjs           writes dist/ (both bundles, readable and minified, plus the API files) and site/ (the
 //                                  landing page, the docs, and the 404)
-//   node tools/build.mjs --check   also fails if a minified bundle is over its min + gzip budget, play adds 1 KB or more, or
-//                                  CHANGELOG.md has no section for package.json's version
+//   node tools/build.mjs --check   also fails if a minified bundle is over its min + gzip budget, play adds 1 KB or more, a
+//                                  page's inline CSS is over its gzip budget, or CHANGELOG.md has no section for
+//                                  package.json's version
 //   node tools/build.mjs --sizes   also prints each bundle's min + gzip size
 //
 // Web Awesome is only page chrome. The site bundles the components it uses from the npm package's dist build, and self-hosts its fonts.
@@ -307,16 +308,8 @@ const FONTS = [
   'schibsted-grotesk/latin-500',
   'schibsted-grotesk/latin-700',
 ];
-const SITE_CSS = [
-  ['tools', 'shared', 'theme.css'],
-  ['tools', 'site', 'site.css'],
-  ['tools', 'site', 'components.css'],
-  ['tools', 'site', 'sections.css'],
-];
-const LANDING_CSS = [
-  ['tools', 'site', 'hero.css'],
-  ['tools', 'site', 'cast.css'],
-];
+/* Gzip limits for each page's inline CSS, about 10% over what each shipped with. */
+const CSS_BUDGET_KB = { landing: 12.8, docs: 9.8, 404: 7.6 };
 
 const attr = text => text.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
 const pageMeta = ({ title, description, path }) => {
@@ -430,9 +423,11 @@ const addAnchors = html => {
   return anchored;
 };
 
-const preparePage = async ({ body, script, root, size, hasAnchors, css = SITE_CSS }) => {
+const preparePage = async ({ body, script, root, size, hasAnchors, name }) => {
   const js = await bundle(`tools/site/${script}`, { minify: true });
-  const { code: styles } = await transform(css.map(path => read(...path)).join('\n'), { loader: 'css', minify: true });
+  /* tokens.css declares the layer order, so it comes first. */
+  const css = ['tokens', 'base', 'shell', 'components', name].map(file => read('tools', 'site', 'css', `${file}.css`));
+  const { code: styles } = await transform(css.join('\n'), { loader: 'css', minify: true });
   const fills = {
     header: read('tools', 'site', 'header.html'),
     footer: read('tools', 'site', 'footer.html'),
@@ -580,7 +575,7 @@ const PAGES = [
       description:
         'A spinner only says busy. A tell shows whether your app is working, done, failed, or waiting on you. Six tiny characters, one <tiny-tell> element.',
       isHandLettered: true,
-      css: [...SITE_CSS, ...LANDING_CSS],
+      name: 'landing',
     },
   ],
   [
@@ -594,6 +589,7 @@ const PAGES = [
       title: 'Docs · Tiny Tells',
       description:
         'Get a tell into your app in three steps, then make it fit: size, color, accessibility, frameworks, and the full API.',
+      name: 'docs',
     },
   ],
   [
@@ -607,6 +603,7 @@ const PAGES = [
       title: 'Nothing Here · Tiny Tells',
       description: 'This page doesn’t exist, but the tells are still here.',
       isNoindex: true,
+      name: '404',
     },
   ],
 ];
@@ -642,6 +639,12 @@ if (args.includes('--sizes') || args.includes('--check')) {
   const playExtraKb = gzipKb(minified['tiny-tells-play']) - gzipKb(minified['tiny-tells']);
   isOver ||= playExtraKb >= 1;
   console.log(`budget: play adds ${playExtraKb.toFixed(2)} KB min + gzip (limit 1 KB)`);
+  PAGES.forEach(([out, { name }], i) => {
+    const kb = gzipKb(prepared[i].styles);
+    const budgetKb = CSS_BUDGET_KB[name];
+    isOver ||= !budgetKb || kb > budgetKb;
+    console.log(`budget: ${out.join('/')} inline CSS is ${kb.toFixed(1)} KB gzip (limit ${budgetKb} KB)`);
+  });
   /* npm publish runs --check, so a version can't ship without its changelog section. */
   const hasChangelog = new RegExp(`^## ${VERSION.replaceAll('.', '\\.')}( |$)`, 'm').test(read('CHANGELOG.md'));
   console.log(`changelog: ${hasChangelog ? 'has' : 'MISSING'} a "## ${VERSION}" section`);
