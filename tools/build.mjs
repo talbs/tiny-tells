@@ -13,6 +13,7 @@ import { dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { gzipSync } from 'node:zlib';
 import { BOX } from '../src/box.js';
+import { setScheme } from './site/scheme.js';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (...parts) => readFileSync(join(ROOT, ...parts), 'utf8');
@@ -276,7 +277,8 @@ const sitePage = async ({
 <title>${title}</title>
 ${favicon(root)}
 ${pageMeta({ title, description, path })}${isNoindex ? '\n<meta name="robots" content="noindex">' : ''}
-<script>const d = document.documentElement.dataset; d.loading = d.upgrading = ''; setTimeout(() => { delete d.loading; delete d.upgrading; }, 2000);</script>
+<script>const d = document.documentElement.dataset; d.loading = d.upgrading = ''; setTimeout(() => { delete d.loading; delete d.upgrading; }, 2000);
+(${setScheme})();</script>
 <link rel="stylesheet" href="${root}assets/vendor.css">${isHandLettered ? `\n<link rel="stylesheet" href="${root}assets/hand.css">` : ''}
 <script type="module" src="${root}assets/webawesome/webawesome.loader.js" data-webawesome="${root}assets/webawesome"></script>${umamiTag()}
 ${preloads}
