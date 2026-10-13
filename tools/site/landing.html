@@ -618,29 +618,36 @@
                 size="s"
                 value="text"
               ></wa-radio-group>
-              <wa-copy-button
-                id="b-link"
-                copy-label="Copy Link"
-                success-label="Link copied"
-                error-label="Couldn’t copy. Try again?"
-                tooltip="copy"
-              >
-                <wa-button
-                  size="s"
-                  appearance="plain"
-                  ><wa-icon
-                    slot="start"
-                    family="sharp"
-                    variant="regular"
-                    name="link"
-                  ></wa-icon
-                  >Copy Link</wa-button
-                >
-              </wa-copy-button>
             </div>
             <figure class="example">
               <div class="example-preview studio">
                 <div id="b-preview"></div>
+                <wa-copy-button
+                  id="b-link"
+                  copy-label="Copy Link to This Setup"
+                  success-label="Link copied"
+                  error-label="Couldn’t copy. Try again?"
+                  tooltip-placement="left"
+                >
+                  <wa-icon
+                    slot="copy-icon"
+                    family="sharp"
+                    variant="regular"
+                    name="link-simple"
+                  ></wa-icon>
+                  <wa-icon
+                    slot="success-icon"
+                    family="sharp"
+                    variant="regular"
+                    name="check"
+                  ></wa-icon>
+                  <wa-icon
+                    slot="error-icon"
+                    family="sharp"
+                    variant="regular"
+                    name="xmark"
+                  ></wa-icon>
+                </wa-copy-button>
               </div>
               <pre data-copy><code class="language-html b-code"></code></pre>
             </figure>
