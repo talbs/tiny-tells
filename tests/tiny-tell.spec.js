@@ -135,10 +135,9 @@ test.describe('in motion', () => {
     expect(await page.$eval('#early', el => el.getAttribute('state')), 'the early state reflects after upgrade').toBe(
       'error'
     );
-    await expect(
-      page.locator('#early').getByRole('img', { name: 'Error' }),
-      'the early state names the tell'
-    ).toHaveCount(1);
+    await expect
+      .poll(() => page.$eval('#early', el => el.matches(':state(error)')), { message: 'the early state applies' })
+      .toBe(true);
   });
 
   test('unknown skins and states warn and fall back to drones and working', async ({ page }) => {
@@ -267,19 +266,17 @@ test.describe('still frames', () => {
       .toBeGreaterThan(60);
   });
 
-  test('accessible name follows state, label overrides, empty label is decorative', async ({ page }) => {
+  test('the tag is the image instead of its canvas, and :state() follows the state', async ({ page }) => {
+    expect(
+      await page.$eval('[data-skin="drones"]', el => {
+        const canvas = el.shadowRoot.querySelector('[part="tell"]');
+        return [canvas.getAttribute('role'), canvas.getAttribute('aria-hidden')];
+      }),
+      'the canvas part is hidden and has no role, so the tag carries the name in this engine'
+    ).toEqual([null, 'true']);
     await page.$eval('[data-skin="drones"]', el => {
       el.state = 'error';
     });
-    await expect(
-      page.locator('[data-skin="drones"]').getByRole('img', { name: 'Error' }),
-      'the state names the tell'
-    ).toHaveCount(1);
-    await expect(
-      page.locator('#labeled').getByRole('img', { name: 'Deploying' }),
-      'label overrides the state name'
-    ).toHaveCount(1);
-    await expect(page.locator('#decorative').getByRole('img'), 'an empty label hides the tell').toHaveCount(0);
     expect(
       await page.$eval('[data-skin="drones"]', el => el.matches(':state(error)')),
       'the state is exposed to :state()'
@@ -303,10 +300,11 @@ test.describe('still frames', () => {
       el.state = 'error';
       document.body.append(el);
     });
-    await expect(
-      page.locator('[data-skin="lens"]').getByRole('img', { name: 'Error' }),
-      'a state set while detached applies on re-add'
-    ).toHaveCount(1);
+    await expect
+      .poll(() => page.$eval('[data-skin="lens"]', el => el.matches(':state(error)')), {
+        message: 'a state set while detached applies on re-add',
+      })
+      .toBe(true);
     await expect
       .poll(() => frame(page, '[data-skin="lens"]'), { message: 'and the re-added tell draws the new state' })
       .not.toBe(before);
@@ -451,6 +449,46 @@ test.describe('Chromium only', () => {
     expect(reads, '60 frames of <html> writes cost a few reads a frame, not a pass over every tell').toBeLessThan(300);
   });
 
+  test('the tell is one img named by its state, its label, or an aria-label on the tag; an empty label hides it', async ({
+    page,
+  }) => {
+    await open(page);
+    const cdp = await page.context().newCDPSession(page);
+    const images = async () =>
+      (await cdp.send('Accessibility.getFullAXTree')).nodes
+        .filter(n => !n.ignored && n.role?.value === 'image')
+        .map(n => n.name?.value);
+    const before = await images();
+    await page.$eval('[data-skin="drones"]', el => {
+      el.state = 'error';
+    });
+    await page.$eval('[data-skin="lens"]', el => el.setAttribute('aria-label', 'Uploading'));
+    await twoFrames(page);
+    const after = await images();
+    const errors = names => names.filter(n => n === 'Error').length;
+    expect(errors(after), 'the state names the tell').toBe(errors(before) + 1);
+    expect(after, 'label overrides the state name').toContain('Deploying');
+    expect(
+      after.filter(n => n === 'Uploading'),
+      'an aria-label on the tag names it'
+    ).toHaveLength(1);
+    expect(after, 'an aria-label replaces the name instead of adding a second img').toHaveLength(before.length);
+    await page.evaluate(() => {
+      document.querySelector('[data-skin="lens"]').removeAttribute('aria-label');
+      document.body.insertAdjacentHTML('beforeend', '<span id="sync-words">Syncing</span>');
+      document.querySelector('[data-skin="dekatron"]').setAttribute('aria-labelledby', 'sync-words');
+    });
+    await twoFrames(page);
+    const relabeled = await images();
+    expect(relabeled, 'removing the aria-label goes back to the state name').not.toContain('Uploading');
+    expect(relabeled, 'an aria-labelledby on the tag names it').toContain('Syncing');
+    expect(relabeled, 'neither change adds or drops an img').toHaveLength(before.length);
+    expect(
+      after.filter(n => !n),
+      'an empty label hides the tell'
+    ).toHaveLength(0);
+  });
+
   test('axe finds no accessibility violations in tells', async ({ page }) => {
     await open(page, { still: true });
     const { violations, passes } = await new AxeBuilder({ page })
@@ -463,8 +501,8 @@ test.describe('Chromium only', () => {
     ).toEqual([]);
     expect(
       passes.map(p => p.id),
-      'axe actually checked the image names'
-    ).toContain('role-img-alt');
+      'axe actually checked the hidden canvas'
+    ).toContain('aria-hidden-focus');
   });
 
   test('every tell stays in its live area, loops without a seam, and never flashes more than 3 times a second', async ({
@@ -560,10 +598,11 @@ test.describe('play bundle', () => {
     await expect
       .poll(() => hue(page, '#eyes'), { message: 'five taps start the dance', timeout: 3000 })
       .toBeGreaterThan(40);
-    await expect(
-      page.locator('#eyes').getByRole('img', { name: 'Idle' }),
-      'the name stays on the real state while dancing'
-    ).toHaveCount(1);
+    await expect
+      .poll(() => page.$eval('#eyes', el => el.matches(':state(idle)')), {
+        message: 'the exposed state stays the real one while dancing',
+      })
+      .toBe(true);
     await expect
       .poll(() => page.evaluate(() => window.heard.length), { message: 'the dance ends on its own', timeout: 5000 })
       .toBe(2);
@@ -783,6 +822,15 @@ test.describe('site pages', () => {
     await expect.poll(speed, { message: 'the speed eases back to 1 once tapping stops' }).toBe(1);
     await tap.click();
     await expect(status, 'a new round clears it, so the same tempo is announced again').toBeEmpty();
+  });
+
+  test('the docs Labels table says what screen readers hear for each label', async ({ page }) => {
+    await open(page, { path: '/docs/' });
+    await expect(page.locator('#label-cases td:last-child'), 'one answer per label case').toHaveText([
+      '“Working”, an image',
+      '“Uploading photos”, an image',
+      'Nothing. The tell is hidden.',
+    ]);
   });
 
   test('the Prompt install method shows the paste-in prompt, and the docs fall back to npm', async ({ page }) => {

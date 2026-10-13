@@ -521,7 +521,8 @@ words.textContent = 'Synced 3 files.';</code></pre>
         <p>
           Screen readers announce a tell as an image named after its state, like “Working”. Set <code>label</code> to
           say something more specific, or set <code>label=""</code> to hide the tell from screen readers when the words
-          beside it already say the state.
+          beside it already say the state. An <code>aria-label</code> or <code>aria-labelledby</code> on the tag works
+          too, and wins over a non-empty <code>label</code>.
         </p>
         <figure class="example wa-not-prose">
           <div class="example-preview studio wa-cluster">
