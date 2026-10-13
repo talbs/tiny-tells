@@ -1,5 +1,5 @@
 @layer page {
-  #docs-title {
+  .docs-wordmark {
     margin: 0 0 var(--wa-space-s) -0.035em;
     font-size: clamp(2.75rem, 5vw, 4rem);
   }
@@ -481,15 +481,15 @@
     }
   }
   @container (max-width: 23rem) {
-    #handoff-state {
+    .handoff-state {
       inline-size: 100%;
     }
-    #handoff-state::part(form-control-input) {
+    .handoff-state::part(form-control-input) {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: var(--wa-space-2xs);
     }
-    #handoff-state wa-radio {
+    .handoff-state wa-radio {
       justify-content: center;
       margin: 0;
       border-radius: var(--wa-form-control-border-radius);
