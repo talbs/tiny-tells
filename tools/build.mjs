@@ -281,14 +281,14 @@ const ICONS = ['favicon.svg', 'favicon-32.png', 'apple-touch-icon.png'];
 const favicon = root => `<link rel="icon" href="${root}favicon-32.png" sizes="32x32" type="image/png">
 <link rel="icon" href="${root}favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="${root}apple-touch-icon.png">`;
-/* Latin and Latin Extended only: Fontsource's default files pull in every subset, and the Korean ones alone are 4 MB. */
+/* Latin only. Fontsource's per-subset files have no unicode-range, so every subset listed here downloads on every page. */
 const FONTS = [
-  'martian-mono/400',
-  'martian-mono/500',
-  'schibsted-grotesk/400',
-  'schibsted-grotesk/500',
-  'schibsted-grotesk/700',
-].flatMap(font => ['latin', 'latin-ext'].map(subset => font.replace('/', `/${subset}-`)));
+  'martian-mono/latin-400',
+  'martian-mono/latin-500',
+  'schibsted-grotesk/latin-400',
+  'schibsted-grotesk/latin-500',
+  'schibsted-grotesk/latin-700',
+];
 const SITE_CSS = [
   ['tools', 'shared', 'theme.css'],
   ['tools', 'site', 'site.css'],
@@ -378,7 +378,6 @@ ${pageMeta({ title, description, path })}${isNoindex ? '\n<meta name="robots" co
 <link rel="stylesheet" href="${root}assets/vendor.css">${isHandLettered ? `\n<link rel="stylesheet" href="${root}assets/hand.css">` : ''}
 <script type="module" src="${root}assets/webawesome/webawesome.loader.js" data-webawesome="${root}assets/webawesome"></script>${umamiTag()}
 ${preloads}
-<script type="module" src="${root}assets/microlighter/microlighter.min.js"></script>
 <style>
 ${styles}</style>
 </head>
@@ -387,6 +386,7 @@ ${page}
 <script type="module">
 ${js}
 </script>
+<script type="module" src="${root}assets/microlighter/microlighter.min.js"></script>
 </body>
 </html>
 `;
