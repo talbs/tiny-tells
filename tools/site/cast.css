@@ -104,10 +104,43 @@ main > #tells {
   background: var(--paper);
   overflow: hidden;
 }
+.stage,
+.onion {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+}
+.guide {
+  position: absolute;
+  inset: calc(13% + 74% * 0.08);
+  border: var(--wa-border-width-s) dashed color-mix(in oklab, var(--guide) 40%, transparent);
+  border-radius: var(--wa-border-radius-s);
+  pointer-events: none;
+}
+.guide::before,
+.guide::after {
+  content: '';
+  position: absolute;
+  background: color-mix(in oklab, var(--guide) 25%, transparent);
+}
+.guide::before {
+  inset-inline: -6%;
+  inset-block-start: 50%;
+  block-size: 1px;
+}
+.guide::after {
+  inset-block: -6%;
+  inset-inline-start: 50%;
+  inline-size: 1px;
+}
+.studio.is-bare .guide {
+  display: none;
+}
 .proof-table .sheet.big {
-  border: 0;
-  border-radius: 0;
+  position: relative;
   aspect-ratio: 16 / 10;
+  overflow: hidden;
 }
 .proof-table .sheet.big tiny-tell {
   --tell-size: 46%;
@@ -118,17 +151,13 @@ main > #tells {
   gap: var(--wa-space-s);
   margin: 0;
   padding: var(--cell);
-  border: 0;
   border-block-start: var(--wa-border-width-s) solid var(--paper-edge);
-  border-radius: 0;
-  background: transparent;
 }
 .proof-table .ship-strip .model {
   display: flex;
   justify-content: space-between;
   align-items: center;
   min-block-size: 0;
-  padding: 0;
 }
 .proof-table .model figure {
   display: grid;
@@ -144,8 +173,6 @@ main > #tells {
   gap: var(--wa-space-xs);
   justify-self: start;
   min-inline-size: 0;
-  padding: 0;
-  border: 0;
   font: var(--wa-font-weight-normal) var(--wa-font-size-xs)/1 var(--font-mono);
   color: var(--muted);
 }
@@ -155,9 +182,8 @@ main > #tells {
   border-block-start: var(--wa-border-width-s) dashed color-mix(in oklab, var(--guide) 55%, transparent);
 }
 .proof-table .any-size {
-  margin: 0;
-  padding: 0;
-  border: 0;
+  display: grid;
+  align-items: center;
   border-block-start: var(--wa-border-width-s) solid var(--paper-edge);
 }
 .proof-table .any-size wa-slider {

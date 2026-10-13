@@ -199,7 +199,6 @@ const FONTS = [
 ].flatMap(font => ['latin', 'latin-ext'].map(subset => font.replace('/', `/${subset}-`)));
 const SITE_CSS = [
   ['tools', 'shared', 'theme.css'],
-  ['tools', 'shared', 'studio.css'],
   ['tools', 'site', 'site.css'],
   ['tools', 'site', 'components.css'],
   ['tools', 'site', 'sections.css'],
