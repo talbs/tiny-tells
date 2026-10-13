@@ -417,11 +417,11 @@ document.querySelectorAll('.system-well').forEach(well => {
   well.innerHTML = STATES.map(s => tag(page.skin, `state="${s}" data-follow label="${LABEL[s]}"`)).join('');
 });
 
+let isDemoPaused = false;
 $('pause-demo-button').addEventListener('click', e => {
-  const isPaused = e.currentTarget.getAttribute('aria-pressed') !== 'true';
-  e.currentTarget.setAttribute('aria-pressed', isPaused);
-  e.currentTarget.textContent = isPaused ? 'Play Animations' : 'Pause Animations';
+  isDemoPaused = !isDemoPaused;
+  e.currentTarget.textContent = isDemoPaused ? 'Play Animations' : 'Pause Animations';
   $('pause-demo')
     .querySelectorAll('tiny-tell')
-    .forEach(tell => (tell.paused = isPaused));
+    .forEach(tell => (tell.paused = isDemoPaused));
 });
