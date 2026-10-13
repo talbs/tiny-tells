@@ -25,7 +25,7 @@ const syncMotion = () => {
 syncMotion();
 onMotionChange(syncMotion);
 
-const peanutsGo = $('peanuts-go');
+const partyGo = $('dance-party-go');
 let cast = [],
   isShowing = false,
   showTimers = [];
@@ -35,7 +35,7 @@ const clearShow = () => {
 };
 const setShowing = next => {
   isShowing = next;
-  peanutsGo.textContent = next ? 'Stop the Show' : 'Start the Show';
+  partyGo.textContent = next ? 'Stop the Show' : 'Start the Show';
 };
 const startShow = () => {
   clearShow();
@@ -50,11 +50,11 @@ const stopShow = ({ isBowing = true } = {}) => {
   cast.forEach(el => (el.state = 'done'));
   showTimers.push(setTimeout(() => cast.forEach(el => (el.state = 'idle')), BEAT_MS));
 };
-peanutsGo.addEventListener('click', () => (isShowing ? stopShow() : startShow()));
+partyGo.addEventListener('click', () => (isShowing ? stopShow() : startShow()));
 onMotionChange(() => isStill() && isShowing && stopShow({ isBowing: false }));
 toys.push({
   build: () => {
-    cast = fill($('peanuts'), 6, i => V1[i]);
+    cast = fill($('dance-party'), 6, i => V1[i]);
     cast.forEach(el => keepDancing(el, () => isShowing));
   },
 });
