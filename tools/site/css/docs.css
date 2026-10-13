@@ -286,7 +286,7 @@
     align-self: start;
     margin-block-start: 10px;
   }
-  @media (max-width: 30rem) {
+  @media (width <= 30rem) {
     .install-head > * {
       grid-area: auto;
     }
@@ -463,7 +463,7 @@
   .text-sizes [data-measure] {
     margin-inline-start: auto;
   }
-  @container (max-width: 24rem) {
+  @container (width <= 24rem) {
     .text-sizes > p {
       row-gap: var(--wa-space-3xs);
     }
@@ -472,7 +472,7 @@
       margin-inline-start: 0;
     }
   }
-  @container (max-width: 32rem) {
+  @container (width <= 32rem) {
     .fallback-glyphs > * {
       flex-basis: calc((100% - var(--wa-space-l)) / 2);
     }
@@ -480,7 +480,7 @@
       flex-basis: 100%;
     }
   }
-  @container (max-width: 23rem) {
+  @container (width <= 23rem) {
     .handoff-state {
       inline-size: 100%;
     }
@@ -516,7 +516,7 @@
     --tell-size: 2rem;
     inline-size: 1px;
   }
-  @media (max-width: 40rem) {
+  @media (width <= 40rem) {
     .label-cases thead {
       position: absolute;
       inline-size: 1px;

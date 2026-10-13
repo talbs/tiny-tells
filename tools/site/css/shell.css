@@ -18,7 +18,7 @@
   wa-page::part(main-content) {
     padding-block: var(--space-section) var(--space-page);
   }
-  @media (max-width: 699px) {
+  @media (width < 700px) {
     wa-page::part(main-content) {
       padding-block-end: var(--section-pad);
     }
@@ -64,7 +64,7 @@
     flex: 1 1 0;
     min-inline-size: 0;
   }
-  @media (max-width: 699px) {
+  @media (width < 700px) {
     .sections,
     .palette-tabs,
     .header-docs[aria-current] {
@@ -155,7 +155,7 @@
   [slot='footer'].site-footer {
     padding-block: var(--wa-space-xl);
   }
-  @media (max-width: 999px) {
+  @media (width < 1000px) {
     .site-footer {
       flex-direction: column;
       align-items: stretch;
@@ -177,12 +177,12 @@
   .title-block a {
     color: inherit;
   }
-  @media (max-width: 519px) {
+  @media (width < 520px) {
     .title-block > * {
       padding-inline: var(--wa-space-s);
     }
   }
-  @media (max-width: 479px) {
+  @media (width < 480px) {
     .title-block {
       gap: var(--wa-space-2xs) var(--wa-space-m);
     }
