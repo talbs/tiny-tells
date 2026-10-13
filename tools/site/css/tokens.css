@@ -92,6 +92,11 @@
     --guide: #5b9ccf;
     --accent: #d0574a;
     --peg: #edeae2;
+    --guide-strong: color-mix(in oklab, var(--guide) 75%, transparent);
+    --guide-line: color-mix(in oklab, var(--guide) 55%, transparent);
+    --guide-soft: color-mix(in oklab, var(--guide) 40%, transparent);
+    --guide-wash: color-mix(in oklab, var(--guide) 25%, transparent);
+    --guide-faint: color-mix(in oklab, var(--guide) 15%, transparent);
     color: var(--ink);
   }
   /* Keyed to the page, not light-dark(): the swatch wells force their own scheme but keep the sheet's edge. */
@@ -115,6 +120,7 @@
     --page-width: 80rem;
     --gutter: clamp(var(--wa-space-m), 4vw, var(--wa-space-2xl));
     --measure: 65ch;
+    --label-tracking: 0.08em;
     --bleed: calc(50% - 50vw);
   }
   .studio {
