@@ -37,7 +37,7 @@ Tiny Tells is one custom element, `<tiny-tell>`, that shows what an app is up to
 
 - Name: Tiny Tells. Element: `<tiny-tell>`.
 - Voice: friendly, like an animation studio's lab team sharing its internal model sheets and lab notes with the public. It's inspired by that kind of studio culture, never a copy of it. No real studio names, characters, logos, or anything implying an endorsement.
-- Site chrome is built on Web Awesome (components, utilities, theming layers), self-hosted from the npm package's `dist-cdn` build, which `npm run build` copies into `site/` (nothing is committed). Icons are Font Awesome via kit `3572f3662e`: Sharp Regular, plus Duotone Regular only where it carries meaning. Never cross colors in a duotone.
+- Site chrome is built on Web Awesome (components, utilities, theming layers), bundled by `npm run build` from the npm package's `dist` build into one file with only the components the pages use (nothing is committed). Icons are Font Awesome via kit `3572f3662e`: Sharp Regular, plus Duotone Regular only where it carries meaning. Never cross colors in a duotone.
 - Keep chrome minimal so the tells carry the page. An earlier proof page got too decorative.
 - Copy gets a voice pass before it ships.
 
