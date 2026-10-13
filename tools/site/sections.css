@@ -85,10 +85,32 @@
   background: var(--wa-color-surface-default);
 }
 .builder .example-preview {
+  position: relative;
   display: grid;
   place-items: center;
   min-block-size: 9rem;
+  padding-block: var(--wa-space-3xl);
   font-size: var(--wa-font-size-l);
+}
+/* Matches the code block's copy button, so the two icons share a column. */
+#b-link {
+  position: absolute;
+  inset-block-start: calc(var(--wa-space-m) - var(--wa-panel-border-width));
+  inset-inline-end: calc(var(--wa-space-s) - var(--wa-panel-border-width));
+  font: var(--wa-font-weight-semibold) var(--wa-font-size-xs) / 1.3 var(--font-body);
+}
+#b-link wa-icon {
+  font-size: var(--wa-font-size-m);
+}
+#b-link::part(button) {
+  justify-content: center;
+  inline-size: 2rem;
+  padding-inline: 0;
+  color: var(--muted);
+}
+#b-link::part(button):hover {
+  background: color-mix(in oklab, var(--ink) 8%, transparent);
+  color: var(--ink);
 }
 .steps {
   margin-block-start: var(--wa-space-l);

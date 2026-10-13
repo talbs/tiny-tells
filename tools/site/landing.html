@@ -527,7 +527,10 @@
             </div>
           </div>
         </li>
-        <li class="step wa-stack">
+        <li
+          class="step wa-stack"
+          id="drop-one-in"
+        >
           <wa-divider></wa-divider>
           <div class="step-head wa-cluster wa-flex-nowrap">
             <span
@@ -548,6 +551,7 @@
               <wa-input
                 id="b-words"
                 label="Words Beside It"
+                maxlength="120"
                 hint="Leave it empty and the tell announces its own state."
                 size="s"
                 value="Syncing 3 files…"
@@ -618,6 +622,32 @@
             <figure class="example">
               <div class="example-preview studio">
                 <div id="b-preview"></div>
+                <wa-copy-button
+                  id="b-link"
+                  copy-label="Copy Link to This Setup"
+                  success-label="Link copied"
+                  error-label="Couldn’t copy. Try again?"
+                  tooltip-placement="left"
+                >
+                  <wa-icon
+                    slot="copy-icon"
+                    family="sharp"
+                    variant="regular"
+                    name="link-simple"
+                  ></wa-icon>
+                  <wa-icon
+                    slot="success-icon"
+                    family="sharp"
+                    variant="regular"
+                    name="check"
+                  ></wa-icon>
+                  <wa-icon
+                    slot="error-icon"
+                    family="sharp"
+                    variant="regular"
+                    name="xmark"
+                  ></wa-icon>
+                </wa-copy-button>
               </div>
               <pre data-copy><code class="language-html b-code"></code></pre>
             </figure>
