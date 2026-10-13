@@ -51,7 +51,7 @@ const bundle = async (entry, { minify = false, banner = '' } = {}) => {
     write: false,
     legalComments: 'inline',
     banner: banner ? { js: banner } : undefined,
-    define: { __TINY_TELLS_VERSION__: JSON.stringify(VERSION), __FA_VERSION__: JSON.stringify(FA_VERSION) },
+    define: { __TINY_TELLS_VERSION__: JSON.stringify(VERSION) },
   });
   return result.outputFiles[0].text;
 };
