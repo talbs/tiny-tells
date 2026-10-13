@@ -651,7 +651,7 @@ wa-tab-group:has(> .tab-bar) > wa-tab[active] {
 :is(h2, h3):hover > .heading-anchor {
   opacity: 0.8;
 }
-.heading-anchor:hover {
+.heading-anchor:is(:hover, :focus-visible) {
   opacity: 1;
   color: var(--fg);
 }

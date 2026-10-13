@@ -245,14 +245,21 @@ const pickBundle = isPlay => {
 $('docs-bundle').addEventListener('change', e => pickBundle(e.target.checked));
 $('examples-play').addEventListener('change', e => pickBundle(e.target.value === 'play'));
 setBundle(store.get('tells-site-bundle') === 'play');
-document
-  .querySelectorAll('main section[id] > h2, main section h3[id]')
-  .forEach(h =>
-    h.insertAdjacentHTML(
-      'beforeend',
-      `<a class="heading-anchor" href="#${h.localName === 'h2' ? h.parentElement.id : h.id}" aria-hidden="true" tabindex="-1"><wa-icon family="sharp" variant="regular" name="anchor" label="Link to ${h.textContent}"></wa-icon></a>`
-    )
+document.querySelectorAll('main section[id] > h2, main section h3[id]').forEach(h => {
+  const link = Object.assign(document.createElement('a'), {
+    className: 'heading-anchor',
+    href: `#${h.localName === 'h2' ? h.parentElement.id : h.id}`,
+  });
+  link.append(
+    Object.assign(document.createElement('wa-icon'), {
+      family: 'sharp',
+      variant: 'regular',
+      name: 'anchor',
+      label: `Link to ${h.textContent.trim()}`,
+    })
   );
+  h.append(link);
+});
 
 let beatStart = 0,
   beatOn = -1,
