@@ -55,10 +55,22 @@ const setup = () => {
     !document.createElement('canvas').getContext?.('2d')
   )
     return (env = { isInert: true });
-  const refreshSoon = () => {
+  const rootLook = () => {
+    const css = getComputedStyle(document.documentElement);
+    return [css.colorScheme, css.color, ...STATES.map(s => css.getPropertyValue(`--tell-color-${s}`))].join();
+  };
+  let rootSeen = '',
+    isStyleOnly = true;
+  /* Scroll and animation scripts can write <html>'s style every frame. Skip the full refresh unless it changed something tells read. */
+  const refreshSoon = (isStyle = false) => {
+    isStyleOnly &&= isStyle;
     pending ||= requestAnimationFrame(() => {
       pending = 0;
-      refreshSeen();
+      const look = rootLook(),
+        isSame = isStyleOnly && look === rootSeen;
+      rootSeen = look;
+      isStyleOnly = true;
+      if (!isSame) refreshSeen();
     });
   };
   const watchDensity = () =>
@@ -109,10 +121,13 @@ const setup = () => {
     ),
     sized: new ResizeObserver(entries => refresh(entries.map(e => e.target))),
   };
-  new MutationObserver(refreshSoon).observe(document.documentElement, { attributes: true });
-  env.reduce.addEventListener('change', refreshSoon);
-  env.dark.addEventListener('change', refreshSoon);
-  env.forced.addEventListener('change', refreshSoon);
+  new MutationObserver(list => refreshSoon(list.every(m => m.attributeName === 'style'))).observe(
+    document.documentElement,
+    { attributes: true }
+  );
+  env.reduce.addEventListener('change', () => refreshSoon());
+  env.dark.addEventListener('change', () => refreshSoon());
+  env.forced.addEventListener('change', () => refreshSoon());
   watchDensity();
   return env;
 };
@@ -126,7 +141,9 @@ class TinyTell extends (typeof HTMLElement === 'undefined' ? class {} : HTMLElem
     return clock.scale;
   }
   static set timeScale(v) {
+    const wasStopped = !clock.scale;
     clock.scale = Number.isFinite(+v) ? Math.max(0, +v) : 0;
+    if (wasStopped !== !clock.scale && env && !env.isInert) refreshSeen();
   }
 
   #canvas = Object.assign(document.createElement('canvas'), { width: 0, height: 0 });
@@ -369,7 +386,9 @@ class TinyTell extends (typeof HTMLElement === 'undefined' ? class {} : HTMLElem
       synced = JSON.stringify([this.state, label]);
     if (synced !== this.#synced) this.#mark(label);
     this.#synced = synced;
-    const isMoving = this.#player && this.#isVisible && !this.paused && !env.reduce.matches;
+    /* A stopped clock draws the same frame forever, unless play has a pointer to follow. */
+    const isMoving =
+      this.#player && this.#isVisible && !this.paused && !env.reduce.matches && (clock.scale > 0 || HOOKS.gaze);
     if (isMoving) {
       clock.live.add(this);
       wake();
