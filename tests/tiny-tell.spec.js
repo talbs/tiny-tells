@@ -87,6 +87,28 @@ const settled = async (page, selector) => {
   throw new Error(`${selector} never settled`);
 };
 
+const fakeDisplay = page =>
+  page.addInitScript(() => {
+    const queue = [],
+      draws = new Map();
+    let now = 0;
+    window.requestAnimationFrame = callback => queue.push(callback);
+    window.cancelAnimationFrame = () => {};
+    const clear = CanvasRenderingContext2D.prototype.clearRect;
+    CanvasRenderingContext2D.prototype.clearRect = function (x, y, w, h) {
+      if (w > 1) draws.set(this.canvas, (draws.get(this.canvas) || 0) + 1);
+      return clear.call(this, x, y, w, h);
+    };
+    window.runDisplay = (hz, frames) => {
+      draws.clear();
+      for (let i = 0; i < frames; i++) {
+        now += 1000 / hz;
+        queue.splice(0).forEach(callback => callback(now));
+      }
+      return Math.max(0, ...draws.values());
+    };
+  });
+
 const noProblems = ({ page }) => expect(page.problems, 'no page errors or console errors').toEqual([]);
 
 test.describe('in motion', () => {
@@ -392,32 +414,41 @@ test.describe('Chromium only', () => {
   test('a moving tell redraws at 60fps on a 120Hz display, not every display frame (Dia stuttered)', async ({
     page,
   }) => {
-    await page.addInitScript(() => {
-      const queue = [],
-        draws = new Map();
-      let now = 0;
-      window.requestAnimationFrame = callback => queue.push(callback);
-      window.cancelAnimationFrame = () => {};
-      const clear = CanvasRenderingContext2D.prototype.clearRect;
-      CanvasRenderingContext2D.prototype.clearRect = function (x, y, w, h) {
-        if (w > 1) draws.set(this.canvas, (draws.get(this.canvas) || 0) + 1);
-        return clear.call(this, x, y, w, h);
-      };
-      window.runDisplay = (hz, frames) => {
-        draws.clear();
-        for (let i = 0; i < frames; i++) {
-          now += 1000 / hz;
-          queue.splice(0).forEach(callback => callback(now));
-        }
-        return Math.max(0, ...draws.values());
-      };
-    });
+    await fakeDisplay(page);
     await page.goto('/tests/fixture.html');
     await page.waitForFunction(() => customElements.get('tiny-tell'));
     const second = hz => page.evaluate(hz => (window.runDisplay(hz, hz), window.runDisplay(hz, hz)), hz);
     expect(await second(120), 'a 120Hz display draws at least 58 frames a second').toBeGreaterThanOrEqual(58);
     expect(await second(120), 'a 120Hz display draws at most 62 frames a second').toBeLessThanOrEqual(62);
     expect(await second(60), 'a 60Hz display still draws every frame').toBeGreaterThanOrEqual(58);
+  });
+
+  test('a tell stops redrawing when timeScale is 0, and moves again when it goes back up', async ({ page }) => {
+    await fakeDisplay(page);
+    await page.goto('/tests/fixture.html');
+    await page.waitForFunction(() => customElements.get('tiny-tell'));
+    await page.evaluate(() => window.runDisplay(60, 10));
+    await page.evaluate(() => (customElements.get('tiny-tell').timeScale = 0));
+    await page.evaluate(() => window.runDisplay(60, 10));
+    expect(await page.evaluate(() => window.runDisplay(60, 60)), 'a stopped clock draws nothing').toBe(0);
+    await page.evaluate(() => (customElements.get('tiny-tell').timeScale = 1));
+    expect(await page.evaluate(() => window.runDisplay(60, 60)), 'a restarted clock draws again').toBeGreaterThan(50);
+  });
+
+  test('a script writing to <html> every frame doesn’t make every tell re-read its colors', async ({ page }) => {
+    await open(page);
+    const reads = await page.evaluate(async () => {
+      const read = window.getComputedStyle;
+      let count = 0;
+      window.getComputedStyle = (...args) => (count++, read(...args));
+      for (let i = 0; i < 60; i++) {
+        document.documentElement.style.setProperty('--scroll', String(i));
+        await new Promise(r => requestAnimationFrame(r));
+      }
+      window.getComputedStyle = read;
+      return count;
+    });
+    expect(reads, '60 frames of <html> writes cost a few reads a frame, not a pass over every tell').toBeLessThan(300);
   });
 
   test('axe finds no accessibility violations in tells', async ({ page }) => {
