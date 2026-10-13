@@ -94,11 +94,7 @@
   color-scheme: dark;
 }
 body {
-  margin: 0;
   background: var(--bg);
-  color: var(--fg);
-  font-family: var(--font-body);
-  line-height: var(--wa-line-height-normal);
 }
 @layer wa-base {
   h2 {
@@ -110,7 +106,6 @@ body {
   }
   p {
     margin: 0;
-    text-wrap: pretty;
   }
 }
 .note {
