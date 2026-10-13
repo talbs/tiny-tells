@@ -338,12 +338,105 @@ const pageMeta = ({ title, description, path }) => {
 <meta name="twitter:card" content="summary_large_image">`;
 };
 
-const preparePage = async ({ body, script, root, size, css = SITE_CSS }) => {
+/* The docs' reference tables are copied from api.json, so the build writes them: they're in the HTML for readers without JS, and they can't drift from the API. */
+const docsTables = () => {
+  const ATTR = Object.fromEntries(API.attributes.map(a => [a.name, a]));
+  const USE_IT = {
+    working: 'For the whole wait, from the first step to the last.',
+    done: 'Once the work is really finished, not just sent.',
+    error: 'Always with words beside it that say what broke.',
+    warning: 'When someone has to act on an approval, a conflict, or a sign-in, and nothing is broken.',
+    idle: 'For anything ready, queued, or up to date, when nobody is waiting on it.',
+  };
+  const GUIDE = {
+    skin: '#tells',
+    state: '#states',
+    color: '#match-text',
+    scheme: '#match-scheme',
+    label: '#labels',
+    paused: '#pausing',
+  };
+  const codeify = text => text.replace(/\b\w+\(\)/g, '<code>$&</code>');
+  return {
+    'tell-rows': Object.entries(ATTR.skin.values)
+      .map(
+        ([s, about]) =>
+          `<tr><td class="tell-cell"><tiny-tell skin="${s}" label=""></tiny-tell></td><th scope="row"><code>${s}</code></th><td>${about}</td></tr>`
+      )
+      .join(''),
+    'state-rows': Object.entries(ATTR.state.values)
+      .map(
+        ([s, about]) =>
+          `<tr><td class="tell-cell"><tiny-tell skin="drones" state="${s}" label=""></tiny-tell></td><th scope="row"><code>${s}</code></th><td>${about}</td><td>${USE_IT[s]}</td></tr>`
+      )
+      .join(''),
+    'attr-rows': API.attributes
+      .map(
+        a =>
+          `<tr><th scope="row"><code>${a.name}</code></th><td>${
+            a.name === 'skin'
+              ? 'One of the six <a href="#tells">tells</a>'
+              : a.name === 'state'
+                ? 'One of the five <a href="#states">states</a>'
+                : a.values
+                  ? Object.keys(a.values)
+                      .map(v => `<code>${v}</code>`)
+                      .join(', ')
+                  : a.type === 'boolean'
+                    ? 'boolean'
+                    : 'text'
+          }<br><span class="wa-caption-s">${a.description} <a href="${GUIDE[a.name]}">How to use it</a>.</span></td><td>${a.default == null || a.default === false ? '—' : `<code>${a.default}</code>`}</td></tr>`
+      )
+      .join(''),
+    'event-rows': API.events
+      .map(
+        e =>
+          `<tr><th scope="row"><code>${e.name}</code></th><td>${e.cancelable ? 'Yes' : 'No'}</td><td>${codeify(e.description)}</td></tr>`
+      )
+      .join(''),
+    'static-rows': API.statics
+      .map(
+        m =>
+          `<tr><th scope="row"><span class="wa-cluster wa-gap-xs wa-flex-nowrap"><code>${API.class}.${m.name}</code>${m.readonly ? '<wa-tag class="studio" appearance="outlined" size="xs">Read-Only</wa-tag>' : ''}</span></th><td><code>${m.type}</code></td><td>${m.description}</td></tr>`
+      )
+      .join(''),
+  };
+};
+
+/* Each heading is named by its own text, because a link inside a heading otherwise joins its accessible name ("Get Started Link to Get Started"). An h2 links to its section, whose id isn't always the heading's. */
+const addAnchors = html => {
+  const sections = [];
+  const anchored = html.replace(
+    /<section\b([^>]*)>|<\/section>|<(h2|h3)( id="([^"]+)")?>([^<]+)<\/\2>/g,
+    (match, sectionAttrs, level, idAttr, id, text) => {
+      if (sectionAttrs !== undefined) {
+        sections.push(sectionAttrs.match(/\sid="([^"]+)"/)?.[1] ?? '');
+        return match;
+      }
+      if (match === '</section>') {
+        sections.pop();
+        return match;
+      }
+      const target = level === 'h2' ? sections.at(-1) : id;
+      if (level === 'h2' && !target) throw new Error(`docs.html: an h2 outside a section with an id: ${match}`);
+      if (!target) return match;
+      const label = text.replaceAll('"', '&quot;');
+      return `<${level}${idAttr ?? ''} aria-label="${label}">${text}<a class="heading-anchor" href="#${target}"><wa-icon family="sharp" variant="regular" name="anchor" label="Link to ${label}"></wa-icon></a></${level}>`;
+    }
+  );
+  const missed = anchored.match(/<h2\b(?![^>]*aria-label)[^>]*>|<h3\b(?=[^>]*\sid=)(?![^>]*aria-label)[^>]*>/);
+  if (missed)
+    throw new Error(`docs.html: no anchor for ${missed[0]} (keep anchored headings to plain text, with only an id)`);
+  return anchored;
+};
+
+const preparePage = async ({ body, script, root, size, hasAnchors, css = SITE_CSS }) => {
   const js = await bundle(`tools/site/${script}`, { minify: true });
   const { code: styles } = await transform(css.map(path => read(...path)).join('\n'), { loader: 'css', minify: true });
   const fills = {
     header: read('tools', 'site', 'header.html'),
     footer: read('tools', 'site', 'footer.html'),
+    ...docsTables(),
   };
   const values = {
     root,
@@ -351,10 +444,11 @@ const preparePage = async ({ body, script, root, size, css = SITE_CSS }) => {
     size,
     prompt: ASSISTANT_PROMPT.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'),
   };
-  const html = read('tools', 'site', body)
-    .replace(/\{\{(header|footer)\}\}/g, (_, name) => fills[name])
+  const source = read('tools', 'site', body);
+  const html = (hasAnchors ? addAnchors(source) : source)
+    .replace(/\{\{([\w-]+)\}\}/g, (match, name) => fills[name] ?? match)
     .replace(/\{\{(root|version|size|prompt)\}\}/g, (_, name) => values[name]);
-  const leftover = html.match(/\{\{\w+\}\}/);
+  const leftover = html.match(/\{\{[\w-]+\}\}/);
   if (leftover) throw new Error(`${body}: unfilled placeholder ${leftover[0]}`);
   const components = [...(html + js).matchAll(/<(wa-[a-z-]+)|createElement\(['"](wa-[a-z-]+)['"]\)/g)].map(m =>
     (m[1] || m[2]).slice(3)
@@ -494,6 +588,7 @@ const PAGES = [
     {
       body: 'docs.html',
       script: 'docs.js',
+      hasAnchors: true,
       root: '../',
       path: 'docs/',
       title: 'Docs · Tiny Tells',

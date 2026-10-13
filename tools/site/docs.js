@@ -1,6 +1,5 @@
 import { BEAT, LABEL, STATES } from '../../src/core.js';
 import { DANCE, HOOKS } from '../../src/element.js';
-import API from '../../src/api.json';
 import { V1 } from '../shared/copy.js';
 import {
   $,
@@ -26,78 +25,6 @@ import {
 } from './shared.js';
 import './funsies.js';
 
-const ATTR = Object.fromEntries(API.attributes.map(a => [a.name, a]));
-
-$('tell-rows').innerHTML = V1.map(
-  s =>
-    `<tr><td class="tell-cell">${tag(s, 'label=""')}</td><th scope="row"><code>${s}</code></th><td>${ATTR.skin.values[s]}</td></tr>`
-).join('');
-const USE_IT = {
-  working: 'For the whole wait, from the first step to the last.',
-  done: 'Once the work is really finished, not just sent.',
-  error: 'Always with words beside it that say what broke.',
-  warning: 'When someone has to act on an approval, a conflict, or a sign-in, and nothing is broken.',
-  idle: 'For anything ready, queued, or up to date, when nobody is waiting on it.',
-};
-$('state-rows').innerHTML = STATES.map(
-  s =>
-    `<tr><td class="tell-cell">${tag(page.skin, `state="${s}" label=""`)}</td><th scope="row"><code>${s}</code></th><td>${ATTR.state.values[s]}</td><td>${USE_IT[s]}</td></tr>`
-).join('');
-const GUIDE = {
-  skin: '#tells',
-  state: '#states',
-  color: '#match-text',
-  scheme: '#match-scheme',
-  label: '#labels',
-  paused: '#pausing',
-};
-$('attr-rows').innerHTML = API.attributes
-  .map(
-    a =>
-      `<tr><th scope="row"><code>${a.name}</code></th><td>${
-        a.name === 'skin'
-          ? 'One of the six <a href="#tells">tells</a>'
-          : a.name === 'state'
-            ? 'One of the five <a href="#states">states</a>'
-            : a.values
-              ? Object.keys(a.values)
-                  .map(v => `<code>${v}</code>`)
-                  .join(', ')
-              : a.type === 'boolean'
-                ? 'boolean'
-                : 'text'
-      }<br><span class="wa-caption-s">${a.description} <a href="${GUIDE[a.name]}">How to use it</a>.</span></td><td>${a.default == null || a.default === false ? '—' : `<code>${a.default}</code>`}</td></tr>`
-  )
-  .join('');
-const codeify = text => text.replace(/\b\w+\(\)/g, '<code>$&</code>');
-$('event-rows').innerHTML = API.events
-  .map(
-    e =>
-      `<tr><th scope="row"><code>${e.name}</code></th><td>${e.cancelable ? 'Yes' : 'No'}</td><td>${codeify(e.description)}</td></tr>`
-  )
-  .join('');
-$('static-rows').innerHTML = API.statics
-  .map(
-    m =>
-      `<tr><th scope="row"><span class="wa-cluster wa-gap-xs wa-flex-nowrap"><code>${API.class}.${m.name}</code>${m.readonly ? '<wa-tag class="studio" appearance="outlined" size="xs">Read-Only</wa-tag>' : ''}</span></th><td><code>${m.type}</code></td><td>${m.description}</td></tr>`
-  )
-  .join('');
-$('schemes').innerHTML = ['wa-light', 'wa-dark']
-  .map(
-    c =>
-      `<div class="${c} scheme-box wa-stack wa-gap-s"><p>${c === 'wa-light' ? 'In a light region' : 'In a dark region'}</p><div class="wa-cluster wa-gap-m">${['auto', 'light', 'dark', 'invert'].map(sc => `<figure class="wa-stack wa-gap-2xs wa-align-items-center">${tag(page.skin, `scheme="${sc}" data-follow`)}<figcaption><code>${sc}</code></figcaption></figure>`).join('')}</div></div>`
-  )
-  .join('');
-
-const LABEL_CASES = [
-  [null, 'no <code>label</code>', `“${LABEL.working}”, an image`],
-  ['Uploading photos', '<code>label="Uploading photos"</code>', '“Uploading photos”, an image'],
-  ['', '<code>label=""</code>', 'Nothing. The tell is hidden.'],
-];
-$('label-cases').innerHTML = LABEL_CASES.map(
-  ([label, markup, hears]) =>
-    `<tr><td>${tag(page.skin, `data-follow${label === null ? '' : ` label="${label}"`}`)}</td><th scope="row">${markup}</th><td>${hears}</td></tr>`
-).join('');
 $('paused-switch').addEventListener('change', e => ($('paused-tell').paused = e.target.checked));
 
 const anySize = () => Number($('any-size').value) || Number($('any-size').getAttribute('value'));
@@ -130,20 +57,8 @@ const describeA11y = () => {
     const pal = resolvedPalette(isDark);
     return Math.min(...STATES.map(s => contrast(pal[s].rgb, pal.surface)));
   });
-  $('a11y').innerHTML = [
-    ['A name', 'Shows up as an image named by its state, or by the <code>label</code> attribute.'],
-    ['Reduced motion', 'Holds one still pose per state, and play turns off.'],
-    ['Forced colors', 'Draws in the system text color under Windows high contrast.'],
-    [
-      'Contrast',
-      `Meets 3:1 with the built-in palette. With the current one, the lowest state is ${worst[0].toFixed(1)}:1 on light and ${worst[1].toFixed(1)}:1 on dark.`,
-    ],
-    ['Flashing', 'Never flashes more than three times a second.'],
-    ['Off-screen', 'Stops animating while it’s scrolled out of view.'],
-    ['Pausing', 'Holds its current frame with the <code>paused</code> attribute.'],
-  ]
-    .map(([need, tell]) => `<li><strong>${need}.</strong> ${tell}</li>`)
-    .join('');
+  $('a11y-contrast-now').textContent =
+    ` With the current one, the lowest state is ${worst[0].toFixed(1)}:1 on light and ${worst[1].toFixed(1)}:1 on dark.`;
 };
 
 $('dance').addEventListener('click', () => $('play-tell')[DANCE]?.());
@@ -235,21 +150,6 @@ const pickBundle = isPlay => {
 $('docs-bundle').addEventListener('change', e => pickBundle(e.target.checked));
 $('examples-play').addEventListener('change', e => pickBundle(e.target.value === 'play'));
 setBundle(store.get('tells-site-bundle') === 'play');
-document.querySelectorAll('main section[id] > h2, main section h3[id]').forEach(h => {
-  const link = Object.assign(document.createElement('a'), {
-    className: 'heading-anchor',
-    href: `#${h.localName === 'h2' ? h.parentElement.id : h.id}`,
-  });
-  link.append(
-    Object.assign(document.createElement('wa-icon'), {
-      family: 'sharp',
-      variant: 'regular',
-      name: 'anchor',
-      label: `Link to ${h.textContent.trim()}`,
-    })
-  );
-  h.append(link);
-});
 
 let beatStart = 0,
   beatOn = -1,

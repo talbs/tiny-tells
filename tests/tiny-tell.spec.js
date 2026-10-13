@@ -1,12 +1,14 @@
 import { readFileSync } from 'node:fs';
 import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
+import { LABEL } from '../src/core.js';
 
 const API = JSON.parse(readFileSync(new URL('../dist/custom-elements.json', import.meta.url))).modules[0]
   .declarations[0];
 const valuesOf = name => [...API.attributes.find(a => a.name === name).type.text.matchAll(/'([^']+)'/g)].map(m => m[1]);
 const SKINS = valuesOf('skin');
 const STATES = valuesOf('state');
+const SOURCE_API = JSON.parse(readFileSync(new URL('../src/api.json', import.meta.url)));
 
 const pixels = (page, selector) =>
   page.$eval(selector, el => {
@@ -804,6 +806,41 @@ test.describe('site pages', () => {
     ).toBe(true);
   });
 
+  test('docs headings are named by their own text, and the contrast note describes the current palette', async ({
+    page,
+  }) => {
+    await open(page, { path: '/docs/' });
+    await expect
+      .poll(() => page.locator('#a11y-contrast-now').textContent(), {
+        message: 'the contrast note gives the current palette’s lowest ratios',
+      })
+      .toMatch(/[\d.]+:1 on light and [\d.]+:1 on dark/);
+    const cdp = await page.context().newCDPSession(page);
+    const names = (await cdp.send('Accessibility.getFullAXTree')).nodes
+      .filter(node => node.role?.value === 'heading' && !node.ignored)
+      .map(node => node.name?.value ?? '');
+    expect(names.length, 'the docs have headings').toBeGreaterThan(10);
+    expect(
+      names.filter(name => name.includes('Link to')),
+      'no heading name includes its anchor link'
+    ).toEqual([]);
+  });
+
+  test('docs tells follow the visitor’s chosen tell', async ({ page }) => {
+    await page.addInitScript(() => localStorage.setItem('tells-site-skin', 'eyes'));
+    await open(page, { path: '/docs/' });
+    expect(
+      await page.evaluate(() => [
+        ...new Set(
+          [...document.querySelectorAll('#state-rows tiny-tell, #label-cases tiny-tell, #schemes tiny-tell')].map(
+            tell => tell.skin
+          )
+        ),
+      ]),
+      'the states, labels, and scheme tells all draw the chosen tell'
+    ).toEqual(['eyes']);
+  });
+
   test('picking a link in the mobile docs drawer closes the drawer', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await open(page, { path: '/docs/' });
@@ -908,5 +945,41 @@ test.describe('site pages', () => {
     await expect(code, 'an unknown size falls back to matching the text').not.toContainText('--tell-size');
     await expect(code, 'markup in linked words shows as text').toContainText('&lt;img src=x onerror=alert(1)&gt;');
     expect(await page.locator('#b-preview img').count(), 'markup in linked words never renders').toBe(0);
+  });
+});
+
+test.describe('docs without JavaScript', () => {
+  test.skip(({ browserName }) => browserName !== 'chromium', 'the shipped HTML is the same in every engine');
+
+  test('the reference tables, label answers, accessibility list, and heading anchors are in the HTML', async ({
+    browser,
+  }) => {
+    const context = await browser.newContext({ javaScriptEnabled: false });
+    const page = await context.newPage();
+    await page.route(/^https:\/\/(ka-p\.fontawesome\.com|cloud\.umami\.is)\//, route => route.abort());
+    await page.goto('/docs/');
+    const rows = id => page.locator(`#${id} > tr`);
+    await expect(rows('attr-rows'), 'one row per attribute in api.json').toHaveCount(SOURCE_API.attributes.length);
+    await expect(rows('event-rows'), 'one row per event in api.json').toHaveCount(SOURCE_API.events.length);
+    await expect(rows('static-rows'), 'one row per static in api.json').toHaveCount(SOURCE_API.statics.length);
+    await expect(rows('tell-rows'), 'one row per tell').toHaveCount(SKINS.length);
+    await expect(rows('state-rows'), 'one row per state').toHaveCount(STATES.length);
+    await expect(page.locator('#label-cases td:last-child'), 'what screen readers hear, per label case').toHaveText([
+      `“${LABEL.working}”, an image`,
+      '“Uploading photos”, an image',
+      'Nothing. The tell is hidden.',
+    ]);
+    await expect(page.locator('#a11y > li'), 'the seven accessibility promises').toHaveCount(7);
+    const anchors = await page.evaluate(() =>
+      [...document.querySelectorAll('main section[id] > h2')].map(h => [
+        h.parentElement.id,
+        h.querySelector('a.heading-anchor')?.getAttribute('href') ?? null,
+      ])
+    );
+    expect(anchors.length, 'the docs have section headings').toBeGreaterThan(10);
+    for (const [id, href] of anchors) expect(href, `the ${id} heading links to its section`).toBe(`#${id}`);
+    await page.goto('/');
+    await expect(page.locator('.heading-anchor'), 'the landing page gets no heading anchors').toHaveCount(0);
+    await context.close();
   });
 });
