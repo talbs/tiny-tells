@@ -117,13 +117,22 @@ const manifest = () => {
     declarations,
     exports: [
       { kind: 'js', name: API.class, declaration: ref },
+      ...declarations
+        .filter(d => d !== decl)
+        .map(d => ({ kind: 'js', name: d.name, declaration: { name: d.name, module: path } })),
       { kind: 'custom-element-definition', name: API.tag, declaration: ref },
     ],
   });
+  const events = API.events.map(e => ({
+    kind: 'class',
+    name: e.class,
+    superclass: { name: 'Event', package: 'global:' },
+    description: eventNote(e),
+  }));
   return {
     schemaVersion: '2.1.0',
     readme: 'README.md',
-    modules: [module('dist/tiny-tells.js', [decl]), module('dist/tiny-tells-play.js', [])],
+    modules: [module('dist/tiny-tells.js', [decl]), module('dist/tiny-tells-play.js', events)],
   };
 };
 
@@ -248,7 +257,16 @@ const dts = () => {
   const statics = API.statics
     .map(m => `  /** ${m.description} */\n  static ${m.readonly ? 'readonly ' : ''}${m.name}: ${m.type};\n`)
     .join('');
-  const props = API.attributes.map(a => `  /** ${a.description} */\n  ${a.name}: ${alias(a) || tsType(a)};\n`).join('');
+  /* Setting null or undefined removes the attribute, so setters take them even where getters never return them. */
+  const props = API.attributes
+    .map(a => {
+      const type = alias(a) || tsType(a);
+      const doc = `  /** ${a.description} */\n`;
+      if (a.type === 'boolean') return `${doc}  ${a.name}: ${type};\n`;
+      const set = [...new Set([...type.split(' | '), 'null', 'undefined'])].join(' | ');
+      return `${doc}  get ${a.name}(): ${type};\n  set ${a.name}(value: ${set});\n`;
+    })
+    .join('');
   return `${types}
 /** The attributes, for typing framework props. */
 export interface ${API.class}Attributes {

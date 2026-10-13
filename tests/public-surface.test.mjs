@@ -4,8 +4,8 @@ import { describe, test } from 'node:test';
 import { Window } from 'happy-dom';
 import { installGlobals } from './dom-globals.mjs';
 
-const API = JSON.parse(readFileSync(new URL('../dist/custom-elements.json', import.meta.url))).modules[0]
-  .declarations[0];
+const MANIFEST = JSON.parse(readFileSync(new URL('../dist/custom-elements.json', import.meta.url)));
+const API = MANIFEST.modules[0].declarations[0];
 const ATTR = Object.fromEntries(API.attributes.map(a => [a.name, a]));
 const valuesOf = name => [...ATTR[name].type.text.matchAll(/'([^']+)'/g)].map(m => m[1]);
 
@@ -33,6 +33,17 @@ describe('the public surface matches custom-elements.json', () => {
       Object.keys(ATTR),
       'every documented attribute is observed, in order'
     );
+  });
+
+  test('every module lists the names it exports', async () => {
+    for (const { path, exports } of MANIFEST.modules) {
+      const listed = exports.filter(e => e.kind === 'js').map(e => e.name);
+      assert.deepEqual(
+        listed.sort(),
+        Object.keys(await import(`../${path}`)).sort(),
+        `${path} lists every name it exports, nothing else`
+      );
+    }
   });
 
   test('defaults', () => {
