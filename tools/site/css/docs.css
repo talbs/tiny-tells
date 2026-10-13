@@ -286,7 +286,7 @@
     align-self: start;
     margin-block-start: 10px;
   }
-  @media (width <= 30rem) {
+  @media (width < 480px) {
     .install-head > * {
       grid-area: auto;
     }
@@ -516,7 +516,7 @@
     --tell-size: 2rem;
     inline-size: 1px;
   }
-  @media (width <= 40rem) {
+  @media (width < 600px) {
     .label-cases thead {
       position: absolute;
       inline-size: 1px;
