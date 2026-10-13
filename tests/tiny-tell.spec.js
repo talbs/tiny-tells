@@ -824,6 +824,15 @@ test.describe('site pages', () => {
     await expect(status, 'a new round clears it, so the same tempo is announced again').toBeEmpty();
   });
 
+  test('the docs Labels table says what screen readers hear for each label', async ({ page }) => {
+    await open(page, { path: '/docs/' });
+    await expect(page.locator('#label-cases td:last-child'), 'one answer per label case').toHaveText([
+      '“Working”, an image',
+      '“Uploading photos”, an image',
+      'Nothing. The tell is hidden.',
+    ]);
+  });
+
   test('the Prompt install method shows the paste-in prompt, and the docs fall back to npm', async ({ page }) => {
     await open(page, { path: '/#install' });
     await page.locator('#b-method wa-radio[value="prompt"]').click();

@@ -90,24 +90,14 @@ $('schemes').innerHTML = ['wa-light', 'wa-dark']
   .join('');
 
 const LABEL_CASES = [
-  [null, 'no <code>label</code>'],
-  ['Uploading photos', '<code>label="Uploading photos"</code>'],
-  ['', '<code>label=""</code>'],
+  [null, 'no <code>label</code>', `“${LABEL.working}”, an image`],
+  ['Uploading photos', '<code>label="Uploading photos"</code>', '“Uploading photos”, an image'],
+  ['', '<code>label=""</code>', 'Nothing. The tell is hidden.'],
 ];
 $('label-cases').innerHTML = LABEL_CASES.map(
-  ([label, markup]) =>
-    `<tr><td>${tag(page.skin, `data-follow${label === null ? '' : ` label="${label}"`}`)}</td><th scope="row">${markup}</th><td data-hears></td></tr>`
+  ([label, markup, hears]) =>
+    `<tr><td>${tag(page.skin, `data-follow${label === null ? '' : ` label="${label}"`}`)}</td><th scope="row">${markup}</th><td>${hears}</td></tr>`
 ).join('');
-const readLabels = () =>
-  $('label-cases')
-    .querySelectorAll('tr')
-    .forEach(row => {
-      const tell = row.querySelector('tiny-tell').shadowRoot?.querySelector('[part="tell"]');
-      row.querySelector('[data-hears]').textContent =
-        tell?.getAttribute('aria-hidden') === 'true'
-          ? 'Nothing. The tell is hidden.'
-          : `“${tell?.getAttribute('aria-label') ?? LABEL.working}”, an image`;
-    });
 $('paused-switch').addEventListener('change', e => ($('paused-tell').paused = e.target.checked));
 
 const anySize = () => Number($('any-size').value) || Number($('any-size').getAttribute('value'));
@@ -363,10 +353,7 @@ onMotionChange(holdStress);
 start();
 renderAnySize();
 renderStateTells();
-requestAnimationFrame(() => {
-  readLabels();
-  measureTextSizes();
-});
+requestAnimationFrame(measureTextSizes);
 
 const startTell = $('start-tell');
 let startTimer = 0;
