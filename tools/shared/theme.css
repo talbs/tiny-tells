@@ -25,7 +25,6 @@
   --dark-muted: var(--slate-400);
   --dark-line: var(--slate-800);
   --dark-well: color-mix(in oklab, var(--slate-900) 63%, var(--slate-950));
-  --is-dark: 0;
   --font-body: 'Schibsted Grotesk', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
   --font-mono: 'Martian Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
 }
@@ -36,7 +35,6 @@
     --fg: var(--dark-fg);
     --muted: var(--dark-muted);
     --line: var(--dark-line);
-    --is-dark: 1;
     color-scheme: dark;
   }
 }
@@ -46,7 +44,6 @@
   --fg: var(--dark-fg);
   --muted: var(--dark-muted);
   --line: var(--dark-line);
-  --is-dark: 1;
   color-scheme: dark;
 }
 :root,
