@@ -697,6 +697,54 @@ test.describe('site pages', () => {
     }
   });
 
+  test('pages load Web Awesome as one file, define every wa-* element, and keep the kit’s system icons', async ({
+    page,
+  }) => {
+    await page.addInitScript(() => {
+      window.builtInIcons = 0;
+      const load = window.fetch;
+      window.fetch = (url, ...rest) => {
+        if (String(url).startsWith('data:image/svg')) window.builtInIcons++;
+        return load(url, ...rest);
+      };
+    });
+    const kit = [];
+    page.on('request', request => {
+      if (request.url().startsWith('https://ka-p.fontawesome.com/')) kit.push(new URL(request.url()).pathname);
+    });
+    for (const path of ['/', '/docs/', '/404.html']) {
+      await open(page, { path });
+      await expect
+        .poll(
+          () =>
+            page.evaluate(() => [
+              ...new Set(
+                [...document.querySelectorAll(':not(:defined)')]
+                  .map(el => el.localName)
+                  .filter(name => name.startsWith('wa-'))
+              ),
+            ]),
+          { message: `${path} defines every wa-* element` }
+        )
+        .toEqual([]);
+      const files = await page.evaluate(() =>
+        performance
+          .getEntriesByType('resource')
+          .map(entry => new URL(entry.name).pathname)
+          .filter(pathname => /\/assets\/webawesome[/-]/.test(pathname))
+      );
+      expect(files, `${path} loads Web Awesome as one file`).toHaveLength(1);
+      expect(
+        await page.evaluate(() => window.builtInIcons),
+        `${path} never draws Web Awesome's built-in icons before the kit's`
+      ).toBe(0);
+    }
+    expect(
+      kit.some(pathname => pathname.endsWith('/sharp-regular/chevron-down.svg')),
+      'the select’s chevron still comes from the kit in sharp regular'
+    ).toBe(true);
+  });
+
   test('picking a link in the mobile docs drawer closes the drawer', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await open(page, { path: '/docs/' });

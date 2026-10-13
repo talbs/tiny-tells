@@ -13,7 +13,7 @@ Set the number before writing the first test for a feature. Judging each test on
 - **Over budget?** Make it table-driven first, then cut.
 - **Gate 1 beats the number.** If a real contract would go unprotected, the budget is wrong, not the test.
 
-Measured 2026-10-13: 40 browser tests (run in up to three engines), 2 node scripts (the test-DOM one runs twice, for jsdom and happy-dom), and 1 node test file.
+For the current count, run `npx playwright test --list --project=chromium` (each browser test runs in up to three engines). `npm test` also runs the node scripts and test file in the table below.
 
 ## Gate 1: should this test exist?
 
