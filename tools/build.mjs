@@ -33,6 +33,10 @@ const note = item => `${item.bundle === 'play' ? 'Play bundle only. ' : ''}${ite
 const hasField = a => a.property !== false;
 if (V1.join() !== Object.keys(ATTR.skin.values).join())
   throw new Error('V1 in tools/shared/copy.js must list the skins in src/api.json');
+const peeks = readdirSync(join(ROOT, 'tools', 'site'))
+  .filter(file => file.endsWith('.js'))
+  .filter(file => /src\/element\.js|\b(HOOKS|MOOD|DANCE)\b/.test(read('tools', 'site', file)));
+if (peeks.length) throw new Error(`The site uses engine internals; use the public API instead: ${peeks.join(', ')}`);
 const REPO = 'https://github.com/talbs/tiny-tells';
 const SUPPORT = { Chrome: '111', Firefox: '113', Safari: '16.4' };
 const FA_KIT = '3572f3662e';
