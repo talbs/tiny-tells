@@ -46,7 +46,8 @@ const applyTheme = () => {
 $('theme').addEventListener('click', () => {
   const next = isDarkPage() ? 'light' : 'dark';
   store.set('tells-site-theme', (next === 'dark') === systemDark.matches ? null : next);
-  applyTheme();
+  if (document.startViewTransition && !isStill()) document.startViewTransition(applyTheme).ready.catch(() => {});
+  else applyTheme();
 });
 systemDark.addEventListener('change', applyTheme);
 
