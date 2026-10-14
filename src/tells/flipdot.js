@@ -1,4 +1,4 @@
-import { BEAT, INK, OFF_A, PI, TAU, css, ctxFor, fitFor, gaze, mod, seg } from '../core.js';
+import { BEAT, INK, OFF_A, PI, TAU, css, ctxFor, fitFor, gaze, ink, mod, seg } from '../core.js';
 
 export const lv = fn => Array.from({ length: 5 }, (_, y) => Array.from({ length: 5 }, (_, x) => fn(x, y) | 0));
 export const fromCells = (list, level = 2) => lv((x, y) => (list.some(([a, b]) => a === x && b === y) ? level : 0));
@@ -155,7 +155,7 @@ export const renderFlip = (cv, cells, colOld, colNew) => {
   cells.forEach(c => {
     const look = near && !c.lvl && c.x === near[0] && c.y === near[1],
       col = c.old ? colOld : colNew,
-      fill = c.lvl || cv._ink || look ? col : INK(),
+      fill = c.lvl || ink || look ? col : INK(),
       a = c.lvl === 2 ? 1 : c.lvl === 1 ? 0.45 : look ? 0.45 * Math.min(1, Math.hypot(gaze.x, gaze.y)) : OFF_A;
     const cx = off + (c.x + 0.5) * cell,
       cy = off + (c.y + 0.5) * cell,

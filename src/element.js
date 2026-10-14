@@ -157,6 +157,7 @@ class TinyTell extends (typeof HTMLElement === 'undefined' ? class {} : HTMLElem
     Object.assign(document.createElement('span'), { className: `palette ${c}` })
   );
   #colors = null;
+  #ink = null;
   #states = null;
   #internals = null;
   #player = null;
@@ -366,14 +367,14 @@ class TinyTell extends (typeof HTMLElement === 'undefined' ? class {} : HTMLElem
     this.#colors = colors.length ? Object.fromEntries(colors) : null;
     let from = this;
     while (from.assignedSlot) from = from.assignedSlot;
-    cv._ink = this.color === 'current' || env.forced.matches ? env.toColor(getComputedStyle(from).color) : null;
+    this.#ink = this.color === 'current' || env.forced.matches ? env.toColor(getComputedStyle(from).color) : null;
     this.#size = css && W;
     if (css) cv._css = css;
     this.#checked = performance.now();
   }
 
   #scene() {
-    return JSON.stringify([this.#isDark, this.#colors, this.#canvas._ink, this.#size]);
+    return JSON.stringify([this.#isDark, this.#colors, this.#ink, this.#size]);
   }
 
   #fit() {
@@ -468,7 +469,7 @@ class TinyTell extends (typeof HTMLElement === 'undefined' ? class {} : HTMLElem
 
   /* The engine reads one shared scheme and palette, so every player call runs inside this tell's own. */
   #within(fn) {
-    withScene({ isDark: this.#isDark, palette: this.#colors, gaze: this.#gaze }, fn);
+    withScene({ isDark: this.#isDark, palette: this.#colors, gaze: this.#gaze, ink: this.#ink }, fn);
   }
 }
 

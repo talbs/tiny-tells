@@ -1,5 +1,5 @@
 /* A player per skin. On a handoff it springs from current position and velocity into the next state, with anticipation, staggered starts, and an arc. */
-import { BEAT, E, PERIOD, PHYS, bell, labMix, mod, seg, springOff, tone } from './core.js';
+import { BEAT, E, PERIOD, PHYS, bell, ink, labMix, mod, seg, springOff, tone } from './core.js';
 import { camMix } from './tells/drones.js';
 import { flipCells, renderFlip } from './tells/flipdot.js';
 import { SKINS } from './registry.js';
@@ -72,14 +72,14 @@ export class EPlayer {
     this.id = id;
     this.t0 = T;
   }
-  draw(cv, T, opts) {
+  draw(cv, T) {
     const sk = SKINS[this.skin],
       s = this.now(T),
       s2 = sk.hasVel && this.now(T + 0.012),
       vel =
         s2 &&
         s.ents.map((e, i) => Object.fromEntries(sk.keys.map(k => [k, unwrap(sk, k, s2.ents[i][k] - e[k]) / 0.012])));
-    sk.render(cv, s, cv._ink || s.color, vel, cv._ink ? { ...opts, ink: cv._ink } : opts);
+    sk.render(cv, s, ink || s.color, vel);
   }
 }
 export class FPlayer {
@@ -96,11 +96,6 @@ export class FPlayer {
   draw(cv, T) {
     const col = tone(this.id),
       recolor = !!this.col0 && this.col0.join() !== col.join();
-    renderFlip(
-      cv,
-      flipCells(this.id, T - this.t0, this.snap, recolor).cells,
-      cv._ink || this.col0 || col,
-      cv._ink || col
-    );
+    renderFlip(cv, flipCells(this.id, T - this.t0, this.snap, recolor).cells, ink || this.col0 || col, ink || col);
   }
 }

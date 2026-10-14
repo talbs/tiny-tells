@@ -1,5 +1,21 @@
 /* ---- Lens: an iris behind smoky glass. Core color always uses the bright step, because the glass is dark. ---- */
-import { BEAT, E, PI, TAU, bell, clamp, css, ctxFor, deepen, gaze, isDark, lerp, seg, springOff } from '../core.js';
+import {
+  BEAT,
+  E,
+  PI,
+  TAU,
+  bell,
+  clamp,
+  css,
+  ctxFor,
+  deepen,
+  gaze,
+  ink,
+  isDark,
+  lerp,
+  seg,
+  springOff,
+} from '../core.js';
 
 export const LENS = {
   keys: ['glow', 'size', 'ox', 'ap', 'bloom'],
@@ -65,14 +81,13 @@ export const LENS = {
       return { ents: [{ glow: 0.1 + 0.45 * b, size: 0.55, ox: 0, ap: 0.36 + 0.08 * b, bloom: 0 }] };
     },
   },
-  render: (cv, s, color, vel, opts = {}) => {
+  render: (cv, s, color) => {
     const { ctx, small, unit, o, dpr } = ctxFor(cv, 'lens'),
       e = s.ents[0],
       sh = s.shake || [0, 0],
       Rb = 0.86 * unit,
       Rg = 0.74 * unit,
-      ink = opts.ink,
-      fix = !ink && !isDark && (opts.fix ?? true),
+      fix = !ink && !isDark,
       spill = fix ? deepen(color) : null;
     color =
       ink || (isDark ? color : [Math.min(0.86, color[0] + (fix ? 0.22 : 0.18)), color[1] * (fix ? 1.1 : 1), color[2]]);

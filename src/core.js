@@ -77,16 +77,17 @@ export const QUIET = {
 export const STATE_COLOR = { working: 'brand', done: 'emerald', error: 'red', warning: 'amber', idle: 'zinc' };
 export let isDark = false,
   palette = null,
-  gaze = null;
+  gaze = null,
+  ink = null;
 
 /* The engine draws from one shared scene. Only this sets it, around a single draw. */
 export const withScene = (scene, fn) => {
-  const was = { isDark, palette, gaze };
-  ({ isDark, palette, gaze } = scene);
+  const was = { isDark, palette, gaze, ink };
+  ({ isDark, palette, gaze, ink } = scene);
   try {
     return fn();
   } finally {
-    ({ isDark, palette, gaze } = was);
+    ({ isDark, palette, gaze, ink } = was);
   }
 };
 export const deepen = c => [Math.max(0.3, c[0] - 0.05), c[1] * 1.18, c[2]];
