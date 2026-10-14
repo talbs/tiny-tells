@@ -501,13 +501,12 @@ const focusScrollers = () => {
 
 const frame = () => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
 
-/* Content shows once the layout has loaded. Components that load later can shift the #hash target, so it's scrolled to again then, unless the reader has scrolled away. */
+/* A #hash load stays hidden until its target is scrolled into place. Components that load later can shift the target, so it's scrolled to again then, unless the reader has scrolled away. */
 const reveal = async () => {
   const { dataset } = document.documentElement;
   const target = location.hash ? document.getElementById(location.hash.slice(1)) : null;
   await frame();
   target?.scrollIntoView({ behavior: 'instant' });
-  delete dataset.loading;
   const top = scrollY;
   if (waBundle) await (await import(waBundle)).allDefined();
   await frame();

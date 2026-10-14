@@ -230,18 +230,12 @@
       transition-timing-function: var(--wa-transition-easing);
     }
   }
-  /* The page waits only for the layout; each component stays invisible, holding its space, until it loads. */
-  [data-loading] wa-page > :not([slot='header']) {
-    opacity: 0;
-  }
   [data-upgrading] {
     scroll-behavior: auto;
   }
-  [data-upgrading] :not(:defined) {
-    visibility: hidden;
-  }
-  wa-page > :not([slot='header']) {
-    transition: opacity var(--wa-transition-fast) var(--wa-transition-easing);
+  /* A #section link stays hidden until reveal() scrolls it into place, or the page would show at the top and jump. */
+  [data-upgrading='hash'] {
+    animation: 2s step-end wa-fouce-cloak;
   }
   wa-page::part(header) {
     view-transition-name: site-header;

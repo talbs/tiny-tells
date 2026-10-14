@@ -509,14 +509,14 @@ const sitePage = ({ root, title, description, path, isNoindex, isHandLettered },
       `${tag}<script>{const p = document.currentScript.parentElement; p.setAttribute('view', document.documentElement.clientWidth >= parseFloat(p.getAttribute('mobile-breakpoint') ?? 768) ? 'desktop' : 'mobile'); document.currentScript.remove();}</script>`
   );
   return `<!doctype html>
-<html lang="en" data-fa-kit-code="${FA_KIT}">
+<html lang="en" class="wa-cloak" data-fa-kit-code="${FA_KIT}">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${title}</title>
 ${favicon(root)}
 ${pageMeta({ title, description, path })}${isNoindex ? '\n<meta name="robots" content="noindex">' : ''}
-<script>const d = document.documentElement.dataset; d.loading = d.upgrading = ''; setTimeout(() => { delete d.loading; delete d.upgrading; }, 2000);
+<script>document.documentElement.dataset.upgrading = location.hash ? 'hash' : '';
 (${setScheme})();</script>
 <link rel="preconnect" href="https://ka-p.fontawesome.com" crossorigin>
 <link rel="stylesheet" href="${root}assets/vendor.css">${isHandLettered ? `\n<link rel="stylesheet" href="${root}assets/hand.css">` : ''}
