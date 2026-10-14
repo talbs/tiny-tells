@@ -211,7 +211,7 @@ Rules:
 - Size follows the text. Set \`--tell-size\` to pin it.
 - If a tell can move for more than five seconds, add a pause button that sets \`paused\`.
 - \`paused\` is a boolean attribute. Any value pauses, \`paused="false"\` included. Remove it to resume.
-- With the play bundle, give tells in dense lists or tables \`noplay\`, so only the ones meant to play do. They still animate their state.
+- With the play bundle, put \`noplay\` on tells in dense lists or tables, so only the ones meant to play do. They still animate their state.
 - If you override \`--tell-color-*\`, keep 3:1 contrast against the surface behind it.
 - Reduced motion and forced colors are handled for you.
 - Custom tells aren't supported.
