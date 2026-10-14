@@ -338,7 +338,8 @@ const addCopyButton = pre => {
     .join('');
   pre.append(btn);
 };
-const whenNear = (elements, build) => {
+/* Web Awesome components are costly to upgrade in bulk (a copy button is eight of them), so each is built as its element nears the screen. */
+export const whenNear = (elements, build) => {
   const near = new IntersectionObserver(
     entries =>
       entries.forEach(({ isIntersecting, target }) => {
@@ -350,9 +351,8 @@ const whenNear = (elements, build) => {
   );
   elements.forEach(el => near.observe(el));
 };
-/* A copy button is eight Web Awesome components (icons, tooltip, popup), so each one is added as its code block nears the screen. */
 const addCopyButtons = () => {
-  const blocks = [...document.querySelectorAll('pre[data-copy]')];
+  const blocks = document.querySelectorAll('pre[data-copy]');
   blocks.forEach(pre => {
     pre.insertAdjacentHTML('afterbegin', PROMPT);
     pre.querySelector('code').insertAdjacentHTML('afterend', '<span class="caret" aria-hidden="true"></span>');
@@ -472,7 +472,6 @@ const addTooltip = el => {
   new MutationObserver(sync).observe(el, { subtree: true, attributes: true });
   document.body.append(tip);
 };
-/* The docs have dozens of icon-only links, so like copy buttons, each tooltip is built as its target nears the screen. */
 const addTooltips = () => {
   const targets = [...document.querySelectorAll('a, button, wa-button')].filter(
     el => !el.textContent.trim() && el.querySelector('wa-icon')

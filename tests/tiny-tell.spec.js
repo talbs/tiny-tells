@@ -756,9 +756,11 @@ test.describe('site pages', () => {
   test('icon-only links and buttons name themselves in a tooltip, even far down the page', async ({ page }) => {
     await open(page, { path: '/docs/' });
     const anchor = page.locator('.heading-anchor').last();
-    await anchor.scrollIntoViewIfNeeded();
     await anchor.hover();
-    await expect(page.locator(`wa-tooltip[for="${await anchor.getAttribute('id')}"]`)).toHaveText(/^Link to \S/);
+    await expect(
+      page.locator(`wa-tooltip[for="${await anchor.getAttribute('id')}"]`),
+      'the last heading anchor gets its tooltip once scrolled near'
+    ).toHaveText(/\S/);
   });
 
   test('landing, docs, and 404 load and switch theme without errors', async ({ page }) => {

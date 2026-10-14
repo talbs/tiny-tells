@@ -22,6 +22,7 @@ import {
   swapText,
   syncInstallTabs,
   tag,
+  whenNear,
 } from './shared.js';
 import './funsies.js';
 
@@ -206,14 +207,7 @@ const buildStress = () => {
     tag(V1[i % V1.length], `state="${STATES[Math.floor(i / V1.length) % STATES.length]}" label="" paused`)
   ).join('');
 };
-new IntersectionObserver(
-  ([e], observer) => {
-    if (!e.isIntersecting) return;
-    buildStress();
-    observer.disconnect();
-  },
-  { rootMargin: '100% 0px' }
-).observe($('stress-grid'));
+whenNear([$('stress-grid')], buildStress);
 let isStressRunning = false,
   frames = 0,
   since = 0,
