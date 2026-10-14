@@ -70,12 +70,8 @@
   .wa-prose .example-preview {
     background: var(--paper-tint);
   }
-  /* Only while the drawer is open: its modal restyles the whole page, and skipped sections leave the accessibility tree. The size sits outside so sections remember their real height and links land exactly. */
-  .wa-prose > section {
-    contain-intrinsic-size: auto 1200px;
-  }
-  wa-page[nav-open] .wa-prose > section {
-    content-visibility: auto;
+  .wa-prose > section[data-offstage] > * {
+    display: none;
   }
   .wa-prose > section + section {
     margin-block-start: var(--space-section);

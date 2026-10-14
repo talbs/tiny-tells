@@ -127,9 +127,35 @@ spy(
   { isFirstByDefault: true }
 );
 const shell = document.querySelector('wa-page');
-// Closing through the drawer keeps nav-open until it's fully shut, so offscreen sections still skip its last restyle.
+const sections = [...document.querySelectorAll('.wa-prose > section')];
+const bringBack = section => {
+  section.style.blockSize = '';
+  delete section.dataset.offstage;
+};
+// WebKit's modal does work across the whole page, ~1.6 s on these docs, so the drawer opens over only the sections on screen. Each keeps its height so nothing moves.
+shell.addEventListener('wa-show', e => {
+  if (e.target !== shell) return;
+  sections.forEach(section => {
+    const { top, bottom, height } = section.getBoundingClientRect();
+    if (bottom > 0 && top < innerHeight) return;
+    section.style.blockSize = `${height}px`;
+    section.dataset.offstage = '';
+  });
+});
+// WebKit's scroll anchoring can jump thousands of pixels as the sections come back, so the one on screen is held in place.
+shell.addEventListener('wa-after-hide', e => {
+  if (e.target !== shell) return;
+  const held = sections.find(section => !('offstage' in section.dataset) && section.getBoundingClientRect().bottom > 0);
+  const top = held?.getBoundingClientRect().top;
+  sections.forEach(bringBack);
+  if (held) scrollBy(0, held.getBoundingClientRect().top - top);
+});
 shell.addEventListener('click', e => {
-  if (e.target.closest('[slot^="navigation"] a[href^="#"]')) shell.navigationDrawer.open = false;
+  const link = e.target.closest('[slot^="navigation"] a[href^="#"]');
+  if (!link) return;
+  const target = $(link.hash.slice(1))?.closest('section');
+  if (target) bringBack(target);
+  shell.hideNavigation();
 });
 syncInstallTabs([$('docs-install'), $('play-install'), $('reserve-install')]);
 
