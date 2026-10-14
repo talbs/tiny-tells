@@ -130,53 +130,59 @@ export const BLOT = {
   },
   render: (cv, s, color) => {
     const { ctx, W, small, unit, o } = ctxFor(cv, 'blot'),
-      N = small ? 34 : Math.min(256, Math.round(W / 2));
+      N = Math.min(W, 256);
     const off = cv._blot || (cv._blot = { a: document.createElement('canvas'), b: document.createElement('canvas') });
-    if (off.n !== N) {
-      off.a.width = off.a.height = off.n = N;
-      off.img = off.a.getContext('2d').createImageData(N, N);
+    if (off.w !== W) {
+      off.b.width = off.b.height = off.w = W;
+      off.bctx = off.b.getContext('2d');
     }
-    if (off.w !== W) off.b.width = off.b.height = off.w = W;
-    const actx = off.a.getContext('2d'),
-      img = off.img,
-      blobs = s.ents.filter(b => b.r > 0.01);
+    if (off.n !== N) {
+      off.n = N;
+      off.img = off.bctx.createImageData(N, N);
+      off.img.data.fill(255);
+    }
+    const { bctx, img } = off,
+      data = img.data,
+      blobs = s.ents.filter(b => b.r > 0.01),
+      field = blobs.map(b => ({ x: b.x, y: b.y, r2: b.r * b.r, sx: b.sx || 1, sy: b.sy || 1 })),
+      gx0 = gaze ? gaze.x * 0.05 : 0,
+      gy0 = gaze ? gaze.y * 0.05 : 0;
     /* The edge fades over one sample, measured as a distance (field over its slope), so it stays crisp at any size. The slope only matters near the edge, so it's skipped elsewhere. */
     const sample = W / N / unit;
-    for (let j = 0; j < N; j++)
+    for (let j = 0; j < N; j++) {
+      const y = (((j + 0.5) / N) * W - o) / unit - gy0;
       for (let i = 0; i < N; i++) {
-        const x = (((i + 0.5) / N) * W - o) / unit - (gaze ? gaze.x * 0.05 : 0),
-          y = (((j + 0.5) / N) * W - o) / unit - (gaze ? gaze.y * 0.05 : 0);
+        const x = (((i + 0.5) / N) * W - o) / unit - gx0;
         let f = 0;
-        blobs.forEach(b => {
-          const dx = (x - b.x) / (b.sx || 1),
-            dy = (y - b.y) / (b.sy || 1);
-          f += (b.r * b.r) / (dx * dx + dy * dy + 1e-4);
-        });
+        for (const b of field) {
+          const dx = (x - b.x) / b.sx,
+            dy = (y - b.y) / b.sy;
+          f += b.r2 / (dx * dx + dy * dy + 1e-4);
+        }
         let a = f > 1.05 ? 1 : 0;
         if (f > 0.5 && f < 2) {
           let gx = 0,
             gy = 0;
-          blobs.forEach(b => {
-            const sx = b.sx || 1,
-              sy = b.sy || 1,
-              dx = (x - b.x) / sx,
-              dy = (y - b.y) / sy,
+          for (const b of field) {
+            const dx = (x - b.x) / b.sx,
+              dy = (y - b.y) / b.sy,
               d2 = dx * dx + dy * dy + 1e-4,
-              v = (b.r * b.r) / d2;
-            gx -= (2 * v * dx) / (d2 * sx);
-            gy -= (2 * v * dy) / (d2 * sy);
-          });
+              v = b.r2 / d2;
+            gx -= (2 * v * dx) / (d2 * b.sx);
+            gy -= (2 * v * dy) / (d2 * b.sy);
+          }
           a = clamp(0.5 + (f - 1.05) / (Math.hypot(gx, gy) + 1e-6) / sample);
         }
-        const k = (j * N + i) * 4;
-        img.data[k] = img.data[k + 1] = img.data[k + 2] = 255;
-        img.data[k + 3] = a * 255;
+        data[(j * N + i) * 4 + 3] = a * 255;
       }
-    actx.putImageData(img, 0, 0);
-    const bctx = off.b.getContext('2d');
-    bctx.clearRect(0, 0, W, W);
-    bctx.imageSmoothingEnabled = true;
-    bctx.drawImage(off.a, 0, 0, W, W);
+    }
+    if (N === W) bctx.putImageData(img, 0, 0);
+    else {
+      if (off.a.width !== N) off.a.width = off.a.height = N;
+      off.a.getContext('2d').putImageData(img, 0, 0);
+      bctx.clearRect(0, 0, W, W);
+      bctx.drawImage(off.a, 0, 0, W, W);
+    }
     bctx.globalCompositeOperation = 'source-in';
     if (!small) {
       const g = bctx.createLinearGradient(0, o - 0.7 * unit, 0, o + 0.7 * unit);
