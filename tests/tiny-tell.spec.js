@@ -42,6 +42,7 @@ const pixels = (page, selector) =>
     };
   });
 const frame = (page, selector) => page.$eval(selector, el => el.shadowRoot.querySelector('[part="tell"]').toDataURL());
+const revealed = page => page.waitForFunction(() => !('upgrading' in document.documentElement.dataset));
 const twoFrames = page => page.evaluate(() => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))));
 const drawn = page =>
   page.waitForFunction(() =>
@@ -926,7 +927,7 @@ test.describe('site pages', () => {
 
   test('a docs link to a section lands where the section scrolls to, below the sticky header', async ({ page }) => {
     await open(page, { path: '/docs/#testing' });
-    await page.waitForFunction(() => !('upgrading' in document.documentElement.dataset));
+    await revealed(page);
     const { landed, header, settled } = await page.evaluate(() => {
       const target = document.getElementById('testing');
       const landed = target.getBoundingClientRect().top;
@@ -1045,7 +1046,7 @@ test.describe('docs drawer', () => {
   test('the mobile docs drawer opens without moving the page, and a far link lands as it closes', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await open(page, { path: '/docs/#states' });
-    await page.waitForFunction(() => !('upgrading' in document.documentElement.dataset));
+    await revealed(page);
     const statesTop = () => page.evaluate(() => document.getElementById('states').getBoundingClientRect().top);
     const before = await statesTop();
     // A locator click scrolls the sticky toggle into view first, which moves the page on its own.

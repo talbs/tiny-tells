@@ -128,15 +128,16 @@ spy(
 );
 const shell = document.querySelector('wa-page');
 const sections = [...document.querySelectorAll('.wa-prose > section')];
-const bringBack = section => {
+const restore = section => {
   section.style.blockSize = '';
   delete section.dataset.offstage;
 };
 // WebKit's modal does work across the whole page, ~1.6 s on these docs, so the drawer opens over only the sections on screen. Each keeps its height so nothing moves.
 shell.addEventListener('wa-show', e => {
   if (e.target !== shell) return;
-  sections.forEach(section => {
-    const { top, bottom, height } = section.getBoundingClientRect();
+  const rects = sections.map(section => section.getBoundingClientRect());
+  sections.forEach((section, i) => {
+    const { top, bottom, height } = rects[i];
     if (bottom > 0 && top < innerHeight) return;
     section.style.blockSize = `${height}px`;
     section.dataset.offstage = '';
@@ -145,16 +146,16 @@ shell.addEventListener('wa-show', e => {
 // WebKit's scroll anchoring can jump thousands of pixels as the sections come back, so the one on screen is held in place.
 shell.addEventListener('wa-after-hide', e => {
   if (e.target !== shell) return;
-  const held = sections.find(section => !('offstage' in section.dataset) && section.getBoundingClientRect().bottom > 0);
-  const top = held?.getBoundingClientRect().top;
-  sections.forEach(bringBack);
-  if (held) scrollBy(0, held.getBoundingClientRect().top - top);
+  const anchor = sections.find(section => section.getBoundingClientRect().bottom > 0);
+  const top = anchor?.getBoundingClientRect().top;
+  sections.forEach(restore);
+  if (anchor) scrollBy(0, anchor.getBoundingClientRect().top - top);
 });
 shell.addEventListener('click', e => {
   const link = e.target.closest('[slot^="navigation"] a[href^="#"]');
   if (!link) return;
   const target = $(link.hash.slice(1))?.closest('section');
-  if (target) bringBack(target);
+  if (target) restore(target);
   shell.hideNavigation();
 });
 syncInstallTabs([$('docs-install'), $('play-install'), $('reserve-install')]);
