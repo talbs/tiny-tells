@@ -60,7 +60,7 @@ export const BLOT = {
       const splat = impact ? Math.exp(-ti * 2.2) * (1 + 0.35 * Math.sin(ti * 18) * Math.exp(-ti * 5)) : 0,
         back = E.inOut(seg(t, 2.6, 3.15)),
         spread = impact ? 0.5 * (1 - Math.exp(-ti * 14)) * Math.exp(-ti * 1.6) : 0;
-      const vy = impact ? 0 : Math.abs(fall.v);
+      const vy = impact ? 4 * bell(back) : Math.abs(fall.v);
       return {
         ents: [
           {
