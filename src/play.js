@@ -2,6 +2,10 @@
 import { LEN } from './doze.js';
 import { DANCE, HOOKS, MOOD, TinyTell } from './element.js';
 
+TinyTell.prototype.dance = function () {
+  return this.isConnected && this[DANCE]();
+};
+
 const pointer = { x: 0, y: 0, isHere: false, hasMouse: false };
 if (typeof window !== 'undefined') {
   addEventListener(

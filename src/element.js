@@ -300,11 +300,12 @@ class TinyTell extends (typeof HTMLElement === 'undefined' ? class {} : HTMLElem
   }
 
   [DANCE]() {
-    if (!this.#player || !PERIOD.dance || env.reduce.matches || this.paused || this.#danceUntil) return;
-    if (!this.dispatchEvent(new TellDanceEvent())) return;
+    if (!this.#player || !PERIOD.dance || env.reduce.matches || this.paused || this.#danceUntil) return false;
+    if (!this.dispatchEvent(new TellDanceEvent())) return false;
     this.#mood = null;
     this.#danceUntil = clock.t + 2 * PERIOD.dance;
     this.#within(() => this.#player.set('dance', clock.t));
+    return true;
   }
 
   get [MOOD]() {

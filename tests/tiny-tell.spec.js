@@ -761,6 +761,32 @@ test.describe('play bundle', () => {
     await page.evaluate(() => document.getElementById('eyes').remove());
     expect(await page.evaluate(() => window.ended), 'removing the tell reports the end right away').toBe(1);
   });
+
+  test('dance(): starts a dance and says so, and returns false when it can’t', async ({ page }) => {
+    const result = await page.evaluate(() => {
+      const el = document.getElementById('eyes'),
+        fired = [];
+      el.addEventListener('tell-dance', e => fired.push(e.type));
+      const first = el.dance(),
+        again = el.dance();
+      el.state = 'done';
+      el.paused = true;
+      const paused = el.dance();
+      el.paused = false;
+      el.addEventListener('tell-dance', e => e.preventDefault(), { once: true });
+      const canceled = el.dance();
+      const gone = document.createElement('tiny-tell');
+      document.body.append(gone);
+      gone.remove();
+      return { first, again, paused, canceled, removed: gone.dance(), fired: fired.length };
+    });
+    expect(result.first, 'a free tell starts dancing').toBe(true);
+    expect(result.again, 'a dancing tell refuses a second dance').toBe(false);
+    expect(result.paused, 'a paused tell refuses').toBe(false);
+    expect(result.canceled, 'a canceled tell-dance refuses').toBe(false);
+    expect(result.removed, 'a tell off the page refuses').toBe(false);
+    expect(result.fired, 'tell-dance fired for the first dance and the canceled one only').toBe(2);
+  });
 });
 
 test.describe('reserve.css', () => {
