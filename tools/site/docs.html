@@ -180,7 +180,7 @@
         <h3 id="load">1. Load It</h3>
         <p>
           Three ways to load it, all the same element. Pick the one that matches how you build. Flip on the
-          <a href="#play">play bundle</a> for tells that glance at the pointer and dance.
+          <a href="#play">play bundle</a> and tells glance at the pointer, dance, and doze off.
         </p>
         <div class="install-head">
           <wa-switch
@@ -1008,8 +1008,9 @@ words.textContent = 'Synced 3 files.';</code></pre>
       >
         <h2 id="play-title">Play Bundle</h2>
         <p>
-          The same element and API, plus two things that only happen when someone’s watching. A tell glances at a nearby
-          mouse pointer, and five quick taps make it dance. It costs under 1 KB more, gzipped.
+          The same element and API, with three extras for the person at the screen. A tell glances at a nearby mouse
+          pointer. Five quick taps make it dance. Leave an idle tell alone for 30 seconds and it dozes off until the
+          pointer comes back. Touch screens never doze. It costs under 2.5 KB more, gzipped.
         </p>
         <p>
           The core bundle reports status and that’s it. Reach for play when the tell is part of the product’s
@@ -1628,8 +1629,8 @@ tiny-tell:not(:defined)[state="warning"]::before { content: "!"; }</code></pre>
         <h3 id="events">Events</h3>
         <p>
           The core fires none. It only shows the state you set, so you already know. The play bundle fires two around a
-          dance, the one change your code doesn’t make. Both bubble and cross shadow roots, so listen on the tell or
-          anywhere above it.
+          dance. Doze fires none. The state never leaves idle. Both bubble and cross shadow roots, so listen on the tell
+          or anywhere above it.
         </p>
         <wa-scroller orientation="horizontal"
           ><table>

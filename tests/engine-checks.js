@@ -1,4 +1,5 @@
 import '../src/dance.js';
+import { DOZE_CLIPS, LEN } from '../src/doze.js';
 import { EPlayer } from '../src/players.js';
 import { SKINS } from '../src/registry.js';
 import { FC, flipCells, renderFlip } from '../src/tells/flipdot.js';
@@ -55,7 +56,7 @@ export const runEngineChecks = () => {
   for (const dark of [false, true]) {
     const still = { isDark: dark, palette: null, gaze: null };
     for (const skin of Object.keys(SKINS))
-      for (const id of [...STATES, ...(PERIOD.dance ? ['dance'] : [])]) {
+      for (const id of [...STATES, ...(PERIOD.dance ? ['dance'] : []), ...DOZE_CLIPS]) {
         for (const px of [20, 48]) {
           const cv = document.createElement('canvas'),
             W = (cv.width = cv.height = px * 2);
@@ -82,29 +83,31 @@ export const runEngineChecks = () => {
               `live area: ${skin} ${id} ${px}px ${dark ? 'dark' : 'light'} spans ${top.toFixed(2)}–${bottom.toFixed(2)} × ${left.toFixed(2)}–${right.toFixed(2)}`
             );
         }
-        const sc = document.createElement('canvas');
-        sc.width = sc.height = 40;
-        sc._css = 20;
-        const P = skin === 'flipdot' ? FC[id].total : PERIOD[id],
-          step = (a, b) => {
-            let d = 0;
-            for (let i = 0; i < a.length; i += 4)
-              d +=
-                (Math.abs(a[i + 3] - b[i + 3]) +
-                  (((Math.abs(a[i] - b[i]) + Math.abs(a[i + 1] - b[i + 1]) + Math.abs(a[i + 2] - b[i + 2])) / 3) *
-                    Math.min(a[i + 3], b[i + 3])) /
-                    255) /
-                255 /
-                4;
-            return d;
-          };
-        const near = [-2, -1, 0, 1].map(k => draw(sc, skin, id, P + k / 60 + 0.0001, still));
-        const seam = step(near[1], near[2]),
-          around = Math.max(step(near[0], near[1]), step(near[2], near[3]));
-        if (seam > SEAM_MIN && seam > SEAM_RATIO * around)
-          failures.push(
-            `loop seam: ${skin} ${id} ${dark ? 'dark' : 'light'} jumps ${seam.toFixed(1)} at the restart vs ${around.toFixed(1)} around it`
-          );
+        if (!(id in LEN)) {
+          const sc = document.createElement('canvas');
+          sc.width = sc.height = 40;
+          sc._css = 20;
+          const P = skin === 'flipdot' ? FC[id].total : PERIOD[id],
+            step = (a, b) => {
+              let d = 0;
+              for (let i = 0; i < a.length; i += 4)
+                d +=
+                  (Math.abs(a[i + 3] - b[i + 3]) +
+                    (((Math.abs(a[i] - b[i]) + Math.abs(a[i + 1] - b[i + 1]) + Math.abs(a[i + 2] - b[i + 2])) / 3) *
+                      Math.min(a[i + 3], b[i + 3])) /
+                      255) /
+                  255 /
+                  4;
+              return d;
+            };
+          const near = [-2, -1, 0, 1].map(k => draw(sc, skin, id, P + k / 60 + 0.0001, still));
+          const seam = step(near[1], near[2]),
+            around = Math.max(step(near[0], near[1]), step(near[2], near[3]));
+          if (seam > SEAM_MIN && seam > SEAM_RATIO * around)
+            failures.push(
+              `loop seam: ${skin} ${id} ${dark ? 'dark' : 'light'} jumps ${seam.toFixed(1)} at the restart vs ${around.toFixed(1)} around it`
+            );
+        }
         const cv = document.createElement('canvas');
         cv.width = cv.height = 96;
         cv._css = 48;

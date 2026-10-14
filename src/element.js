@@ -15,6 +15,7 @@ const TICK = Symbol('tick');
 const HOOKS = {};
 const DOCS = 'https://tinytells.dev/docs/#';
 const DANCE = Symbol('dance');
+const MOOD = Symbol('mood');
 let env = null,
   refresh = null,
   refreshSeen = null,
@@ -33,9 +34,13 @@ const frame = now => {
   prevNow = now;
   if (++skipped < Math.floor(17 / gapMs + 0.1)) return void (clock.raf = requestAnimationFrame(frame));
   skipped = 0;
-  clock.t += (clock.last ? clamp((now - clock.last) / 1000, 0, 0.1) : 0) * clock.scale;
+  const dt = (clock.last ? clamp((now - clock.last) / 1000, 0, 0.1) : 0) * clock.scale;
+  clock.t += dt;
   clock.last = now;
-  clock.live.forEach(el => el[TICK]());
+  clock.live.forEach(el => {
+    el[TICK]();
+    HOOKS.tick?.(el, dt, clock.t);
+  });
   clock.raf = clock.live.size ? requestAnimationFrame(frame) : 0;
   if (!clock.raf) clock.last = prevNow = skipped = 0;
 };
@@ -161,6 +166,7 @@ class TinyTell extends (typeof HTMLElement === 'undefined' ? class {} : HTMLElem
   #size = 0;
   #gaze = null;
   #danceUntil = 0;
+  #mood = null;
   #synced = '';
   #built = null;
 
@@ -240,7 +246,7 @@ class TinyTell extends (typeof HTMLElement === 'undefined' ? class {} : HTMLElem
     seen.observe(this);
     sized.observe(this);
     if (this.#player && this.#built === this.skin) {
-      this.#endDance();
+      this.#endPlay();
       this.#within(() => this.#player.set(this.state, clock.t));
     } else this.#build();
     fresh.add(this);
@@ -253,7 +259,7 @@ class TinyTell extends (typeof HTMLElement === 'undefined' ? class {} : HTMLElem
   }
 
   disconnectedCallback() {
-    this.#endDance();
+    this.#endPlay();
     all.delete(this);
     clock.live.delete(this);
     env?.seen?.unobserve(this);
@@ -263,13 +269,18 @@ class TinyTell extends (typeof HTMLElement === 'undefined' ? class {} : HTMLElem
   attributeChangedCallback(name, before, after) {
     if (before === after || !all.has(this)) return;
     if (name === 'skin') {
-      this.#endDance();
+      this.#endPlay();
       this.#build();
     }
     if (name === 'state') {
       this.#validate();
-      this.#endDance();
+      this.#endPlay();
       this.#within(() => this.#player?.set(this.state, clock.t));
+    }
+    if (name === 'paused' && this.#mood) {
+      this.#mood = null;
+      this.#player = playerFor(this.skin, this.state);
+      this.#player.t0 = clock.t;
     }
     this[TICK](name === 'color' || name === 'scheme');
   }
@@ -283,7 +294,7 @@ class TinyTell extends (typeof HTMLElement === 'undefined' ? class {} : HTMLElem
     const next = { x: lerp(g.x, want?.x || 0, 0.15), y: lerp(g.y, want?.y || 0, 0.15) };
     this.#gaze = want || Math.hypot(next.x, next.y) > 0.01 ? next : null;
     if (this.#danceUntil && clock.t > this.#danceUntil) {
-      this.#endDance();
+      this.#endPlay();
       this.#within(() => this.#player?.set(this.state, clock.t));
     }
     if (isStale || performance.now() - this.#checked > 1000) {
@@ -297,11 +308,22 @@ class TinyTell extends (typeof HTMLElement === 'undefined' ? class {} : HTMLElem
   [DANCE]() {
     if (!this.#player || !PERIOD.dance || env.reduce.matches || this.paused || this.#danceUntil) return;
     if (!this.dispatchEvent(new TellDanceEvent())) return;
+    this.#mood = null;
     this.#danceUntil = clock.t + 2 * PERIOD.dance;
     this.#within(() => this.#player.set('dance', clock.t));
   }
 
-  #endDance() {
+  get [MOOD]() {
+    return this.#mood;
+  }
+  set [MOOD](id) {
+    if (id === this.#mood || !this.#player || this.#danceUntil || (id && (env.reduce.matches || this.paused))) return;
+    this.#mood = id;
+    this.#within(() => this.#player.set(id || this.state, clock.t));
+  }
+
+  #endPlay() {
+    this.#mood = null;
     if (!this.#danceUntil) return;
     this.#danceUntil = 0;
     this.dispatchEvent(new TellAfterDanceEvent());
@@ -430,7 +452,10 @@ class TinyTell extends (typeof HTMLElement === 'undefined' ? class {} : HTMLElem
     const cv = this.#canvas;
     if (!this.#player || cv.width < 2) return;
     const still = env.reduce.matches;
-    if (still) this.#player = playerFor(this.skin, this.state);
+    if (still) {
+      this.#mood = null;
+      this.#player = playerFor(this.skin, this.state);
+    }
     try {
       this.#within(() =>
         this.#player.draw(cv, still ? (SKINS[this.skin]?.still?.[this.state] ?? STILL[this.state]) : clock.t)
@@ -456,4 +481,4 @@ if (typeof customElements !== 'undefined') {
     );
 }
 
-export { DANCE, HOOKS, STILL, TinyTell };
+export { DANCE, HOOKS, MOOD, STILL, TinyTell };

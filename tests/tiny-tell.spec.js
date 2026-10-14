@@ -80,6 +80,24 @@ const tap5 = (page, selector) =>
     for (let i = 0; i < 5; i++) el.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }));
   });
 
+const peakOpen = (page, selector, frames = 20) =>
+  page.$eval(
+    selector,
+    async (el, n) => {
+      const cv = el.shadowRoot.querySelector('[part="tell"]');
+      let most = 0;
+      for (let f = 0; f < n; f++) {
+        await new Promise(r => requestAnimationFrame(r));
+        const d = cv.getContext('2d').getImageData(0, 0, cv.width, cv.height).data;
+        let lit = 0;
+        for (let i = 0; i < d.length; i += 4) if (d[i + 3] > 200 && d[i] + d[i + 1] + d[i + 2] > 450) lit++;
+        most = Math.max(most, lit);
+      }
+      return most;
+    },
+    frames
+  );
+
 const settled = async (page, selector) => {
   let last = await frame(page, selector);
   for (let i = 0; i < 90; i++) {
@@ -518,7 +536,7 @@ test.describe('Chromium only', () => {
       .waitForFunction(() => window.engineChecks, null, { timeout: 110000 })
       .then(h => h.jsonValue());
     expect(flashes, 'every tell × state × scheme was checked for flashing').toHaveLength(
-      SKINS.length * (STATES.length + 1) * 2
+      SKINS.length * (STATES.length + 1 + 3) * 2 // dance, plus doze's nod, doze, and wake
     );
     expect(failures, 'no live-area, seam, or flash failures').toEqual([]);
   });
@@ -627,6 +645,48 @@ test.describe('play bundle', () => {
       { type: 'tell-dance', bubbles: true, composed: true, cancelable: true, id: 'eyes' },
       { type: 'tell-after-dance', bubbles: true, composed: true, cancelable: false, id: 'eyes' },
     ]);
+  });
+
+  test('doze: an idle tell left alone nods off, wakes when the pointer comes back, and never covers a real state', async ({
+    page,
+  }) => {
+    const box = await page.locator('#eyes').boundingBox(),
+      cx = box.x + box.width / 2,
+      cy = box.y + box.height / 2;
+    await page.mouse.move(cx, cy);
+    await page.mouse.move(cx + 2000, cy + 2000);
+    const awake = await peakOpen(page, '#eyes'),
+      busy = await peakOpen(page, '#busy');
+    await page.evaluate(() => (customElements.get('tiny-tell').timeScale = 60));
+    await expect
+      .poll(() => peakOpen(page, '#eyes'), { message: 'an idle tell left alone closes its eyes', timeout: 5000 })
+      .toBeLessThan(awake * 0.5);
+    expect(await peakOpen(page, '#busy'), 'a working tell left alone stays awake').toBeGreaterThan(busy * 0.7);
+    expect(
+      await page.$eval('#eyes', el => el.matches(':state(idle)')),
+      'the exposed state stays idle while it sleeps'
+    ).toBe(true);
+    await page.mouse.move(cx, cy);
+    await expect
+      .poll(() => peakOpen(page, '#eyes'), { message: 'the pointer coming back wakes it' })
+      .toBeGreaterThan(awake * 0.8);
+    await page.mouse.move(cx + 2000, cy + 2000);
+    await expect
+      .poll(() => peakOpen(page, '#eyes'), { message: 'it dozes off again', timeout: 5000 })
+      .toBeLessThan(awake * 0.5);
+    await page.$eval('#eyes', el => (el.state = 'working'));
+    await expect
+      .poll(() => peakOpen(page, '#eyes'), { message: 'a state change lands on the new state' })
+      .toBeGreaterThan(busy * 0.7);
+    await page.$eval('#eyes', el => (el.state = 'idle'));
+    await expect
+      .poll(() => peakOpen(page, '#eyes'), { message: 'back on idle, it dozes off once more', timeout: 5000 })
+      .toBeLessThan(awake * 0.5);
+    await page.$eval('#eyes', el => (el.paused = true));
+    await expect
+      .poll(() => peakOpen(page, '#eyes'), { message: 'pausing a sleeping tell hands it back to idle' })
+      .toBeGreaterThan(awake * 0.5);
+    await page.$eval('#eyes', el => (el.paused = false));
   });
 
   test('a subclass under its own tag dances and names its own tag in warnings', async ({ page }) => {

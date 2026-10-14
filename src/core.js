@@ -95,7 +95,11 @@ export const hop = (h0, tt) => {
   const tUp = Math.sqrt((2 * h0) / G);
   return tt < tUp ? h0 - 0.5 * G * (tUp - tt) ** 2 : drop(h0, tt - tUp).h;
 };
-export const tone = id => palette?.[id] || QUIET[STATE_COLOR[id]][isDark ? 1 : 0];
+export const ALIAS = {};
+export const tone = id => {
+  const k = ALIAS[id] || id;
+  return palette?.[k] || QUIET[STATE_COLOR[k]][isDark ? 1 : 0];
+};
 export const toSrgb = ([L, C, H]) => {
   const A = C * Math.cos((H * PI) / 180),
     B = C * Math.sin((H * PI) / 180);

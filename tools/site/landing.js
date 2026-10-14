@@ -1,5 +1,5 @@
 import { LABEL, STATES } from '../../src/core.js';
-import { DANCE, HOOKS } from '../../src/element.js';
+import { DANCE, HOOKS, MOOD } from '../../src/element.js';
 import API from '../../src/api.json';
 import { version as VERSION } from '../../package.json';
 import { ASSISTANT_PROMPT, GOES, MODEL, NAMES, NOTES, V1 } from '../shared/copy.js';
@@ -277,6 +277,8 @@ applyGuides();
 let isCastPlay = true;
 const playGaze = HOOKS.gaze;
 HOOKS.gaze = el => (!isCastPlay && el.closest('#tells') ? null : playGaze?.(el));
+const playTick = HOOKS.tick;
+HOOKS.tick = (el, dt, t) => (!isCastPlay && el.closest('#tells') ? (el[MOOD] = null) : playTick?.(el, dt, t));
 $('tells').addEventListener('pointerdown', e => isCastPlay || e.stopPropagation());
 $('play-toggle').addEventListener('change', e => (isCastPlay = e.target.checked));
 $('guides-toggle').addEventListener('change', e => {

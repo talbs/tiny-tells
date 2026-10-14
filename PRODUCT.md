@@ -15,11 +15,11 @@ Tiny Tells is one custom element, `<tiny-tell>`, that shows what an app is up to
 
 ## Positioning
 
-**Characters, not spinners.** Each tell is animated like a character off a model sheet: one shared 0.8s beat, anticipation, squash and stretch, and handoffs that spring from wherever the tell was instead of swapping icons. Small (under 14 KB min+gzip, no dependencies) and accessible are table stakes, not the headline.
+**Characters, not spinners.** Each tell is animated like a character off a model sheet: one shared 0.8s beat, anticipation, squash and stretch, and handoffs that spring from wherever the tell was instead of swapping icons. Small (about 14 KB min+gzip, no dependencies) and accessible are table stakes, not the headline.
 
 ## Operating Context
 
-- Ships on npm as `tiny-tells`, plus a play bundle (`tiny-tells/play`) with pointer "notice" and a five-tap dance.
+- Ships on npm as `tiny-tells`, plus a play bundle (`tiny-tells/play`) with pointer "notice", a five-tap dance, and doze (idle tells nod off when the pointer stays away).
 - Used inline in text, in buttons, sidebars, CI check lists, editor status bars, uploads, callouts, and step lists.
 - Themed through `--tell-size`, `--tell-color-{state}` tokens, `color`, and `scheme`. It works with any design system's palette.
 - Public site on GitHub Pages: the landing page at the root, the docs at `/docs/`, and a 404. The proofing bench lives in the private `tiny-tells-lab` repo.
