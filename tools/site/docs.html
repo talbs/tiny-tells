@@ -117,9 +117,9 @@
       </h1>
     </div>
     <p class="wa-body-l">
-      Tiny Tells is one custom element, <code>&lt;tiny-tell&gt;</code>, that shows what your app is up to with a small
-      animated character. Pick one of <a href="#tells">six tells</a> with the <code>skin</code> attribute and one of
-      <a href="#states">five states</a> with the <code>state</code> attribute. Change the state and the tell
+      Tiny Tells is one custom element, <code>&lt;tiny-tell&gt;</code>. It shows what your app is doing with a small
+      animated character instead of a spinner. Pick one of <a href="#tells">six tells</a> with <code>skin</code> and one
+      of <a href="#states">five states</a> with <code>state</code>. Change the state and the tell
       <a href="#handoffs">springs into the new one</a>.
     </p>
   </section>
@@ -131,7 +131,7 @@
     <div class="wa-stack wa-gap-0">
       <p class="label">Start</p>
       <a href="#get-started">Get Started</a>
-      <a href="#play">Play Bundle</a>
+      <a href="#build-with-ai">Build with AI</a>
     </div>
     <div class="wa-stack wa-gap-0">
       <p class="label">Use</p>
@@ -144,6 +144,7 @@
       <a href="#size">Size</a>
       <a href="#color">Color</a>
       <a href="#styling">Styling</a>
+      <a href="#play">Play Bundle</a>
     </div>
     <div class="wa-stack wa-gap-0">
       <p class="label">Integrate</p>
@@ -173,14 +174,13 @@
       >
         <h2 id="get-started-title">Get Started</h2>
         <p>
-          Three steps: load it, add a tell, and change its state. Using a coding assistant?
-          <a href="#with-an-assistant">Start it here instead</a>.
+          Three steps: load it, add a tell, change its state. Working with a coding assistant? Skip to
+          <a href="#build-with-ai">Build with AI</a> and let it do these for you.
         </p>
         <h3 id="load">1. Load It</h3>
         <p>
-          Tiny Tells loads three ways, and each one defines the same <code>&lt;tiny-tell&gt;</code> element, so pick
-          whichever matches how you build your site. Turn on <a href="#play">Play bundle</a> if you want the version
-          where tells glance at the pointer and dance.
+          Three ways to load it, all the same element. Pick the one that matches how you build. Flip on the
+          <a href="#play">play bundle</a> for tells that glance at the pointer and dance.
         </p>
         <div class="install-head">
           <wa-switch
@@ -209,20 +209,20 @@
               >Self-Host</wa-tab
             >
             <wa-tab-panel name="npm">
-              <p>If your app uses a bundler, install the package and import it once, anywhere in your code:</p>
+              <p>Using a bundler? Install the package and import it once, anywhere:</p>
               <pre data-copy><code class="language-bash">npm i tiny-tells</code></pre>
               <pre data-copy><code
               class="language-javascript"
               data-bundle
             >import 'tiny-tells';</code></pre>
               <p>
-                The import registers the element as soon as it runs, and the package ships with TypeScript types. If you
-                need the class itself, import it by name with
+                The import registers the element as it runs. Types ship in the package. Need the class itself? Import it
+                by name with
                 <code data-bundle>import { TinyTell } from 'tiny-tells'</code>.
               </p>
             </wa-tab-panel>
             <wa-tab-panel name="cdn">
-              <p>If you’d rather skip the build step, add this script tag to your page:</p>
+              <p>No build step? Add the script tag:</p>
               <pre data-copy><code
               class="language-html"
               data-bundle
@@ -240,14 +240,14 @@
                   name="thumbtack"
                 ></wa-icon>
                 <strong>Keep the version in the URL until 1.0.</strong>
-                <span>That way a breaking change can’t reach your site until you choose to update.</span>
+                <span>A breaking change can’t reach your site until you choose to update.</span>
               </wa-callout>
             </wa-tab-panel>
             <wa-tab-panel name="self">
               <p>
-                To serve the file yourself, copy <code data-bundle>dist/tiny-tells.min.js</code> from the package into
-                your site and load it like any other module. The package also includes
-                <code data-bundle>dist/tiny-tells.js</code>, the same code unminified, if you want to read or debug it:
+                Copy <code data-bundle>dist/tiny-tells.min.js</code> from the package into your site and load it like
+                any other module. Want to read or debug it? <code data-bundle>dist/tiny-tells.js</code> is the same
+                code, unminified.
               </p>
               <pre data-copy><code
               class="language-html"
@@ -258,9 +258,8 @@
         </div>
         <h3 id="add">2. Add a Tell</h3>
         <p>
-          Put it next to the words it describes. <code>label=""</code> keeps screen readers from saying the state twice,
-          and <code>role="status"</code> announces the words when they change.
-          <a href="#accessibility">More on accessibility</a>.
+          Put it next to the words it describes. <code>label=""</code> stops screen readers from saying the state twice.
+          <code>role="status"</code> announces the words when they change. <a href="#accessibility">More on that</a>.
         </p>
         <figure class="example wa-not-prose">
           <div class="example-preview studio wa-cluster">
@@ -283,7 +282,7 @@
 &lt;/p&gt;</code></pre>
         </figure>
         <h3 id="change">3. Change Its State</h3>
-        <p>Set <code>state</code> from your code and update the words with it. The tell springs into the new state.</p>
+        <p>Set <code>state</code> from your code, and change the words at the same time.</p>
         <figure class="example wa-not-prose">
           <div class="example-preview studio wa-stack wa-gap-l is-centered">
             <p>
@@ -313,111 +312,40 @@ const words = document.querySelector('[role="status"]');
 tell.state = 'done';
 words.textContent = 'Synced 3 files.';</code></pre>
         </figure>
-        <h3 id="with-an-assistant">With a Coding Assistant</h3>
+      </section>
+      <section
+        id="build-with-ai"
+        aria-labelledby="build-with-ai-title"
+      >
+        <h2 id="build-with-ai-title">Build with AI</h2>
         <p>
-          Paste this into your coding assistant. It points at <a href="{{root}}llms.txt">llms.txt</a>, a short
-          plain-text version of these docs, written for assistants.
+          Claude Code, Codex, Cursor, Copilot: any assistant that can read a URL can add Tiny Tells for you. Point it at
+          <a href="{{root}}llms.txt">llms.txt</a>, a plain-text copy of these docs written for assistants. It has the
+          install, the attributes, and the rules an assistant gets wrong without them (words beside every tell,
+          <code>warning</code> only when a person has to act).
         </p>
+        <h3 id="with-an-assistant">Paste-In Prompt</h3>
+        <p>For a one-off. Paste it into the chat:</p>
         <pre
           class="is-paste-in"
           data-copy
         ><code>{{prompt}}</code></pre>
-      </section>
-      <section
-        id="play"
-        aria-labelledby="play-title"
-      >
-        <h2 id="play-title">Play Bundle</h2>
+        <h3 id="agent-rules">Project Rules</h3>
         <p>
-          The play bundle, <code>tiny-tells/play</code>, is optional. It’s the same element with the same states,
-          colors, and API. It adds two things that only happen when someone’s there to see them: a tell glances toward a
-          nearby pointer, and five quick taps make it dance.
+          For every session after this one. Add this to the instructions file your assistant reads on its own. Codex,
+          Cursor, and Copilot read <code>AGENTS.md</code>. Claude Code reads <code>CLAUDE.md</code>, which can pull in
+          <code>AGENTS.md</code> with a line that says <code>@AGENTS.md</code>.
         </p>
+        <pre
+          class="is-paste-in"
+          data-copy
+        ><code class="language-markdown">{{rules}}</code></pre>
+        <h3 id="agent-tooling">Manifest and Types</h3>
         <p>
-          The core bundle is for status and nothing else. Play is for when you want the tells to feel alive. It costs
-          under 1 KB more, gzipped. Reduced motion and <code>paused</code> turn it off.
+          Installed from npm, the package carries its own description. <code>custom-elements.json</code> lists every
+          attribute, event, and CSS hook. The TypeScript types flag <code>tell.state = 'workin'</code> before it ships.
+          See <a href="#frameworks-and-editors">Frameworks and Editors</a>.
         </p>
-        <figure class="example wa-not-prose">
-          <div class="example-preview studio wa-grid wa-gap-l compare">
-            <div class="wa-stack wa-gap-s wa-align-items-center">
-              <tiny-tell
-                class="is-core"
-                skin="eyes"
-                data-follow
-              ></tiny-tell>
-              <p class="wa-caption-s">Core: keeps to itself</p>
-            </div>
-            <div class="wa-stack wa-gap-s wa-align-items-center">
-              <tiny-tell
-                id="play-tell"
-                skin="eyes"
-                data-follow
-              ></tiny-tell>
-              <p class="wa-caption-s">Play: looks your way</p>
-            </div>
-          </div>
-          <div class="example-bar studio">
-            <span>Move your pointer between them, or tap the play one five times.</span>
-            <wa-button
-              id="dance"
-              size="s"
-              appearance="outlined"
-              >Or Press This</wa-button
-            >
-          </div>
-        </figure>
-        <p>Load it in place of the core bundle:</p>
-        <wa-tab-group
-          id="play-install"
-          active="npm"
-        >
-          <wa-tab
-            slot="nav"
-            panel="npm"
-            >npm</wa-tab
-          >
-          <wa-tab
-            slot="nav"
-            panel="cdn"
-            >CDN</wa-tab
-          >
-          <wa-tab
-            slot="nav"
-            panel="self"
-            >Self-Host</wa-tab
-          >
-          <wa-tab-panel name="npm">
-            <pre data-copy><code class="language-javascript">import 'tiny-tells/play';</code></pre>
-          </wa-tab-panel>
-          <wa-tab-panel name="cdn">
-            <pre
-              data-copy
-            ><code class="language-html">&lt;script type="module" src="https://cdn.jsdelivr.net/npm/tiny-tells@{{version}}/dist/tiny-tells-play.min.js"&gt;&lt;/script&gt;</code></pre>
-          </wa-tab-panel>
-          <wa-tab-panel name="self">
-            <pre
-              data-copy
-            ><code class="language-html">&lt;script type="module" src="/js/tiny-tells-play.min.js"&gt;&lt;/script&gt;</code></pre>
-          </wa-tab-panel>
-        </wa-tab-group>
-        <wa-callout
-          class="note"
-          variant="neutral"
-          appearance="outlined"
-          size="s"
-        >
-          <wa-icon
-            slot="icon"
-            family="sharp"
-            variant="regular"
-            name="thumbtack"
-          ></wa-icon>
-          <strong>From a CDN, load one bundle, not both.</strong>
-          <span
-            >The two CDN files each carry the whole element, so if both load, the first one wins and the console says
-            so. From npm, importing both is fine, since they share one element.</span
-          >
-        </wa-callout>
       </section>
 
       <p class="label">Use</p>
@@ -426,7 +354,10 @@ words.textContent = 'Synced 3 files.';</code></pre>
         aria-labelledby="tells-title"
       >
         <h2 id="tells-title">Tells</h2>
-        <p>Pick one with the <code>skin</code> attribute. An unknown name logs a warning and falls back to Drones.</p>
+        <p>
+          Pick one with <code>skin</code>. They all say the same five things. What differs is the personality, so pick
+          the one that fits your product. A typo logs a warning and gets you Drones.
+        </p>
         <wa-scroller orientation="horizontal"
           ><table>
             <thead>
@@ -447,7 +378,7 @@ words.textContent = 'Synced 3 files.';</code></pre>
         aria-labelledby="states-title"
       >
         <h2 id="states-title">States</h2>
-        <p>Set one with the <code>state</code> attribute. An unknown name logs a warning and falls back to working.</p>
+        <p>Set one with <code>state</code>. A typo logs a warning and gets you <code>working</code>.</p>
         <wa-scroller orientation="horizontal"
           ><table>
             <thead>
@@ -464,9 +395,9 @@ words.textContent = 'Synced 3 files.';</code></pre>
           </table></wa-scroller
         >
         <p>
-          Warning means a person has to act, while idle means nobody’s waiting. Whatever the state, pair the tell with
-          words, and put them in a
-          <code>role="status"</code> region when the state matters, so screen readers announce the change:
+          People mix up <code>warning</code> and <code>idle</code>. Warning means someone has to act. Idle means
+          nobody’s waiting. Whatever the state, put words beside it. When the change matters, put them in a
+          <code>role="status"</code> region so screen readers announce it:
         </p>
         <figure class="example wa-not-prose">
           <div class="example-preview studio wa-stack wa-gap-xs">
@@ -503,9 +434,9 @@ words.textContent = 'Synced 3 files.';</code></pre>
       >
         <h2 id="a11y-title">Accessibility</h2>
         <p>
-          A tell is a hint, never the message. The words beside it carry the status, and the tell adds something you can
-          catch at a glance. So Tiny Tells handles everything it can on its own (motion, contrast, high contrast,
-          flashing) and leaves you the one thing it can’t know: what’s happening, in words.
+          A tell is a hint, never the message. The words carry the status. The tell is what you notice at a glance. Tiny
+          Tells handles everything it can (motion, contrast, forced colors, flashing). The one thing it can’t know is
+          what’s actually happening, so that part is yours.
         </p>
         <h3 id="your-part">Your Part</h3>
         <ol>
@@ -519,11 +450,16 @@ words.textContent = 'Synced 3 files.';</code></pre>
             <code>role="status"</code> region so screen readers announce it. <a href="#states">See how</a>.
           </li>
           <li>
-            <strong>If you change the colors,</strong> keep 3:1 against the surface. <a href="#color">Check yours</a>.
+            <strong>If you change the colors,</strong> keep 3:1 against the surface (<a
+              href="https://www.w3.org/WAI/WCAG22/Understanding/non-text-contrast.html"
+              >WCAG 1.4.11</a
+            >). <a href="#color">Check yours</a>.
           </li>
           <li>
-            <strong>If it moves for more than five seconds,</strong> give people a pause button.
-            <a href="#pause-demo">Copy one</a>.
+            <strong>If it moves for more than five seconds,</strong> give people a pause button (<a
+              href="https://www.w3.org/WAI/WCAG22/Understanding/pause-stop-hide.html"
+              >WCAG 2.2.2</a
+            >). <a href="#pause-demo">Copy one</a>.
           </li>
         </ol>
         <h3 id="handled-for-you">Handled for You</h3>
@@ -532,19 +468,40 @@ words.textContent = 'Synced 3 files.';</code></pre>
             <strong>A name.</strong> Shows up as an image named by its state, or by the <code>label</code> attribute.
           </li>
           <li><strong>Reduced motion.</strong> Holds one still pose per state, and play turns off.</li>
-          <li><strong>Forced colors.</strong> Draws in the system text color under Windows high contrast.</li>
+          <li><strong>Forced colors.</strong> Draws in the system text color in Windows High Contrast mode.</li>
           <li><strong>Contrast.</strong> Meets 3:1 with the built-in palette.<span id="a11y-contrast-now"></span></li>
-          <li><strong>Flashing.</strong> Never flashes more than three times a second.</li>
+          <li>
+            <strong>Flashing.</strong> Never more than three flashes a second (<a
+              href="https://www.w3.org/WAI/WCAG22/Understanding/three-flashes-or-below-threshold.html"
+              >WCAG 2.3.1</a
+            >).
+          </li>
           <li><strong>Off-screen.</strong> Stops animating while it’s scrolled out of view.</li>
           <li><strong>Pausing.</strong> Holds its current frame with the <code>paused</code> attribute.</li>
         </ul>
         <h3 id="labels">Labels</h3>
         <p>
-          Screen readers announce a tell as an image named after its state, like “Working”. Set <code>label</code> to
-          say something more specific, or set <code>label=""</code> to hide the tell from screen readers when the words
-          beside it already say the state. An <code>aria-label</code> or <code>aria-labelledby</code> on the tag works
-          too, and wins over a non-empty <code>label</code>.
+          Screen readers announce a tell as an image named after its state, like “Working”. Set <code>label</code> to be
+          more specific. Set <code>label=""</code> to hide the tell when the words beside it already say the state.
         </p>
+        <wa-callout
+          class="note"
+          variant="neutral"
+          appearance="outlined"
+          size="s"
+        >
+          <wa-icon
+            slot="icon"
+            family="sharp"
+            variant="regular"
+            name="thumbtack"
+          ></wa-icon>
+          <strong>Use <code>label</code>, not <code>aria-label</code>.</strong>
+          <span
+            >An <code>aria-label</code> or <code>aria-labelledby</code> on the tag also wins over a non-empty
+            <code>label</code>, but Firefox only honors it from version 119.</span
+          >
+        </wa-callout>
         <figure class="example wa-not-prose">
           <div class="example-preview studio wa-cluster">
             <table class="label-cases">
@@ -552,7 +509,7 @@ words.textContent = 'Synced 3 files.';</code></pre>
                 <tr>
                   <th scope="col"><span class="wa-visually-hidden">Tell</span></th>
                   <th scope="col">Markup</th>
-                  <th scope="col">Screen readers hear</th>
+                  <th scope="col">Screen Readers Hear</th>
                 </tr>
               </thead>
               <tbody id="label-cases">
@@ -596,7 +553,7 @@ words.textContent = 'Synced 3 files.';</code></pre>
 &lt;tiny-tell state="working" label=""&gt;&lt;/tiny-tell&gt;</code></pre>
         </figure>
         <h3 id="pausing">Pausing</h3>
-        <p>Set the <code>paused</code> attribute to hold a tell on its current frame.</p>
+        <p><code>paused</code> freezes a tell on its current frame. Remove it and the tell rejoins the shared beat.</p>
         <figure class="example wa-not-prose">
           <div class="example-preview studio wa-stack wa-gap-l is-centered">
             <tiny-tell
@@ -624,9 +581,12 @@ words.textContent = 'Synced 3 files.';</code></pre>
             name="thumbtack"
           ></wa-icon>
           <strong>Moving for more than five seconds? Add a pause.</strong>
-          <span>If tells on your page keep moving that long, WCAG asks you to give people a way to stop them.</span>
+          <span
+            ><a href="https://www.w3.org/WAI/WCAG22/Understanding/pause-stop-hide.html">WCAG 2.2.2</a> (Pause, Stop,
+            Hide) asks for a way to stop anything that moves that long.</span
+          >
         </wa-callout>
-        <p>A button that pauses every tell on the page:</p>
+        <p>One button for every tell on the page:</p>
         <figure class="example wa-not-prose">
           <div
             class="example-preview studio wa-stack wa-gap-l is-centered"
@@ -676,14 +636,11 @@ words.textContent = 'Synced 3 files.';</code></pre>
         aria-labelledby="size-title"
       >
         <h2 id="size-title">Size</h2>
-        <p>
-          You usually don’t set one. A tell sizes itself to the text beside it, about 1.4 times the font size, and stays
-          between 20 and 48px.
-        </p>
+        <p>Usually you don’t set one.</p>
         <h3 id="follow-the-text">Follow the Text</h3>
         <p>
-          Leave the size alone and the tell matches whatever text it sits in. Under the hood, that’s
-          <code>clamp(20px, 1.43em, 48px)</code>.
+          A tell sizes itself to the text it sits in: about 1.4 times the font size, never under 20px or over 48px.
+          Under the hood that’s <code>clamp(20px, 1.43em, 48px)</code>.
         </p>
         <figure class="example wa-not-prose">
           <div class="example-preview studio text-sizes wa-stack wa-gap-s">
@@ -727,8 +684,8 @@ words.textContent = 'Synced 3 files.';</code></pre>
         </figure>
         <h3 id="pin-a-size">Pin a Size</h3>
         <p>
-          Set <code>--tell-size</code> when the tell should stay one size no matter the text, like in a toolbar. It
-          inherits, so set it on the tell or on any container:
+          Set <code>--tell-size</code> when a tell should hold one size whatever the text does (a toolbar, a table
+          column). It inherits, so set it on the tell or any container above it:
         </p>
         <figure class="example wa-not-prose">
           <div class="example-preview studio wa-cluster">
@@ -746,7 +703,7 @@ words.textContent = 'Synced 3 files.';</code></pre>
           <pre data-copy><code class="language-css">.toolbar { --tell-size: 1.5rem; }</code></pre>
         </figure>
         <h3 id="pick-a-value">Pick a Value</h3>
-        <p>Any CSS length works. Tells are drawn for 20 to 48px and look their best in that range:</p>
+        <p>Any CSS length works. They’re drawn for 20 to 48px, though, and it shows outside that range:</p>
         <figure class="example wa-not-prose">
           <div class="example-preview studio wa-stack wa-gap-l is-centered">
             <div
@@ -775,10 +732,12 @@ words.textContent = 'Synced 3 files.';</code></pre>
       >
         <h2 id="color-title">Color</h2>
         <p>
-          Set the palette with inherited custom properties, on <code>:root</code> or any container. Any CSS color works,
-          including <code>light-dark()</code>. Tokens you don’t set keep the built-in palette. Keep 3:1 contrast against
-          the surface the tell sits on. The built-in palette clears it in light and dark, and the chips below check
-          yours.
+          Five custom properties, one per state. Set them on <code>:root</code> or any container, with any CSS color,
+          <code>light-dark()</code> included. Skip one and it keeps the built-in color.
+        </p>
+        <p>
+          The rule: 3:1 against the surface behind the tell. The built-in palette clears it in light and dark. Pick a
+          palette below and the chips check it for you.
         </p>
         <div class="wa-not-prose wa-stack wa-gap-m">
           <wa-select
@@ -801,15 +760,15 @@ words.textContent = 'Synced 3 files.';</code></pre>
             aria-label="Palette contrast by state"
           ></div>
         </div>
-        <p>Here’s the CSS for the palette you picked:</p>
+        <p>The CSS for the palette you picked:</p>
         <pre data-copy><code
             class="language-css"
             id="palette-css"
           ></code></pre>
-        <h3 id="other-systems">Using Another System’s Colors</h3>
+        <h3 id="other-systems">Use Your Design System’s Colors</h3>
         <p>
-          Declare the tokens on the same selectors your system uses to switch theme. The names below are stand-ins for
-          your system’s own:
+          Point the tokens at your system’s, and declare them on the same selectors your system uses to switch theme.
+          The names below are stand-ins:
         </p>
         <figure class="example wa-not-prose">
           <div class="example-preview studio wa-grid wa-gap-s system-colors">
@@ -851,15 +810,15 @@ words.textContent = 'Synced 3 files.';</code></pre>
           ></wa-icon>
           <strong>Set the tokens where the theme switches.</strong>
           <span
-            >A <code>var()</code> resolves where the token is declared, so a token set only on <code>:root</code> keeps
-            its light value inside a dark region.</span
+            >A <code>var()</code> resolves where it’s declared. Set the tokens only on <code>:root</code> and a dark
+            region still gets the light values.</span
           >
         </wa-callout>
         <h3 id="match-text">Match the Text Color</h3>
         <p>
-          Set <code>color="current"</code> and the tell draws in the text color around it instead of the state colors,
-          even inside another component’s slot. Reach for it on a filled button or a badge, where state colors would
-          clash.
+          <code>color="current"</code> drops the state colors and draws in the text color around the tell, even inside
+          another component’s slot. Use it on a filled button or a badge, where green on brand blue looks like a
+          mistake.
         </p>
         <figure class="example wa-not-prose">
           <div class="example-preview studio wa-grid wa-gap-l compare">
@@ -890,9 +849,10 @@ words.textContent = 'Synced 3 files.';</code></pre>
         </figure>
         <h3 id="match-scheme">Match Light or Dark</h3>
         <p>
-          A tell draws for light or dark surfaces. The <code>scheme</code> attribute picks which: <code>auto</code> (the
-          default) reads the <code>color-scheme</code> around it, <code>light</code> and <code>dark</code> force one,
-          and <code>invert</code> flips it for a tell on a badge or a filled button.
+          Each tell has a light drawing and a dark one. <code>scheme</code> picks. <code>auto</code>, the default, reads
+          the <code>color-scheme</code> around it. <code>light</code> and <code>dark</code> force one.
+          <code>invert</code>
+          flips it, for a tell sitting on a filled badge or button.
         </p>
         <figure class="example wa-not-prose">
           <div
@@ -986,13 +946,17 @@ words.textContent = 'Synced 3 files.';</code></pre>
         aria-labelledby="styling-title"
       >
         <h2 id="styling-title">Styling</h2>
+        <p>
+          Size and color cover most of it. Past that, you get two hooks. The drawing itself is one canvas, so there’s
+          nothing inside to restyle.
+        </p>
         <ul>
-          <li>The <code>tell</code> CSS part, <code>::part(tell)</code>, is the canvas.</li>
+          <li><strong>The canvas:</strong> <code>::part(tell)</code>. Opacity, filters, transforms.</li>
           <li>
-            The custom states <code>:state(working)</code>, <code>:state(done)</code>, and so on match the current
-            state. They need Chrome 125, Firefox 126, or Safari 17.4. For older browsers, match the attribute instead,
-            like <code>tiny-tell[state="error"]</code>. A tell with no <code>state</code> attribute is
-            <code>working</code>, so match that one with <code>tiny-tell:not([state])</code> too.
+            <strong>The state:</strong> <code>:state(working)</code>, <code>:state(done)</code>, and so on. Style the
+            things around the tell by what it’s showing. These need <a href="#browser-support">newer browsers</a>. For
+            older ones, match the attribute (<code>tiny-tell[state="error"]</code>). A tell with no
+            <code>state</code> is <code>working</code>, so add <code>tiny-tell:not([state])</code> to that one.
           </li>
         </ul>
         <figure class="example wa-not-prose">
@@ -1038,6 +1002,101 @@ words.textContent = 'Synced 3 files.';</code></pre>
           <pre data-copy><code class="language-css">.muted tiny-tell::part(tell) { opacity: 0.6; }</code></pre>
         </figure>
       </section>
+      <section
+        id="play"
+        aria-labelledby="play-title"
+      >
+        <h2 id="play-title">Play Bundle</h2>
+        <p>
+          The same element and API, plus two things that only happen when someone’s watching. A tell glances at a nearby
+          mouse pointer, and five quick taps make it dance. It costs under 1 KB more, gzipped.
+        </p>
+        <p>
+          The core bundle reports status and that’s it. Reach for play when the tell is part of the product’s
+          personality, not just a progress signal. Reduced motion and <code>paused</code> both switch it off.
+        </p>
+        <figure class="example wa-not-prose">
+          <div class="example-preview studio wa-grid wa-gap-l compare">
+            <div class="wa-stack wa-gap-s wa-align-items-center">
+              <tiny-tell
+                class="is-core"
+                skin="eyes"
+                data-follow
+              ></tiny-tell>
+              <p class="wa-caption-s">Core: keeps to itself</p>
+            </div>
+            <div class="wa-stack wa-gap-s wa-align-items-center">
+              <tiny-tell
+                id="play-tell"
+                skin="eyes"
+                data-follow
+              ></tiny-tell>
+              <p class="wa-caption-s">Play: looks your way</p>
+            </div>
+          </div>
+          <div class="example-bar studio">
+            <span>Move your pointer between them, or tap the play one five times.</span>
+            <wa-button
+              id="dance"
+              size="s"
+              appearance="outlined"
+              >Or Press This</wa-button
+            >
+          </div>
+        </figure>
+        <p>Load it in place of the core bundle:</p>
+        <wa-tab-group
+          id="play-install"
+          active="npm"
+        >
+          <wa-tab
+            slot="nav"
+            panel="npm"
+            >npm</wa-tab
+          >
+          <wa-tab
+            slot="nav"
+            panel="cdn"
+            >CDN</wa-tab
+          >
+          <wa-tab
+            slot="nav"
+            panel="self"
+            >Self-Host</wa-tab
+          >
+          <wa-tab-panel name="npm">
+            <pre data-copy><code class="language-javascript">import 'tiny-tells/play';</code></pre>
+          </wa-tab-panel>
+          <wa-tab-panel name="cdn">
+            <pre
+              data-copy
+            ><code class="language-html">&lt;script type="module" src="https://cdn.jsdelivr.net/npm/tiny-tells@{{version}}/dist/tiny-tells-play.min.js"&gt;&lt;/script&gt;</code></pre>
+          </wa-tab-panel>
+          <wa-tab-panel name="self">
+            <pre
+              data-copy
+            ><code class="language-html">&lt;script type="module" src="/js/tiny-tells-play.min.js"&gt;&lt;/script&gt;</code></pre>
+          </wa-tab-panel>
+        </wa-tab-group>
+        <wa-callout
+          class="note"
+          variant="neutral"
+          appearance="outlined"
+          size="s"
+        >
+          <wa-icon
+            slot="icon"
+            family="sharp"
+            variant="regular"
+            name="thumbtack"
+          ></wa-icon>
+          <strong>From a CDN, load one bundle, not both.</strong>
+          <span
+            >Each CDN file carries the whole element. Load both and the first one wins, with a console warning. From
+            npm, importing both is safe since they share one element, but then every tell on the page plays.</span
+          >
+        </wa-callout>
+      </section>
 
       <p class="label">Integrate</p>
       <section
@@ -1046,24 +1105,27 @@ words.textContent = 'Synced 3 files.';</code></pre>
       >
         <h2 id="frameworks-and-editors-title">Frameworks and Editors</h2>
         <p>
-          A tell is a plain custom element, so any framework that renders HTML can render one. The package also ships
-          files that describe it to your editor and tools.
+          It’s a plain custom element. Anything that renders HTML renders a tell, and Svelte, Lit, and plain HTML need
+          nothing else. React, Vue, and Angular each want one small setup step, below.
         </p>
+        <h3 id="types-and-editors">Types and Editors</h3>
         <ul>
           <li>
             <strong>TypeScript:</strong> <code>dist/tiny-tells.d.ts</code> types the element and exports
             <code>TinyTell</code>, <code>TinyTellAttributes</code>, <code>TellSkin</code>, <code>TellState</code>,
-            <code>TellColor</code>, and <code>TellScheme</code>. The play bundle&rsquo;s types add the
-            <a href="#events">dance events</a> to <code>addEventListener</code>.
+            <code>TellColor</code>, and <code>TellScheme</code>. The play bundle’s types add
+            <code>TellDanceEvent</code>, <code>TellAfterDanceEvent</code>, and the <a href="#events">dance events</a> on
+            <code>addEventListener</code>.
           </li>
           <li>
-            <strong>Custom Elements Manifest:</strong> <code>dist/custom-elements.json</code> describes the element for
-            tools that read the manifest, like Storybook, docs generators, and agents. The package points to it, so most
-            tools find it on their own.
+            <strong><a href="https://custom-elements-manifest.open-wc.org/">Custom Elements Manifest</a>:</strong>
+            <code>dist/custom-elements.json</code> describes the element to anything that reads the format: Storybook,
+            docs generators, coding agents. The package’s <code>customElements</code> field points to it, so most tools
+            find it on their own.
           </li>
           <li>
-            <strong>VS Code:</strong> add the custom data file to the <code>html.customData</code> setting to get
-            attribute autocomplete in HTML files. On the CDN or self-hosting, download
+            <strong>VS Code:</strong> add the custom data file to <code>html.customData</code> for attribute
+            autocomplete in HTML files. On the CDN or self-hosting, download
             <a href="https://cdn.jsdelivr.net/npm/tiny-tells@{{version}}/dist/vscode.html-custom-data.json"
               >the same file</a
             >
@@ -1074,15 +1136,28 @@ words.textContent = 'Synced 3 files.';</code></pre>
   "html.customData": ["./node_modules/tiny-tells/dist/vscode.html-custom-data.json"]
 }</code></pre>
         <h3 id="react">React</h3>
+        <p>React 19 works out of the box.</p>
+        <wa-callout
+          class="note"
+          variant="neutral"
+          appearance="outlined"
+          size="s"
+        >
+          <wa-icon
+            slot="icon"
+            family="sharp"
+            variant="regular"
+            name="thumbtack"
+          ></wa-icon>
+          <strong>In React 18, leave <code>paused</code> off instead of setting it to <code>false</code>.</strong>
+          <span
+            >React 18 writes every value as an attribute string, so <code>paused={false}</code> becomes
+            <code>paused="false"</code>, and that still pauses.</span
+          >
+        </wa-callout>
         <p>
-          React 19 handles boolean attributes, so <code>paused={false}</code> leaves the tell running. React 18 writes
-          every value as an attribute string instead, which turns <code>paused={false}</code> into
-          <code>paused="false"</code> and pauses the tell anyway. In React 18, leave <code>paused</code> out rather than
-          setting it to <code>false</code>.
-        </p>
-        <p>
-          With TypeScript, add this to any <code>.d.ts</code> file so <code>&lt;tiny-tell&gt;</code> type-checks in JSX.
-          It works with the types for React 18 and 19:
+          With TypeScript, drop this in any <code>.d.ts</code> file so <code>&lt;tiny-tell&gt;</code> type-checks in
+          JSX. It works with React 18 and 19 types:
         </p>
         <pre data-copy><code class="language-typescript">import type { DetailedHTMLProps, HTMLAttributes } from 'react';
 import type { TinyTell, TinyTellAttributes } from 'tiny-tells';
@@ -1094,14 +1169,26 @@ declare module 'react' {
     }
   }
 }</code></pre>
+        <h3 id="vue-and-angular">Vue and Angular</h3>
+        <p>
+          Both need to be told <code>&lt;tiny-tell&gt;</code> isn’t one of their components. In Vue, pass this to the
+          Vue plugin in <code>vite.config.js</code>:
+        </p>
+        <pre data-copy><code class="language-javascript">vue({
+  template: { compilerOptions: { isCustomElement: tag =&gt; tag === 'tiny-tell' } },
+})</code></pre>
+        <p>In Angular, add <code>CUSTOM_ELEMENTS_SCHEMA</code> to the component that uses it:</p>
+        <pre data-copy><code class="language-typescript">@Component({
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
+})</code></pre>
         <h3 id="web-awesome">Web Awesome</h3>
         <p>
-          We build this site on <a href="https://webawesome.com/">Web Awesome</a>, so here's how the two fit. A tell
-          goes in a slot like anything else. Give it <code>color="current"</code> and it takes the component's text
-          color. That's what keeps it readable on a loud button. For the state colors, pick the Web Awesome preset under
-          <a href="#other-systems">Using Another System's Colors</a>.
+          This site runs on <a href="https://webawesome.com/">Web Awesome</a>, so the examples below are live. A tell
+          goes in a slot like anything else. Give it <code>color="current"</code> and it takes the component’s text
+          color, which is what keeps it readable on a loud button. For state colors, pick the Web Awesome preset under
+          <a href="#other-systems">Use Your Design System’s Colors</a>.
         </p>
-        <p>In a button's <code>start</code> slot. Click it.</p>
+        <p>In a button’s <code>start</code> slot. Click it.</p>
         <figure class="example wa-not-prose">
           <div class="example-preview studio wa-cluster wa-gap-m">
             <wa-button
@@ -1133,7 +1220,7 @@ button.addEventListener('click', async () => {
   await save();
   tell.state = 'done';
 });</code></pre>
-        <p>In a callout's <code>icon</code> slot:</p>
+        <p>In a callout’s <code>icon</code> slot:</p>
         <figure class="example wa-not-prose">
           <div class="example-preview studio">
             <wa-callout variant="warning">
@@ -1179,21 +1266,25 @@ button.addEventListener('click', async () => {
       >
         <h2 id="agent-status-title">Agent Status</h2>
         <p>
-          An agent run is doing one of five things, and those are the five states. A spinner can show one of them. The
-          one it can't is <code>warning</code>: the run stopped and it's waiting on a person. Map your SDK's status to a
-          state, set it on the tell, and put the words in a <code>role="status"</code> region so screen readers hear the
-          change. A chat reply is a run too. If someone stops a run, that's your call. Most apps go back to
-          <code>idle</code>.
+          An agent run is always doing one of five things, and those are the five states. A spinner covers
+          <code>working</code>. What it can’t show is <code>warning</code>: the run stopped and it’s waiting on a
+          person. That’s the state that costs time when nobody notices it.
+        </p>
+        <p>
+          Map your SDK’s status to a state, set it on the tell, and put the words in a
+          <code>role="status"</code> region. A chat reply counts as a run. A run someone stopped is your call (most apps
+          go back to <code>idle</code>).
         </p>
         <wa-scroller orientation="horizontal"
           ><table>
             <thead>
               <tr>
                 <th scope="col">State</th>
-                <th scope="col">The run is</th>
+                <th scope="col">The Run Is</th>
                 <th scope="col">AI SDK</th>
                 <th scope="col">LangGraph.js</th>
-                <th scope="col">OpenAI Agents</th>
+                <th scope="col">OpenAI Agents SDK</th>
+                <th scope="col">Claude Agent SDK</th>
               </tr>
             </thead>
             <tbody>
@@ -1201,8 +1292,9 @@ button.addEventListener('click', async () => {
                 <th scope="row"><code>working</code></th>
                 <td>thinking or streaming</td>
                 <td><code>status</code> is <code>submitted</code> or <code>streaming</code></td>
-                <td><code>invoke()</code> hasn't returned</td>
-                <td><code>run()</code> hasn't settled</td>
+                <td><code>invoke()</code> hasn’t returned</td>
+                <td><code>run()</code> hasn’t settled</td>
+                <td><code>query()</code> is still yielding</td>
               </tr>
               <tr>
                 <th scope="row"><code>done</code></th>
@@ -1210,6 +1302,7 @@ button.addEventListener('click', async () => {
                 <td><code>status</code> is <code>ready</code> after a reply</td>
                 <td>returned with no <code>__interrupt__</code></td>
                 <td>returned with no <code>interruptions</code></td>
+                <td>a <code>result</code> message with subtype <code>success</code></td>
               </tr>
               <tr>
                 <th scope="row"><code>error</code></th>
@@ -1217,6 +1310,7 @@ button.addEventListener('click', async () => {
                 <td><code>status</code> is <code>error</code></td>
                 <td><code>invoke()</code> threw</td>
                 <td><code>run()</code> threw</td>
+                <td>any other <code>result</code> subtype, or it threw</td>
               </tr>
               <tr>
                 <th scope="row"><code>warning</code></th>
@@ -1224,6 +1318,7 @@ button.addEventListener('click', async () => {
                 <td>a tool part in <code>approval-requested</code></td>
                 <td><code>__interrupt__</code> in the result</td>
                 <td><code>result.interruptions</code> has entries</td>
+                <td><code>canUseTool</code> hasn’t returned</td>
               </tr>
               <tr>
                 <th scope="row"><code>idle</code></th>
@@ -1231,56 +1326,98 @@ button.addEventListener('click', async () => {
                 <td><code>status</code> is <code>ready</code> before any reply</td>
                 <td>nothing started yet</td>
                 <td>nothing started yet</td>
+                <td>nothing started yet</td>
               </tr>
             </tbody>
           </table></wa-scroller
         >
+        <h3 id="agent-show">Shared Helper</h3>
+        <p>The LangGraph, OpenAI, and Claude examples share this:</p>
+        <pre data-copy><code class="language-javascript">const tell = document.querySelector('tiny-tell');
+const words = document.querySelector('[role="status"]');
+const TEXT = { working: 'Thinking…', done: 'Done', error: 'Something broke', warning: 'Needs your OK', idle: '' };
+
+const show = state =&gt; {
+  tell.state = state;
+  words.textContent = TEXT[state];
+};</code></pre>
+        <wa-callout
+          class="note"
+          variant="neutral"
+          appearance="outlined"
+          size="s"
+        >
+          <wa-icon
+            slot="icon"
+            family="sharp"
+            variant="regular"
+            name="thumbtack"
+          ></wa-icon>
+          <strong>Call <code>show()</code> in the page, not next to the SDK.</strong>
+          <span
+            >Those SDKs usually run on a server. Call it wherever the page hears about the run: a stream, a socket, or a
+            poll.</span
+          >
+        </wa-callout>
         <h3 id="ai-sdk">AI SDK</h3>
         <p>
-          <code>ready</code> means idle. It's also where <code>status</code> lands after a reply, or after
-          <code>stop()</code>, so your app decides when ready means done. Here it's done once any reply exists.
-          <code>sendAutomaticallyWhen</code> sends the approval back, so done means the tool actually ran:
+          <code>ready</code> is ambiguous. It means idle, but it’s also where <code>status</code> lands after a reply or
+          after <code>stop()</code>, so your app decides when ready means done. Here, done is ready with any reply on
+          the page. <code>sendAutomaticallyWhen</code> sends the approval back, so done means the tool really ran:
         </p>
         <pre data-copy><code class="language-jsx">import { useChat } from '@ai-sdk/react';
 import { lastAssistantMessageIsCompleteWithApprovalResponses } from 'ai';
 
-const WORDS = { working: 'Thinking…', done: 'Done', error: 'Something broke', warning: 'Needs your OK', idle: '' };
+const TEXT = { working: 'Thinking…', done: 'Done', error: 'Something broke', warning: 'Needs your OK', idle: '' };
+
+const stateOf = (status, messages) =&gt; {
+  const parts = messages.at(-1)?.parts ?? [];
+  if (parts.some(p =&gt; p.state === 'approval-requested' &amp;&amp; !p.approval?.isAutomatic)) return 'warning';
+  if (status === 'error') return 'error';
+  if (status !== 'ready') return 'working';
+  return messages.length ? 'done' : 'idle';
+};
 
 function RunStatus() {
   const { status, messages } = useChat({
     sendAutomaticallyWhen: lastAssistantMessageIsCompleteWithApprovalResponses,
   });
-  const parts = messages.at(-1)?.parts ?? [];
-  const state = parts.some(p => p.state === 'approval-requested')
-    ? 'warning'
-    : status === 'error'
-      ? 'error'
-      : status === 'ready'
-        ? messages.length ? 'done' : 'idle'
-        : 'working';
+  const state = stateOf(status, messages);
   return (
     &lt;p&gt;
-      &lt;tiny-tell state={state} label="" /&gt; &lt;span role="status"&gt;{WORDS[state]}&lt;/span&gt;
+      &lt;tiny-tell state={state} label="" /&gt; &lt;span role="status"&gt;{TEXT[state]}&lt;/span&gt;
     &lt;/p&gt;
   );
 }</code></pre>
+        <wa-callout
+          class="note"
+          variant="neutral"
+          appearance="outlined"
+          size="s"
+        >
+          <wa-icon
+            slot="icon"
+            family="sharp"
+            variant="regular"
+            name="thumbtack"
+          ></wa-icon>
+          <strong>Skip automatic approvals.</strong>
+          <span
+            >They pass through <code>approval-requested</code> too, with <code>approval.isAutomatic</code> set. Count
+            them and the tell shows <code>warning</code> when nobody needs to act.</span
+          >
+        </wa-callout>
         <h3 id="langgraph">LangGraph.js</h3>
         <p>
-          A paused graph comes back with <code>__interrupt__</code> set. Answer with
-          <code>new Command({ resume })</code> and it's working again:
+          A paused graph comes back with <code>__interrupt__</code> set. Answer it with
+          <code>new Command({ resume })</code> on the same thread and it’s working again:
         </p>
-        <pre data-copy><code class="language-javascript">const tell = document.querySelector('tiny-tell');
-const status = document.querySelector('[role="status"]');
-
-tell.state = 'working';
-status.textContent = 'Thinking…';
+        <pre data-copy><code class="language-javascript">show('working');
 try {
   const result = await graph.invoke(input, config);
-  tell.state = result.__interrupt__ ? 'warning' : 'done';
-  status.textContent = result.__interrupt__ ? 'Needs your OK' : 'Done';
+  show(result.__interrupt__?.length ? 'warning' : 'done');
 } catch {
-  tell.state = 'error';
-  status.textContent = 'Something broke';
+  show('error');
 }</code></pre>
         <h3 id="openai-agents">OpenAI Agents SDK</h3>
         <p>
@@ -1289,18 +1426,35 @@ try {
         </p>
         <pre data-copy><code class="language-javascript">import { run } from '@openai/agents';
 
-const tell = document.querySelector('tiny-tell');
-const status = document.querySelector('[role="status"]');
-
-tell.state = 'working';
-status.textContent = 'Thinking…';
+show('working');
 try {
   const result = await run(agent, input);
-  tell.state = result.interruptions.length ? 'warning' : 'done';
-  status.textContent = result.interruptions.length ? 'Needs your OK' : 'Done';
+  show(result.interruptions.length ? 'warning' : 'done');
 } catch {
-  tell.state = 'error';
-  status.textContent = 'Something broke';
+  show('error');
+}</code></pre>
+        <h3 id="claude-agent-sdk">Claude Agent SDK</h3>
+        <p>
+          The run doesn’t stop for approval. It waits inside <code>canUseTool</code> until you answer, so the tell
+          switches to <code>warning</code> there and back when the person decides. <code>askUser</code> stands in for
+          your own approval UI:
+        </p>
+        <pre data-copy><code class="language-javascript">import { query } from '@anthropic-ai/claude-agent-sdk';
+
+const canUseTool = async (toolName, input) =&gt; {
+  show('warning');
+  const isAllowed = await askUser(toolName, input);
+  show('working');
+  return isAllowed ? { behavior: 'allow', updatedInput: input } : { behavior: 'deny', message: 'Declined' };
+};
+
+show('working');
+try {
+  for await (const message of query({ prompt, options: { canUseTool } })) {
+    if (message.type === 'result') show(message.subtype === 'success' ? 'done' : 'error');
+  }
+} catch {
+  show('error');
 }</code></pre>
       </section>
       <section
@@ -1310,12 +1464,12 @@ try {
         <h2 id="testing-title">Testing Your App</h2>
         <ul>
           <li>
-            <strong>Test DOMs</strong> (jsdom, happy-dom): tells render inert. Attributes and properties work, nothing
-            draws, and nothing logs, so Jest and Vitest runs stay clean.
+            <strong>Test DOMs</strong> (jsdom, happy-dom): tells go inert. Attributes and properties work, nothing
+            draws, and nothing logs, so Jest and Vitest output stays clean.
           </li>
           <li>
-            <strong>Screenshot tests:</strong> emulate reduced motion. Every state then holds one fixed pose, so frames
-            match run to run.
+            <strong>Screenshot tests</strong> (Playwright, Puppeteer): emulate reduced motion. Every state holds one
+            fixed pose, so screenshots match from run to run.
           </li>
         </ul>
         <pre
@@ -1328,14 +1482,14 @@ try {
       >
         <h2 id="before-title">Before It Loads</h2>
         <p>
-          Tiny Tells needs JavaScript, and until the script runs, <code>&lt;tiny-tell&gt;</code> is an empty inline
-          element. When it loads, the tell appears and can push the words beside it over. The words carry the status, so
-          a late tell only costs some charm. The shift is the part worth fixing.
+          Until the script runs, <code>&lt;tiny-tell&gt;</code> is an empty inline element. Then the tell appears and
+          shoves the words beside it over. A late tell is fine (the words already say the status). The layout shift
+          isn’t, and it counts against your <a href="https://web.dev/articles/cls">Cumulative Layout Shift</a>.
         </p>
         <h3 id="reserve">Hold Its Space</h3>
         <p>
-          Load <code>reserve.css</code> before the script. It gives every tell the exact box it will have once it loads,
-          so nothing moves when it arrives:
+          Load <code>reserve.css</code> before the script. It gives every tell the box it’ll have once it loads, so
+          nothing moves:
         </p>
         <wa-tab-group
           id="reserve-install"
@@ -1372,8 +1526,8 @@ try {
         </wa-tab-group>
         <h3 id="stand-in">Show a Stand-In</h3>
         <p>
-          If the script might never arrive, draw something in the reserved space. The <code>state</code> attribute is
-          already there, so plain CSS can follow it:
+          If the script might never arrive (a blocked CDN, JavaScript off), draw something in the reserved space. The
+          <code>state</code> attribute is already on the tag, so plain CSS can follow it:
         </p>
         <figure class="example wa-not-prose">
           <div class="example-preview studio wa-cluster fallback-glyphs">
@@ -1392,10 +1546,10 @@ tiny-tell:not(:defined)[state="error"]::before { content: "✕"; }
 tiny-tell:not(:defined)[state="warning"]::before { content: "!"; }</code></pre>
         </figure>
         <p>
-          Anything you put inside the tag also shows until the element loads, then hides. With
-          <code>reserve.css</code> it’s clipped to the tell’s box, so keep it to a short word or an icon.
+          Anything inside the tag shows until the element loads, then hides. With <code>reserve.css</code> it’s clipped
+          to the tell’s box, so keep it to an icon or a short word.
         </p>
-        <p>To check from script whether it loaded: <code>await customElements.whenDefined('tiny-tell')</code>.</p>
+        <p>To wait for it from script: <code>await customElements.whenDefined('tiny-tell')</code>.</p>
       </section>
 
       <p class="label">Reference</p>
@@ -1404,9 +1558,10 @@ tiny-tell:not(:defined)[state="warning"]::before { content: "!"; }</code></pre>
         aria-labelledby="attributes-title"
       >
         <h2 id="attributes-title">API</h2>
+        <h3 id="attributes">Attributes and Properties</h3>
         <p>
-          Every attribute is also a property (<code>el.state = 'error'</code>), and unknown values fall back to their
-          defaults. An unknown skin or state also logs a warning.
+          Every attribute is also a property (<code>tell.state = 'error'</code>). Unknown values fall back to the
+          default, and an unknown skin or state logs a warning too.
         </p>
         <wa-scroller orientation="horizontal"
           ><table>
@@ -1422,11 +1577,59 @@ tiny-tell:not(:defined)[state="warning"]::before { content: "!"; }</code></pre>
             </tbody>
           </table></wa-scroller
         >
+        <h3 id="css-custom-properties">CSS Custom Properties</h3>
+        <p>All of them inherit. <a href="#size">Size</a> and <a href="#color">Color</a> show them in use.</p>
+        <wa-scroller orientation="horizontal"
+          ><table>
+            <thead>
+              <tr>
+                <th scope="col">Property</th>
+                <th scope="col">Default</th>
+                <th scope="col">Does</th>
+              </tr>
+            </thead>
+            <tbody id="css-property-rows">
+              {{css-property-rows}}
+            </tbody>
+          </table></wa-scroller
+        >
+        <h3 id="css-parts">CSS Parts</h3>
+        <wa-scroller orientation="horizontal"
+          ><table>
+            <thead>
+              <tr>
+                <th scope="col">Part</th>
+                <th scope="col">Is</th>
+              </tr>
+            </thead>
+            <tbody id="css-part-rows">
+              {{css-part-rows}}
+            </tbody>
+          </table></wa-scroller
+        >
+        <h3 id="custom-states">Custom States</h3>
+        <p>
+          These need <a href="#browser-support">newer browsers</a> than the rest. <a href="#styling">Styling</a> has the
+          fallback.
+        </p>
+        <wa-scroller orientation="horizontal"
+          ><table>
+            <thead>
+              <tr>
+                <th scope="col">Selector</th>
+                <th scope="col">Matches When the Tell Is</th>
+              </tr>
+            </thead>
+            <tbody id="custom-state-rows">
+              {{custom-state-rows}}
+            </tbody>
+          </table></wa-scroller
+        >
         <h3 id="events">Events</h3>
         <p>
-          The core fires no events, since it only shows the state you set. The play bundle fires two around a dance,
-          because a dance is the one change your code doesn’t make. Both bubble and cross shadow roots, so you can
-          listen on the tell or on any element above it.
+          The core fires none. It only shows the state you set, so you already know. The play bundle fires two around a
+          dance, the one change your code doesn’t make. Both bubble and cross shadow roots, so listen on the tell or
+          anywhere above it.
         </p>
         <wa-scroller orientation="horizontal"
           ><table>
@@ -1443,10 +1646,10 @@ tiny-tell:not(:defined)[state="warning"]::before { content: "!"; }</code></pre>
           </table></wa-scroller
         >
         <p>
-          A dance lasts two loops, about 6.4 seconds. <code>tell-dance</code> doesn’t fire while a tell is paused, while
-          reduced motion is on, or while the tell is already dancing. Pausing mid-dance holds it, and
-          <code>tell-after-dance</code> fires once it finishes after you unpause. A canceled dance never started, so it
-          gets no <code>tell-after-dance</code>.
+          A dance lasts two loops, about 6.4 seconds. <code>tell-dance</code> doesn’t fire while a tell is paused, under
+          reduced motion, or mid-dance. Pausing freezes the frame but not the dance’s clock, so if the time’s up when
+          you unpause, <code>tell-after-dance</code> fires right then. A canceled dance never started, so it gets no
+          <code>tell-after-dance</code>.
         </p>
         <figure
           class="example wa-not-prose"
@@ -1479,29 +1682,25 @@ tiny-tell:not(:defined)[state="warning"]::before { content: "!"; }</code></pre>
               >Dance</wa-button
             >
           </div>
-          <pre data-copy><code class="language-js">const tell = document.querySelector('tiny-tell');
-const status = document.querySelector('#status');
+          <pre data-copy><code class="language-javascript">const tell = document.querySelector('tiny-tell');
+const words = document.querySelector('[role="status"]');
 const holdStill = document.querySelector('#hold-still');
 
 tell.addEventListener('tell-dance', event => {
-  if (holdStill.checked) {
-    event.preventDefault();
-    status.textContent = 'Asked to dance, and held still.';
-  } else {
-    status.textContent = 'Dancing…';
-  }
+  if (holdStill.checked) event.preventDefault();
+  words.textContent = holdStill.checked ? 'Asked to dance, and held still.' : 'Dancing…';
 });
 
-tell.addEventListener('tell-after-dance', event => {
-  status.textContent = `Back to ${event.target.state}.`;
+tell.addEventListener('tell-after-dance', () => {
+  words.textContent = `Back to ${tell.state}.`;
 });</code></pre>
         </figure>
-        <h3 id="statics">Statics</h3>
+        <h3 id="statics">Static Properties</h3>
         <wa-scroller orientation="horizontal"
           ><table>
             <thead>
               <tr>
-                <th scope="col">Static</th>
+                <th scope="col">Property</th>
                 <th scope="col">Type</th>
                 <th scope="col">Does</th>
               </tr>
@@ -1511,39 +1710,33 @@ tell.addEventListener('tell-after-dance', event => {
             </tbody>
           </table></wa-scroller
         >
-        <p>Custom tells aren’t supported yet, because the internals will keep changing.</p>
+        <wa-callout
+          class="note"
+          variant="neutral"
+          appearance="outlined"
+          size="s"
+        >
+          <wa-icon
+            slot="icon"
+            family="sharp"
+            variant="regular"
+            name="hourglass-half"
+          ></wa-icon>
+          <strong>No custom tells yet.</strong>
+          <span>The internals are still moving, so there’s no API for adding your own.</span>
+        </wa-callout>
       </section>
       <section
         id="browser-support"
         aria-labelledby="browser-title"
       >
         <h2 id="browser-title">Browser Support</h2>
-        <p>Tiny Tells works in these browsers and later:</p>
+        <p>
+          These versions and later. That covers every browser in <a href="https://web.dev/baseline">Baseline</a>’s
+          Widely available set, with room to spare.
+        </p>
         <ul class="wa-cluster wa-gap-xs wa-list-plain">
-          <li>
-            <wa-tag
-              class="studio"
-              appearance="outlined"
-              size="xs"
-              >Chrome 99</wa-tag
-            >
-          </li>
-          <li>
-            <wa-tag
-              class="studio"
-              appearance="outlined"
-              size="xs"
-              >Firefox 112</wa-tag
-            >
-          </li>
-          <li>
-            <wa-tag
-              class="studio"
-              appearance="outlined"
-              size="xs"
-              >Safari 16.4</wa-tag
-            >
-          </li>
+          {{support-tags}}
         </ul>
         <wa-callout
           class="note"
@@ -1559,9 +1752,10 @@ tell.addEventListener('tell-after-dance', event => {
           ></wa-icon>
           <strong>Two extras need newer browsers.</strong>
           <span
-            ><code>:state()</code> selectors, and <code>scheme="auto"</code> following a container’s
-            <code>color-scheme</code>, need Chrome 125, Firefox 126, or Safari 17.5. Older browsers skip
-            <code>:state()</code> and follow the system’s light or dark setting instead.</span
+            ><code>:state()</code> selectors need Chrome 125, Firefox 126, or Safari 17.4. Before that, match the
+            <code>state</code> attribute instead. <code>scheme="auto"</code> follows a container’s
+            <code>color-scheme</code> from Chrome 123, Firefox 120, and Safari 17.5. Before that, it follows the
+            system’s light or dark setting.</span
           >
         </wa-callout>
       </section>
@@ -1571,13 +1765,13 @@ tell.addEventListener('tell-after-dance', event => {
       >
         <h2 id="how-title">How It Works</h2>
         <p>
-          Each tell is animated like a character rather than swapped like an icon, and all six follow the same few
-          rules.
+          A tell is animated like a character, not swapped like an icon. All six follow the same few rules, and the
+          demos below are running them live.
         </p>
         <h3 id="one-beat">One Beat, One Clock</h3>
         <p>
-          Everything runs on a 0.8s beat. Each loop is four beats, and idle takes six. Every tell on a page shares one
-          clock, so a row of them stays in time, and each one lands its hardest moves on the beat.
+          Everything runs on a 0.8s beat. A loop is four beats (idle takes six). Every tell on the page shares one
+          clock, so a row of them stays in time, and each lands its biggest move on the beat.
         </p>
         <figure class="example wa-not-prose">
           <div class="example-preview studio wa-stack wa-gap-m">
@@ -1608,8 +1802,9 @@ tell.addEventListener('tell-after-dance', event => {
         </figure>
         <h3 id="handoffs">Handoffs</h3>
         <p>
-          When the state changes, the tell doesn’t cut to the next loop. It springs from its current pose into the new
-          one and keeps its speed, so switching halfway through a move still looks deliberate.
+          Change the state and the tell doesn’t cut to the new loop. It springs from wherever it is, keeping its
+          momentum, so even a switch halfway through a move looks intended. This is the part a sprite sheet or a GIF
+          can’t do.
         </p>
         <figure class="example wa-not-prose">
           <div class="example-preview studio wa-grid wa-gap-l compare handoff-compare">
@@ -1640,8 +1835,8 @@ tell.addEventListener('tell-after-dance', event => {
         </figure>
         <h3 id="small-on-purpose">Small on Purpose</h3>
         <p>
-          Tells drop detail as they shrink. Eyes loses its glow at 32px and under, and Dekatron’s ten cathodes merge
-          into one ring, so each one still reads at 20px.
+          Tells drop detail as they shrink, so each still reads at 20px. At 32px and under, Eyes loses its glow and
+          Dekatron’s ten cathodes merge into one ring.
         </p>
         <figure class="example wa-not-prose">
           <div
@@ -1649,14 +1844,13 @@ tell.addEventListener('tell-after-dance', event => {
             id="size-ladder"
           ></div>
           <div class="example-bar studio">
-            At 32px and under, five of the six switch to a simpler drawing. Flipdot’s grid already reads small.
+            At 32px and under, four of the six switch to a simpler drawing. Flipdot and Lens keep theirs.
           </div>
         </figure>
         <h3 id="drawing">Drawing</h3>
         <p>
-          Each tell is one canvas, drawn at your screen’s full resolution. Off-screen tells stop drawing. On a recent
-          laptop, 100 on screen run well past 60 fps, and a CPU four times slower still gets about 40. Measure it on
-          yours:
+          Each tell is one canvas at your screen’s full resolution, and off-screen tells stop drawing. On a recent
+          laptop, 100 on screen run well past 60 fps. On a CPU four times slower, they still hold about 40. Try yours:
         </p>
         <figure class="example wa-not-prose">
           <div
@@ -1674,7 +1868,7 @@ tell.addEventListener('tell-after-dance', event => {
           </div>
         </figure>
         <h3 id="tested">Tested</h3>
-        <p>Every change runs in Chromium, Firefox, and WebKit. Each tell has to:</p>
+        <p>Every change is tested in Chromium, Firefox, and WebKit, and every tell has to pass the same checks:</p>
         <ul>
           <li>stay inside its live area</li>
           <li>loop without a seam</li>
@@ -1689,31 +1883,29 @@ tell.addEventListener('tell-after-dance', event => {
         <h2 id="project-title">Project</h2>
         <h3 id="license">License</h3>
         <p>
-          MIT. Use it in anything, commercial work included.
-          <a href="https://github.com/talbs/tiny-tells/blob/main/LICENSE">The license file</a> is the whole deal.
+          MIT. Use it in anything, commercial work included. The
+          <a href="https://github.com/talbs/tiny-tells/blob/main/LICENSE">license file</a> has the full text.
         </p>
         <h3 id="versions">Versions</h3>
         <p>
-          Tiny Tells is pre-1.0. It's tested, but names and defaults can still change, so pin a version. Fixes go to the
-          latest release only. Every release is in the
+          Pre-1.0. It’s tested, but names and defaults can still change, so pin a version. Fixes only go to the latest
+          release. Every release is in the
           <a href="https://github.com/talbs/tiny-tells/blob/main/CHANGELOG.md">changelog</a>, and
-          <code>TinyTell.version</code> tells you which one you've got.
+          <code>TinyTell.version</code> tells you which one you’ve got.
         </p>
         <h3 id="contributing">Contributing</h3>
         <p>
           Bugs go in an <a href="https://github.com/talbs/tiny-tells/issues/new/choose">issue</a>: the browser, the
           tell, the state, what you saw. A screen recording helps a lot. For anything bigger, open an issue before the
-          pull request so we agree on it first. New tells: not yet. The internals are still moving. Fork away, though.
-          Security problems go through
-          <a href="https://github.com/talbs/tiny-tells/security/advisories/new">GitHub's private report</a>, not a
+          pull request so we agree on it first. New tells aren’t open yet, but fork away. Security problems go through
+          <a href="https://github.com/talbs/tiny-tells/security/advisories/new">GitHub’s private report</a>, not a
           public issue. The rest is in
           <a href="https://github.com/talbs/tiny-tells/blob/main/CONTRIBUTING.md">CONTRIBUTING.md</a>.
         </p>
         <h3 id="stats">Stats</h3>
         <p>
-          The site counts visits, plus which tell you pick, which install tab you open, and which palette you try, with
-          <a href="https://umami.is/">Umami</a>. The numbers are aggregate and cookie-free. Nothing in them identifies
-          you.
+          The site counts visits with <a href="https://umami.is/">Umami</a>, plus which tell you pick, which install tab
+          you open, and which palette you try. There are no cookies, and nothing in the totals identifies you.
         </p>
       </section>
       <section
