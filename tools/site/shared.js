@@ -1,6 +1,6 @@
 import '../../src/tiny-tells-play.js';
-import { DANCE } from '../../src/element.js';
-import { LABEL, QUIET, STATES, STATE_COLOR, toSrgb } from '../../src/core.js';
+import { DANCE, HOOKS, MOOD } from '../../src/element.js';
+import { LABEL, QUIET, STATES, STATE_COLOR, linear, toSrgb } from '../../src/core.js';
 import { NAMES, V1 } from '../shared/copy.js';
 import { setScheme } from './scheme.js';
 import { track } from './track.js';
@@ -22,7 +22,28 @@ export const store = {
 };
 export const radios = (values, labels = values) =>
   values.map((v, i) => `<wa-radio appearance="button" value="${v}">${labels[i]}</wa-radio>`).join('');
+export const recentTaps = (log, ms) => {
+  const now = performance.now();
+  return log.filter(t => now - t < ms).concat(now);
+};
+export const perFrame = fn => {
+  let isQueued = false;
+  return (...args) => {
+    if (isQueued) return;
+    isQueued = true;
+    requestAnimationFrame(() => {
+      isQueued = false;
+      fn(...args);
+    });
+  };
+};
 export const tag = (skin, attrs = '') => `<tiny-tell skin="${skin}" ${attrs}></tiny-tell>`;
+
+export const holdPlay = isHeld => {
+  const { gaze, tick } = HOOKS;
+  HOOKS.gaze = el => (isHeld(el) ? null : gaze?.(el));
+  HOOKS.tick = (el, dt, t) => (isHeld(el) ? (el[MOOD] = null) : tick?.(el, dt, t));
+};
 const isDarkPage = () => document.documentElement.classList.contains('wa-dark');
 
 const listeners = { skin: [], theme: [], pause: [], palette: [] };
@@ -109,10 +130,7 @@ export const resolvedPalette = isDark => {
     toRgb(getComputedStyle(host.lastElementChild).backgroundColor) || (isDark ? [35, 38, 44] : [255, 255, 255]);
   return out;
 };
-const luminance = rgb =>
-  rgb
-    .map(c => ((c /= 255) <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4))
-    .reduce((sum, c, i) => sum + c * [0.2126, 0.7152, 0.0722][i], 0);
+const luminance = rgb => rgb.map(linear).reduce((sum, c, i) => sum + c * [0.2126, 0.7152, 0.0722][i], 0);
 export const contrast = (a, b) => {
   const [hi, lo] = [luminance(a), luminance(b)].sort((x, y) => y - x);
   return (hi + 0.05) / (lo + 0.05);
@@ -423,19 +441,7 @@ export const spy = (links, sections, { isFirstByDefault = false } = {}) => {
     shown = current;
     if (link) revealIn(scrollerOf(link), link);
   };
-  let isQueued = false;
-  addEventListener(
-    'scroll',
-    () => {
-      if (isQueued) return;
-      isQueued = true;
-      requestAnimationFrame(() => {
-        isQueued = false;
-        update();
-      });
-    },
-    { passive: true }
-  );
+  addEventListener('scroll', perFrame(update), { passive: true });
   update();
   // Web Awesome upgrades wa-page after load; until then its menu isn't the sidebar's scroller.
   customElements
@@ -529,8 +535,7 @@ const reveal = async () => {
 const mark = document.querySelector('.tb-name');
 let markTaps = [];
 mark?.addEventListener('pointerdown', () => {
-  const now = performance.now();
-  markTaps = markTaps.filter(t => now - t < 1500).concat(now);
+  markTaps = recentTaps(markTaps, 1500);
   if (markTaps.length < 5) return;
   markTaps = [];
   document.querySelectorAll('tiny-tell').forEach(t => t[DANCE]?.());
@@ -586,20 +591,8 @@ export const swapText = (el, text) => {
   );
 };
 
-let isScrollQueued = false;
 const markScrolled = () => document.documentElement.classList.toggle('is-scrolled', scrollY > 4);
-addEventListener(
-  'scroll',
-  () => {
-    if (isScrollQueued) return;
-    isScrollQueued = true;
-    requestAnimationFrame(() => {
-      isScrollQueued = false;
-      markScrolled();
-    });
-  },
-  { passive: true }
-);
+addEventListener('scroll', perFrame(markScrolled), { passive: true });
 markScrolled();
 
 const marker = (group, className, slot) => {
@@ -639,15 +632,7 @@ const placeTabBar = (group, isInstant) => {
   if (on) slide(marker(group, 'tab-bar', 'nav'), on, { isInstant, isWidthOnly: true });
 };
 const follow = (group, items, attr, place) => {
-  let isQueued = false;
-  const queue = isInstant => {
-    if (isQueued) return;
-    isQueued = true;
-    requestAnimationFrame(() => {
-      isQueued = false;
-      place(group, isInstant);
-    });
-  };
+  const queue = perFrame(isInstant => place(group, isInstant));
   const widths = new WeakMap();
   const sizes = new ResizeObserver(entries => {
     const isWider = entries.some(e => widths.get(e.target) !== e.contentRect.width);
@@ -684,7 +669,7 @@ const syncAttrs = (from, to, names = [...new Set([...from.getAttributeNames(), .
     if (value === null) from.removeAttribute(name);
     else if (from.getAttribute(name) !== value) from.setAttribute(name, value);
   });
-export const morph = (from, to, { isTextAnimated = true } = {}) => {
+const morph = (from, to, { isTextAnimated = true } = {}) => {
   if (from.nodeName !== to.nodeName) return from.replaceWith(to.cloneNode(true));
   if (from.nodeType === Node.TEXT_NODE) {
     if (from.data !== to.data) from.data = to.data;

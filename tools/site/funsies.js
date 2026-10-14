@@ -1,7 +1,7 @@
-import { BEAT } from '../../src/core.js';
+import { BEAT, clamp } from '../../src/core.js';
 import { DANCE } from '../../src/element.js';
 import { V1 } from '../shared/copy.js';
-import { $, holdAll, isStill, onMotionChange, reducedMotion, tag, whenNear } from './shared.js';
+import { $, holdAll, isStill, onMotionChange, recentTaps, reducedMotion, tag, whenNear } from './shared.js';
 
 const BEAT_MS = BEAT * 1000;
 const section = $('funsies');
@@ -87,18 +87,14 @@ $('tap').addEventListener('click', () => {
   clearTimeout(settleTimer);
   status.textContent = '';
   band.forEach(el => (el.state = 'working'));
-  const now = performance.now();
-  taps = taps
-    .filter(t => now - t < 3000)
-    .concat(now)
-    .slice(-5);
+  taps = recentTaps(taps, 3000).slice(-5);
   if (taps.length < 2) {
     readout.textContent = 'Keep tapping…';
     settleTimer = setTimeout(settle, 3000);
     return;
   }
   const gap = (taps.at(-1) - taps[0]) / (taps.length - 1) / 1000;
-  tellClass().timeScale = Math.min(4, Math.max(0.25, BEAT / gap));
+  tellClass().timeScale = clamp(BEAT / gap, 0.25, 4);
   bpm = Math.round((60 / BEAT) * tellClass().timeScale);
   readout.textContent = `${bpm} BPM · ${tellClass().timeScale.toFixed(2)}× speed`;
   settleTimer = setTimeout(settle, gap * 2000);

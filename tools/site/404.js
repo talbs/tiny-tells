@@ -1,6 +1,6 @@
 import { PERIOD, QUIET } from '../../src/core.js';
 import { V1 } from '../shared/copy.js';
-import { $, isStill, on, onMotionChange, page, start, tag } from './shared.js';
+import { $, isStill, on, onMotionChange, page, recentTaps, start, tag } from './shared.js';
 
 const GLYPHS = {
   4: ['101', '101', '111', '001', '001'],
@@ -89,8 +89,7 @@ wall.addEventListener('pointerdown', e => {
   wake(el);
   const cell = el.parentElement;
   if (cell.hasAttribute('data-lit')) return;
-  const now = performance.now(),
-    log = (taps.get(el) || []).filter(t => now - t < 3000).concat(now);
+  const log = recentTaps(taps.get(el) || [], 3000);
   if (log.length < 10) return taps.set(el, log);
   taps.delete(el);
   el.state = 'error';
