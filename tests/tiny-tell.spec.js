@@ -74,9 +74,12 @@ const hue = (page, selector) =>
       if (d[i + 3] > 200) most = Math.max(most, d[i + 2] - Math.max(d[i], d[i + 1]));
     return most;
   });
-const tap5 = async (page, selector) => {
-  for (let i = 0; i < 5; i++) await page.locator(selector).click();
-};
+// Five real clicks can span more than play's 1.5s tap window on a busy machine, so they're dispatched in one go.
+const tap5 = (page, selector) =>
+  page.$eval(selector, el => {
+    for (let i = 0; i < 5; i++)
+      el.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, composed: true, pointerType: 'mouse' }));
+  });
 
 const settled = async (page, selector) => {
   let last = await frame(page, selector);
