@@ -1,6 +1,5 @@
 /* A player per skin. On a handoff it springs from current position and velocity into the next state, with anticipation, staggered starts, and an arc. */
 import { BEAT, E, PERIOD, PHYS, bell, ink, labMix, mod, seg, springOff, tone } from './core.js';
-import { camMix } from './tells/drones.js';
 import { SKINS } from './registry.js';
 
 /* A wrapped key (dekatron's k) crosses its wrap point as a small step, not a jump back around the ring. */
@@ -19,7 +18,7 @@ export class EPlayer {
       sk = SKINS[this.skin];
     const k = this.col0 ? E.inOut(seg(tau, 0, BEAT)) : 1,
       color = this.col0 ? labMix(this.col0, tone(this.id), k) : tone(this.id);
-    const cam = sk.cam ? camMix(this.cam0 || sk.cam[this.id], sk.cam[this.id], this.cam0 ? k : 1) : null;
+    const cam = sk.cam?.(this.cam0, this.id, k);
     if (!this.off) return { ...st, color, cam };
     const P = PHYS[this.id],
       full = this.mode === 'x';
@@ -44,7 +43,7 @@ export class EPlayer {
           o[kb] += uy * ant + ux * arc;
         }
       }
-      if (sk.cam) o.h += 0.14 * bell(seg(tt, 0, 0.7));
+      sk.handoff?.(o, tt);
       return o;
     });
     return { ...st, ents, color, cam };

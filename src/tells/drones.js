@@ -2,9 +2,10 @@ import { BEAT, E, PI, SHADOW, TAU, bell, clamp, ctxFor, drop, gaze, lerp, seg, s
 
 export const rotX = ([x, y, z], a) => [x, y * Math.cos(a) - z * Math.sin(a), y * Math.sin(a) + z * Math.cos(a)];
 export const rotY = ([x, y, z], a) => [x * Math.cos(a) + z * Math.sin(a), y, -x * Math.sin(a) + z * Math.cos(a)];
-export const AERIAL = { pitch: 1.05, yaw: 0, lift: 0.08 },
-  FLAT = { pitch: PI / 2 - 0.001, yaw: 0, lift: 0 };
-export const camMix = (A, B, t) => ({
+const AERIAL = { pitch: 1.05, yaw: 0, lift: 0.08 },
+  FLAT = { pitch: PI / 2 - 0.001, yaw: 0, lift: 0 },
+  CAM = { done: FLAT, error: FLAT };
+const camMix = (A, B, t) => ({
   pitch: lerp(A.pitch, B.pitch, t),
   yaw: lerp(A.yaw, B.yaw, t),
   lift: lerp(A.lift, B.lift, t),
@@ -71,7 +72,13 @@ export const DRONES = {
   keys: ['x', 'z', 'h', 'a'],
   hasVel: true,
   pos: ['x', 'z'],
-  cam: { working: AERIAL, done: FLAT, error: FLAT, warning: AERIAL, idle: AERIAL },
+  cam: (from, id, k) => {
+    const to = CAM[id] || AERIAL;
+    return from ? camMix(from, to, k) : to;
+  },
+  handoff: (o, tt) => {
+    o.h += 0.14 * bell(seg(tt, 0, 0.7));
+  },
   states: {
     working: t => {
       const u4 = t / BEAT,

@@ -1,6 +1,6 @@
 /* ---- Dance: a hidden fun state, one loop per tell. Only in the play bundle. ---- */
 import { BEAT, E, PERIOD, PHYS, PI, STATE_COLOR, bell, mod, seg } from './core.js';
-import { AERIAL, CORNERS, DRONES } from './tells/drones.js';
+import { CORNERS, DRONES } from './tells/drones.js';
 import { B, FC, FLIP, fromCells } from './tells/flipdot.js';
 import { EP, EYES, pair } from './tells/eyes.js';
 import { BLOT } from './tells/blot.js';
@@ -10,7 +10,6 @@ import { LENS } from './tells/lens.js';
 STATE_COLOR.dance = 'sky';
 PERIOD.dance = 4 * BEAT;
 PHYS.dance = PHYS.working;
-DRONES.cam.dance = AERIAL;
 const EQ = [
   [4, 2, 5, 2, 3],
   [2, 3, 2, 3, 2],
