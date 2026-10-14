@@ -556,10 +556,12 @@ test.describe('play bundle', () => {
     await tap5(page, '#eyes');
     expect(await page.evaluate(() => window.danced), 'a paused tell ignores five taps').toBe(0);
     await page.emulateMedia({ reducedMotion: 'reduce' });
+    await twoFrames(page);
     await page.$eval('#eyes', el => (el.paused = false));
     await tap5(page, '#eyes');
     expect(await page.evaluate(() => window.danced), 'so does any tell under reduced motion').toBe(0);
     await page.emulateMedia({ reducedMotion: 'no-preference' });
+    await twoFrames(page);
     await tap5(page, '#eyes');
     await expect.poll(() => page.evaluate(() => window.danced), { message: 'with both off, five taps dance' }).toBe(1);
   });
