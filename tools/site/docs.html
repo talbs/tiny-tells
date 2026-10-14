@@ -483,9 +483,25 @@ words.textContent = 'Synced 3 files.';</code></pre>
         <p>
           Screen readers announce a tell as an image named after its state, like “Working”. Set <code>label</code> to be
           more specific. Set <code>label=""</code> to hide the tell when the words beside it already say the state.
-          Stick to <code>label</code>. An <code>aria-label</code> or <code>aria-labelledby</code> on the tag also wins
-          over a non-empty <code>label</code>, but Firefox only honors it from version 119.
         </p>
+        <wa-callout
+          class="note"
+          variant="neutral"
+          appearance="outlined"
+          size="s"
+        >
+          <wa-icon
+            slot="icon"
+            family="sharp"
+            variant="regular"
+            name="thumbtack"
+          ></wa-icon>
+          <strong>Use <code>label</code>, not <code>aria-label</code>.</strong>
+          <span
+            >An <code>aria-label</code> or <code>aria-labelledby</code> on the tag also wins over a non-empty
+            <code>label</code>, but Firefox only honors it from version 119.</span
+          >
+        </wa-callout>
         <figure class="example wa-not-prose">
           <div class="example-preview studio wa-cluster">
             <table class="label-cases">
@@ -1120,11 +1136,25 @@ words.textContent = 'Synced 3 files.';</code></pre>
   "html.customData": ["./node_modules/tiny-tells/dist/vscode.html-custom-data.json"]
 }</code></pre>
         <h3 id="react">React</h3>
-        <p>
-          React 19 works out of the box. React 18 has one trap: it writes every value as an attribute string, so
-          <code>paused={false}</code> becomes <code>paused="false"</code>, and that still pauses. In React 18, leave
-          <code>paused</code> off instead of setting it to <code>false</code>.
-        </p>
+        <p>React 19 works out of the box.</p>
+        <wa-callout
+          class="note"
+          variant="neutral"
+          appearance="outlined"
+          size="s"
+        >
+          <wa-icon
+            slot="icon"
+            family="sharp"
+            variant="regular"
+            name="thumbtack"
+          ></wa-icon>
+          <strong>In React 18, leave <code>paused</code> off instead of setting it to <code>false</code>.</strong>
+          <span
+            >React 18 writes every value as an attribute string, so <code>paused={false}</code> becomes
+            <code>paused="false"</code>, and that still pauses.</span
+          >
+        </wa-callout>
         <p>
           With TypeScript, drop this in any <code>.d.ts</code> file so <code>&lt;tiny-tell&gt;</code> type-checks in
           JSX. It works with React 18 and 19 types:
@@ -1302,10 +1332,7 @@ button.addEventListener('click', async () => {
           </table></wa-scroller
         >
         <h3 id="agent-show">Shared Helper</h3>
-        <p>
-          The LangGraph, OpenAI, and Claude examples share this. Those SDKs usually run on a server, so wherever the
-          page hears about the run (a stream, a socket, a poll), call <code>show()</code> there.
-        </p>
+        <p>The LangGraph, OpenAI, and Claude examples share this:</p>
         <pre data-copy><code class="language-javascript">const tell = document.querySelector('tiny-tell');
 const words = document.querySelector('[role="status"]');
 const TEXT = { working: 'Thinking…', done: 'Done', error: 'Something broke', warning: 'Needs your OK', idle: '' };
@@ -1314,13 +1341,29 @@ const show = state =&gt; {
   tell.state = state;
   words.textContent = TEXT[state];
 };</code></pre>
+        <wa-callout
+          class="note"
+          variant="neutral"
+          appearance="outlined"
+          size="s"
+        >
+          <wa-icon
+            slot="icon"
+            family="sharp"
+            variant="regular"
+            name="thumbtack"
+          ></wa-icon>
+          <strong>Call <code>show()</code> in the page, not next to the SDK.</strong>
+          <span
+            >Those SDKs usually run on a server. Call it wherever the page hears about the run: a stream, a socket, or a
+            poll.</span
+          >
+        </wa-callout>
         <h3 id="ai-sdk">AI SDK</h3>
         <p>
           <code>ready</code> is ambiguous. It means idle, but it’s also where <code>status</code> lands after a reply or
           after <code>stop()</code>, so your app decides when ready means done. Here, done is ready with any reply on
-          the page. <code>sendAutomaticallyWhen</code> sends the approval back, so done means the tool really ran.
-          Automatic approvals pass through <code>approval-requested</code> too, so skip those, or the tell shows
-          <code>warning</code> when nobody needs to act:
+          the page. <code>sendAutomaticallyWhen</code> sends the approval back, so done means the tool really ran:
         </p>
         <pre data-copy><code class="language-jsx">import { useChat } from '@ai-sdk/react';
 import { lastAssistantMessageIsCompleteWithApprovalResponses } from 'ai';
@@ -1346,6 +1389,24 @@ function RunStatus() {
     &lt;/p&gt;
   );
 }</code></pre>
+        <wa-callout
+          class="note"
+          variant="neutral"
+          appearance="outlined"
+          size="s"
+        >
+          <wa-icon
+            slot="icon"
+            family="sharp"
+            variant="regular"
+            name="thumbtack"
+          ></wa-icon>
+          <strong>Skip automatic approvals.</strong>
+          <span
+            >They pass through <code>approval-requested</code> too, with <code>approval.isAutomatic</code> set. Count
+            them and the tell shows <code>warning</code> when nobody needs to act.</span
+          >
+        </wa-callout>
         <h3 id="langgraph">LangGraph.js</h3>
         <p>
           A paused graph comes back with <code>__interrupt__</code> set. Answer it with
@@ -1649,7 +1710,21 @@ tell.addEventListener('tell-after-dance', () => {
             </tbody>
           </table></wa-scroller
         >
-        <p>No API for custom tells yet. The internals are still moving.</p>
+        <wa-callout
+          class="note"
+          variant="neutral"
+          appearance="outlined"
+          size="s"
+        >
+          <wa-icon
+            slot="icon"
+            family="sharp"
+            variant="regular"
+            name="hourglass-half"
+          ></wa-icon>
+          <strong>No custom tells yet.</strong>
+          <span>The internals are still moving, so there’s no API for adding your own.</span>
+        </wa-callout>
       </section>
       <section
         id="browser-support"
