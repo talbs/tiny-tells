@@ -923,15 +923,25 @@ test.describe('site pages', () => {
     ).toEqual(['eyes']);
   });
 
-  test('picking a link in the mobile docs drawer closes the drawer', async ({ page }) => {
+  test('picking a far link in the mobile docs drawer lands behind the drawer as it closes', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await open(page, { path: '/docs/' });
     await page.locator('.nav-toggle').click();
-    const link = page.getByRole('navigation', { name: 'Docs' }).getByRole('link', { name: 'Color' });
+    const link = page.getByRole('navigation', { name: 'Docs' }).getByRole('link', { name: 'API' });
     await expect(link, 'the drawer opens').toBeVisible();
     await link.click();
-    await expect(page, 'the link still jumps to its section').toHaveURL(/#color$/);
+    const drift = () =>
+      page.evaluate(() => {
+        const target = document.getElementById('api'),
+          landed = target.getBoundingClientRect().top;
+        target.scrollIntoView({ behavior: 'instant' });
+        return Math.abs(landed - target.getBoundingClientRect().top);
+      });
+    await twoFrames(page);
+    expect(await drift(), 'the section is in place two frames after the tap').toBeLessThan(2);
+    await expect(page, 'the link still updates the address').toHaveURL(/#api$/);
     await expect(link, 'the drawer closes').toBeHidden();
+    expect(await drift(), 'the section stays in place once the drawer is gone').toBeLessThan(2);
   });
 
   test('a docs link to a section lands where the section scrolls to, below the sticky header', async ({ page }) => {

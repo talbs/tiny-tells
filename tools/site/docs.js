@@ -127,8 +127,9 @@ spy(
   { isFirstByDefault: true }
 );
 const shell = document.querySelector('wa-page');
+// Closing through the drawer keeps nav-open until it's fully shut, so offscreen sections still skip its last restyle.
 shell.addEventListener('click', e => {
-  if (e.target.closest('[slot^="navigation"] a[href^="#"]')) shell.hideNavigation();
+  if (e.target.closest('[slot^="navigation"] a[href^="#"]')) shell.navigationDrawer.open = false;
 });
 syncInstallTabs([$('docs-install'), $('play-install'), $('reserve-install')]);
 

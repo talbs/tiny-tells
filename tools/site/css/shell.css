@@ -232,7 +232,6 @@
   }
   /* Web Awesome's cloak lifts once everything is defined, before reveal() scrolls a #section link into place, so it's held until then, or the page would show at the top and jump. */
   [data-upgrading] {
-    scroll-behavior: auto;
     & body {
       animation: 2s step-end wa-fouce-cloak;
     }
