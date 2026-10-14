@@ -141,9 +141,9 @@ export const flipCells = (id, u, cut, recolor) => {
   return { cells: out, bits: f.to };
 };
 export const renderFlip = (cv, cells, colOld, colNew) => {
-  const { ctx, W, px } = ctxFor(cv),
+  const { ctx, W, px, k } = ctxFor(cv, FLIPDOT.fit),
     big = px > 40,
-    cell = (W * FLIPDOT.fit(px)) / 5,
+    cell = (W * k) / 5,
     off = (W - cell * 5) / 2;
   const near =
     gaze && Math.hypot(gaze.x, gaze.y) > 0.2
@@ -183,4 +183,4 @@ class FPlayer {
     renderFlip(cv, flipCells(this.id, T - this.t0, this.snap, recolor).cells, ink || this.col0 || col, ink || col);
   }
 }
-export const FLIPDOT = { fit: () => 0.8, player: id => new FPlayer(id), period: id => FC[id].total };
+export const FLIPDOT = { fit: () => 0.8, player: id => new FPlayer(id) };

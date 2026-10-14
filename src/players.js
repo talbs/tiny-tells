@@ -7,7 +7,7 @@ const unwrap = (sk, k, d) => (sk.wrap?.[k] ? mod(d + sk.wrap[k] / 2, sk.wrap[k])
 
 export class EPlayer {
   constructor(skin, id = 'working', mode = 'x') {
-    Object.assign(this, { skin, id, mode, t0: 0, off: null, col0: null, cam0: null });
+    Object.assign(this, { skin, id, mode, t0: 0, off: null, from: null });
   }
   base(id, tau) {
     return SKINS[this.skin].states[id](mod(tau, PERIOD[id]));
@@ -16,10 +16,11 @@ export class EPlayer {
     const tau = T - this.t0,
       st = this.base(this.id, tau),
       sk = SKINS[this.skin];
-    const k = this.col0 ? E.inOut(seg(tau, 0, BEAT)) : 1,
-      color = this.col0 ? labMix(this.col0, tone(this.id), k) : tone(this.id);
-    const cam = sk.cam?.(this.cam0, this.id, k);
-    if (!this.off) return { ...st, color, cam };
+    const from = this.from,
+      k = from ? E.inOut(seg(tau, 0, BEAT)) : 1,
+      color = from ? labMix(from.color, tone(this.id), k) : tone(this.id);
+    const view = sk.view?.(from?.view, this.id, k);
+    if (!this.off) return { ...st, color, view };
     const P = PHYS[this.id],
       full = this.mode === 'x';
     const ents = st.ents.map((e, i) => {
@@ -46,7 +47,7 @@ export class EPlayer {
       sk.handoff?.(o, tt);
       return o;
     });
-    return { ...st, ents, color, cam };
+    return { ...st, ents, color, view };
   }
   set(id, T) {
     if (id === this.id) return;
@@ -65,8 +66,7 @@ export class EPlayer {
         )
       ),
     };
-    this.col0 = a.color;
-    this.cam0 = a.cam;
+    this.from = a;
     this.id = id;
     this.t0 = T;
   }

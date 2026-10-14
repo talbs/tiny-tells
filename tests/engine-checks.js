@@ -83,7 +83,7 @@ export const runEngineChecks = () => {
           const sc = document.createElement('canvas');
           sc.width = sc.height = 40;
           sc._css = 20;
-          const P = SKINS[skin].period?.(id) ?? PERIOD[id],
+          const P = PERIOD[id],
             step = (a, b) => {
               let d = 0;
               for (let i = 0; i < a.length; i += 4)

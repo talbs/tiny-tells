@@ -152,7 +152,7 @@ export const ctxFor = (cv, fit) => {
     px = cv._css || 100,
     k = fit ? fit(px) : 1;
   ctx.clearRect(0, 0, W, W);
-  return { ctx, W, px, small: px <= 32, unit: W * (px > 40 ? 0.4 : 0.46) * k, o: W / 2, dpr: W / px };
+  return { ctx, W, px, k, small: px <= 32, unit: W * (px > 40 ? 0.4 : 0.46) * k, o: W / 2, dpr: W / px };
 };
 export const sphere = (ctx, x, y, rx, ry, color, a, small, rot = 0) => {
   const R = Math.max(rx, ry);

@@ -72,9 +72,9 @@ export const DRONES = {
   keys: ['x', 'z', 'h', 'a'],
   hasVel: true,
   pos: ['x', 'z'],
-  cam: (from, id, k) => {
+  view: (from, id, k) => {
     const to = CAM[id] || AERIAL;
-    return from ? camMix(from, to, k) : to;
+    return k < 1 ? camMix(from, to, k) : to;
   },
   handoff: (o, tt) => {
     o.h += 0.14 * bell(seg(tt, 0, 0.7));
@@ -172,7 +172,7 @@ export const DRONES = {
   },
   render: (cv, s, color, vel) => {
     const { ctx, small, unit, o } = ctxFor(cv, DRONES.fit),
-      cam = s.cam,
+      cam = s.view,
       sh = s.shake || [0, 0],
       r = 0.12,
       sq = Math.max(0.25, Math.sin(cam.pitch));
