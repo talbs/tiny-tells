@@ -895,6 +895,31 @@ test.describe('site pages', () => {
     await expect(tip, 'the first hover opens it, though it was built under the pointer').toHaveJSProperty('open', true);
   });
 
+  test('docs in Core mode keep every example tell out of play, even after a skin change', async ({ page }) => {
+    await open(page, { path: '/docs/' });
+    const playing = () =>
+      page.$$eval(
+        'tiny-tell',
+        els => els.filter(el => !el.closest('#play, #events-demo, #funsies') && !el.hasAttribute('noplay')).length
+      );
+    expect(await playing(), 'every example tell starts with noplay').toBe(0);
+    await page.evaluate(() => {
+      const select = document.getElementById('page-tell');
+      select.value = 'blot';
+      select.dispatchEvent(new Event('change', { bubbles: true }));
+    });
+    await expect.poll(playing, { message: 'tells rebuilt for the new skin get noplay too' }).toBe(0);
+    await page.evaluate(() => {
+      const picker = document.getElementById('examples-play');
+      picker.value = 'play';
+      picker.dispatchEvent(new Event('change', { bubbles: true }));
+    });
+    expect(
+      await page.$$eval('tiny-tell[noplay]', els => els.filter(el => !el.matches('.is-core')).length),
+      'picking Play clears it from everything but the core comparison'
+    ).toBe(0);
+  });
+
   test('landing, docs, and 404 load and switch theme without errors', async ({ page }) => {
     await page.addInitScript(() => {
       window.windowErrors = [];

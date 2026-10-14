@@ -1,5 +1,4 @@
 import { BEAT, clamp } from '../../src/core.js';
-import { DANCE } from '../../src/element.js';
 import { V1 } from '../shared/copy.js';
 import { $, holdAll, isStill, onMotionChange, recentTaps, reducedMotion, tag, whenNear } from './shared.js';
 
@@ -13,7 +12,7 @@ const fill = (host, count, skinAt) => {
 };
 // The element re-sets its state right after this event fires, which would cancel a dance started inside it.
 const keepDancing = (el, isOn) =>
-  el.addEventListener('tell-after-dance', () => isOn() && queueMicrotask(() => isOn() && el[DANCE]()));
+  el.addEventListener('tell-after-dance', () => isOn() && queueMicrotask(() => isOn() && el.dance()));
 const syncMotion = () => {
   const isOff = isStill();
   $('funsies-still').hidden = !isOff;
@@ -41,7 +40,7 @@ const startShow = () => {
   clearShow();
   cast.forEach(el => (el.state = 'idle'));
   setShowing(true);
-  cast.forEach((el, i) => showTimers.push(setTimeout(() => isShowing && el[DANCE](), (i * BEAT_MS) / 6)));
+  cast.forEach((el, i) => showTimers.push(setTimeout(() => isShowing && el.dance(), (i * BEAT_MS) / 6)));
 };
 const stopShow = ({ isBowing = true } = {}) => {
   clearShow();

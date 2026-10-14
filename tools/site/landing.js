@@ -1,5 +1,4 @@
 import { LABEL, STATES } from '../../src/core.js';
-import { DANCE } from '../../src/element.js';
 import API from '../../src/api.json';
 import { version as VERSION } from '../../package.json';
 import { ASSISTANT_PROMPT, GOES, MODEL, NAMES, NOTES, V1 } from '../shared/copy.js';
@@ -13,7 +12,7 @@ import {
   bindPaletteSelect,
   fillCode,
   holdAll,
-  holdPlay,
+  keepCore,
   isStill,
   morphInto,
   on,
@@ -272,9 +271,11 @@ const applyGuides = () => document.querySelectorAll('.studio').forEach(el => el.
 $('guides-toggle').checked = isGuides;
 applyGuides();
 let isCastPlay = true;
-holdPlay(el => !isCastPlay && el.closest('#tells'));
-$('tells').addEventListener('pointerdown', e => isCastPlay || e.stopPropagation());
-$('play-toggle').addEventListener('change', e => (isCastPlay = e.target.checked));
+const refreshCast = keepCore(el => !isCastPlay && !!el.closest('#tells'));
+$('play-toggle').addEventListener('change', e => {
+  isCastPlay = e.target.checked;
+  refreshCast();
+});
 $('guides-toggle').addEventListener('change', e => {
   isGuides = e.target.checked;
   applyGuides();
@@ -522,4 +523,4 @@ $('palette-reset').addEventListener('click', () => {
 });
 on('palette', syncPaletteFoot);
 syncPaletteFoot();
-$('play-dance').addEventListener('click', () => $('play-tell')[DANCE]?.());
+$('play-dance').addEventListener('click', () => $('play-tell').dance());
