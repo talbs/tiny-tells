@@ -22,7 +22,6 @@ export const DEKATRON = {
         out = seg(t, 2.8, 3.2);
       return {
         tail: spin && t > 0.15 ? [k - 0.7, k - 1.4] : [],
-        tailU: 0,
         flash: flash * (1 - out),
         ents: [{ k: mod(k, DK), g: 1 + 0.5 * flash }],
       };
@@ -91,7 +90,7 @@ export const DEKATRON = {
         ctx.fill();
       }
     }
-    (s.tail || []).forEach((k, j) => {
+    (s.tail || (Math.abs(vel[0].k) > 2 ? [e.k - clamp(vel[0].k * 0.04, -1, 1)] : [])).forEach((k, j) => {
       const a = (j ? 0.2 : 0.42) * (1 - (s.tailU || 0) * 0.6),
         [x, y] = pos(mod(k, DK));
       ctx.fillStyle = css(color, a * Math.min(1, g));
