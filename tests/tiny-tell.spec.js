@@ -599,6 +599,15 @@ test.describe('play bundle', () => {
         );
     });
     expect(await hue(page, '#eyes'), 'the tell starts without the dance color').toBeLessThan(20);
+    await page.evaluate(() =>
+      addEventListener(
+        'pointerdown',
+        e => (window.isTapOnTell = e.composedPath().includes(document.getElementById('eyes'))),
+        { once: true }
+      )
+    );
+    await page.locator('#eyes').click();
+    expect(await page.evaluate(() => window.isTapOnTell), 'a real click reaches the tell').toBe(true);
     await tap5(page, '#eyes');
     await expect
       .poll(() => hue(page, '#eyes'), { message: 'five taps start the dance', timeout: 3000 })
