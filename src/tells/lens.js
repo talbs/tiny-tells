@@ -2,13 +2,23 @@
 import { BEAT, E, PI, TAU, bell, clamp, css, ctxFor, deepen, gaze, isDark, lerp, seg, springOff } from '../core.js';
 
 export const LENS = {
-  keys: ['glow', 'size', 'flick', 'ap', 'bloom'],
+  keys: ['glow', 'size', 'ox', 'ap', 'bloom'],
   pos: [],
   states: {
     working: t => {
       const u = (t % BEAT) / BEAT,
         pulse = Math.exp(-u * 4.5) * (u < 0.06 ? u / 0.06 : 1);
-      return { ents: [{ glow: 0.7 + 0.3 * pulse, size: 0.62, flick: 0, ap: 0.4 + 0.16 * pulse, bloom: 0.2 * pulse }] };
+      return {
+        ents: [
+          {
+            glow: 0.7 + 0.3 * pulse,
+            size: 0.62,
+            ox: 0.07 * Math.sin((TAU * t) / (4 * BEAT)),
+            ap: 0.4 + 0.16 * pulse,
+            bloom: 0.2 * pulse,
+          },
+        ],
+      };
     },
     done: t => {
       const open = t < 0.12 ? 0.4 - 0.12 * bell(t / 0.12) : 0.8 + springOff(-0.52, 0, t - 0.12, 9, 0.32),
@@ -19,7 +29,7 @@ export const LENS = {
           {
             glow: lerp(t < 0.12 ? 0.55 : 0.98, 0.7, out),
             size: 0.66,
-            flick: 0,
+            ox: 0,
             ap: lerp(open, 0.4, out),
             bloom: 0.65 * bell(seg(t, 0.12, 0.7)),
           },
@@ -36,7 +46,7 @@ export const LENS = {
           {
             glow: lerp(0.72, 0.2, dim) + 0.6 * f,
             size: 0.62 + 0.25 * f,
-            flick: 0,
+            ox: 0,
             ap: lerp(0.5, 0.32, dim) + 0.22 * f,
             bloom: 0.8 * clamp(f),
           },
@@ -47,12 +57,12 @@ export const LENS = {
       const th = bell(seg(t, 0.6, 1.1)) + bell(seg(t, 1.2, 1.7)),
         squeeze = E.back(seg(t, 0.1, 0.45), 2) * (1 - E.inOut(seg(t, 2.6, 3.1)));
       return {
-        ents: [{ glow: 0.75 + 0.35 * th, size: 0.6, flick: 0, ap: 0.44 - 0.2 * squeeze + 0.07 * th, bloom: 0.35 * th }],
+        ents: [{ glow: 0.75 + 0.35 * th, size: 0.6, ox: 0, ap: 0.44 - 0.2 * squeeze + 0.07 * th, bloom: 0.35 * th }],
       };
     },
     idle: t => {
       const b = 0.5 + 0.5 * Math.sin((TAU * t) / (6 * BEAT) - PI / 2);
-      return { ents: [{ glow: 0.1 + 0.45 * b, size: 0.55, flick: 0, ap: 0.36 + 0.08 * b, bloom: 0 }] };
+      return { ents: [{ glow: 0.1 + 0.45 * b, size: 0.55, ox: 0, ap: 0.36 + 0.08 * b, bloom: 0 }] };
     },
   },
   render: (cv, s, color, vel, opts = {}) => {
@@ -89,7 +99,7 @@ export const LENS = {
       ctx.arc(o, o, Rg, 0, TAU);
       ctx.fill();
     }
-    const glow = clamp(e.glow * (1 - (e.flick || 0)), 0, 1.6),
+    const glow = clamp(e.glow, 0, 1.6),
       ap = clamp(e.ap, 0.12, 0.96) * Rg,
       rc = Math.max(1.5 * dpr, e.size * Rg);
     const cx = o + ((gaze ? gaze.x * 0.16 : 0) + (e.ox || 0)) * Rg,
