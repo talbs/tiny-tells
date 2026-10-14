@@ -1029,7 +1029,7 @@
     background: var(--muted);
     opacity: 0.4;
     transition:
-      inline-size var(--wa-transition-fast) var(--ease-move),
+      inline-size var(--wa-transition-slow) var(--ease-detent),
       opacity var(--wa-transition-fast) var(--wa-transition-easing);
   }
   .cast-dots [aria-current='true']::before {
