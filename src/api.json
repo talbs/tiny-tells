@@ -1,7 +1,7 @@
 {
   "tag": "tiny-tell",
   "class": "TinyTell",
-  "description": "A tiny animated status mark. Six tells, five states, one 0.8s beat.",
+  "description": "A tiny animated status character. Six tells, five states, one 0.8s beat.",
   "attributes": [
     {
       "name": "skin",

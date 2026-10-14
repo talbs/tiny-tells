@@ -7,7 +7,7 @@
 
 Give your app's status a face. Six tiny characters drop in anywhere a spinner would go, and no two of them move the same way. People can tell at a glance whether things are working, done, broken, or waiting on them.
 
-It's one custom element, `<tiny-tell>`, with no dependencies and about 14 KB min+gzip. It works in Chrome 99+, Firefox 112+, and Safari 16.4+.
+It's one custom element, `<tiny-tell>`, with no dependencies and about 14 KB min+gzip. It works in Chrome 111+, Firefox 113+, and Safari 16.4+.
 
 **[See them live, and read the docs →](https://tinytells.dev/)**
 
@@ -37,7 +37,9 @@ Change the state and the tell springs into the new one:
 document.querySelector('tiny-tell').state = 'done';
 ```
 
-The six tells are `drones`, `flipdot`, `eyes`, `blot`, `dekatron`, and `lens`. The five states are `working`, `done`, `error`, `warning` (waiting on a person), and `idle`. The [docs](https://tinytells.dev/docs/) cover sizing, color, accessibility, frameworks, testing, the play bundle, and the full API.
+The six tells are `drones`, `flipdot`, `eyes`, `blot`, `dekatron`, and `lens`. The five states are `working`, `done`, `error`, `warning` (waiting on a person), and `idle`. The [docs](https://tinytells.dev/docs/) cover sizing, color, accessibility, frameworks, agent status, testing, the play bundle, and the full API.
+
+Building with an AI assistant? Point it at [llms.txt](https://tinytells.dev/llms.txt), or see [Build with AI](https://tinytells.dev/docs/#build-with-ai).
 
 ## Develop
 

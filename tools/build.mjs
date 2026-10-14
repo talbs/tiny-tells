@@ -14,7 +14,7 @@ import { dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { gzipSync } from 'node:zlib';
 import { BOX } from '../src/box.js';
-import { ASSISTANT_PROMPT } from './shared/copy.js';
+import { AGENT_RULES, ASSISTANT_PROMPT } from './shared/copy.js';
 import { setScheme } from './site/scheme.js';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -29,6 +29,7 @@ const write = (text, ...parts) => {
 const { version: VERSION, homepage: HOMEPAGE } = JSON.parse(read('package.json'));
 const API = JSON.parse(read('src', 'api.json'));
 const REPO = 'https://github.com/talbs/tiny-tells';
+const SUPPORT = { Chrome: '111', Firefox: '113', Safari: '16.4' };
 const FA_KIT = '3572f3662e';
 const UMAMI_WEBSITE_ID = '9f2cb342-dd92-4387-b96a-cf0b52f5ec76';
 const WA_DIST = join(ROOT, 'node_modules', '@awesome.me', 'webawesome', 'dist');
@@ -147,7 +148,11 @@ const llmsTxt = sizeKb => {
     (a.values ? '\n' + list(Object.entries(a.values), ([v, d]) => `  - \`${v}\`: ${d}`) : '');
   return `# Tiny Tells
 
-> \`<tiny-tell>\` is one custom element for app status: working, done, error, warning, or idle. Pick from ${skins} small animated characters. No dependencies, ${sizeKb} KB min+gzip. Chrome 99+, Firefox 112+, Safari 16.4+.
+> \`<tiny-tell>\` is one custom element for app status: working, done, error, warning, or idle. Pick from ${skins} small animated characters. No dependencies, ${sizeKb} KB min+gzip. ${Object.entries(
+    SUPPORT
+  )
+    .map(([browser, v]) => `${browser} ${v}+`)
+    .join(', ')}.
 
 This file describes version ${VERSION}. Tiny Tells is pre-1.0, so pin the version.
 
@@ -169,7 +174,7 @@ Without one:
 <script type="module" src="https://cdn.jsdelivr.net/npm/tiny-tells@${VERSION}/dist/tiny-tells.min.js"></script>
 \`\`\`
 
-The play bundle adds pointer notice and a five-tap dance. Use it only if asked. Import \`tiny-tells/play\` instead of \`tiny-tells\`, or load \`tiny-tells-play.min.js\` from the same CDN path. Types ship with the package, and the element class is exported as \`TinyTell\`.
+The play bundle adds a glance at a nearby pointer and a five-tap dance. Use it only if asked. Import \`tiny-tells/play\` instead of \`tiny-tells\`, or load \`tiny-tells-play.min.js\` from the same CDN path. Types ship with the package, and the element class is exported as \`TinyTell\`.
 
 ## Use
 
@@ -184,7 +189,7 @@ document.querySelector('[role="status"]').textContent = 'Synced 3 files.';
 
 Rules:
 
-- Put words next to a tell, in a \`role="status"\` region. A state change doesn't announce on its own.
+- Put words next to every tell. If the status can change while someone's on the page, put them in a \`role="status"\` region. A state change doesn't announce on its own.
 - When the words beside it already say the state, set \`label=""\`. Otherwise give it a more specific \`label\`, like \`label="Uploading photos"\`.
 - \`warning\` means stuck until a person acts. Not for soft errors.
 - Size follows the text. Set \`--tell-size\` to pin it.
@@ -214,6 +219,7 @@ ${list(API.events ?? [], e => `- \`${e.name}\`${e.cancelable ? ' (cancelable)' :
 ## Docs
 
 - [Get Started](${docs}#get-started)
+- [Build with AI](${docs}#build-with-ai)
 - [Play Bundle](${docs}#play)
 - [States](${docs}#states)
 - [Accessibility](${docs}#accessibility)
@@ -352,7 +358,8 @@ const docsTables = () => {
     label: '#labels',
     paused: '#pausing',
   };
-  const codeify = text => text.replace(/\b\w+\(\)/g, '<code>$&</code>');
+  const codeify = text => text.replace(/\b[\w-]+\(\)/g, '<code>$&</code>');
+  const codeOrDash = v => (v == null || v === false ? '—' : `<code>${v}</code>`);
   return {
     'tell-rows': Object.entries(ATTR.skin.values)
       .map(
@@ -381,8 +388,23 @@ const docsTables = () => {
                   : a.type === 'boolean'
                     ? 'boolean'
                     : 'text'
-          }<br><span class="wa-caption-s">${a.description} <a href="${GUIDE[a.name]}">How to use it</a>.</span></td><td>${a.default == null || a.default === false ? '—' : `<code>${a.default}</code>`}</td></tr>`
+          }<br><span class="wa-caption-s">${a.description} <a href="${GUIDE[a.name]}">How to use it</a>.</span></td><td>${codeOrDash(a.default)}</td></tr>`
       )
+      .join(''),
+    'css-property-rows': API.cssProperties
+      .map(
+        c =>
+          `<tr><th scope="row"><code>${c.name}</code></th><td>${codeOrDash(c.default)}</td><td>${codeify(c.description)}</td></tr>`
+      )
+      .join(''),
+    'css-part-rows': API.cssParts
+      .map(c => `<tr><th scope="row"><code>${c.name}</code></th><td>${codeify(c.description)}</td></tr>`)
+      .join(''),
+    'custom-state-rows': Object.entries(ATTR.state.values)
+      .map(([s, about]) => `<tr><th scope="row"><code>:state(${s})</code></th><td>${about}</td></tr>`)
+      .join(''),
+    'support-tags': Object.entries(SUPPORT)
+      .map(([browser, v]) => `<li><wa-tag class="studio" appearance="outlined" size="xs">${browser} ${v}</wa-tag></li>`)
       .join(''),
     'event-rows': API.events
       .map(
@@ -441,12 +463,13 @@ const preparePage = async ({ body, script, root, size, hasAnchors, name }) => {
     root,
     version: VERSION,
     size,
-    prompt: ASSISTANT_PROMPT.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'),
+    prompt: attr(ASSISTANT_PROMPT),
+    rules: attr(AGENT_RULES),
   };
   const source = read('tools', 'site', body);
   const html = (hasAnchors ? addAnchors(source) : source)
     .replace(/\{\{([\w-]+)\}\}/g, (match, name) => fills[name] ?? match)
-    .replace(/\{\{(root|version|size|prompt)\}\}/g, (_, name) => values[name]);
+    .replace(/\{\{(root|version|size|prompt|rules)\}\}/g, (_, name) => values[name]);
   const leftover = html.match(/\{\{[\w-]+\}\}/);
   if (leftover) throw new Error(`${body}: unfilled placeholder ${leftover[0]}`);
   const components = [...(html + js).matchAll(/<(wa-[a-z-]+)|createElement\(['"](wa-[a-z-]+)['"]\)/g)].map(m =>

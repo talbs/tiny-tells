@@ -1,5 +1,8 @@
 export const ASSISTANT_PROMPT =
   'Add Tiny Tells to this project. Read https://tinytells.dev/llms.txt first, and follow its rules for pairing each tell with status text. Ask me where it should go before adding any.';
+export const AGENT_RULES = `## Tiny Tells
+
+- Before adding or changing a \`<tiny-tell>\`, read https://tinytells.dev/llms.txt and follow its Rules.`;
 export const V1 = ['drones', 'flipdot', 'eyes', 'blot', 'dekatron', 'lens'];
 export const NAMES = {
   drones: 'Drones',

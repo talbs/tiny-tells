@@ -962,6 +962,11 @@ test.describe('docs without JavaScript', () => {
     await expect(rows('attr-rows'), 'one row per attribute in api.json').toHaveCount(SOURCE_API.attributes.length);
     await expect(rows('event-rows'), 'one row per event in api.json').toHaveCount(SOURCE_API.events.length);
     await expect(rows('static-rows'), 'one row per static in api.json').toHaveCount(SOURCE_API.statics.length);
+    await expect(rows('css-property-rows'), 'one row per CSS custom property in api.json').toHaveCount(
+      SOURCE_API.cssProperties.length
+    );
+    await expect(rows('css-part-rows'), 'one row per CSS part in api.json').toHaveCount(SOURCE_API.cssParts.length);
+    await expect(rows('custom-state-rows'), 'one custom state per state').toHaveCount(STATES.length);
     await expect(rows('tell-rows'), 'one row per tell').toHaveCount(SKINS.length);
     await expect(rows('state-rows'), 'one row per state').toHaveCount(STATES.length);
     await expect(page.locator('#label-cases td:last-child'), 'what screen readers hear, per label case').toHaveText([
