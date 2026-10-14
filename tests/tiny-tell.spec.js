@@ -77,8 +77,7 @@ const hue = (page, selector) =>
 // Five real clicks can span more than play's 1.5s tap window on a busy machine, so they're dispatched in one go.
 const tap5 = (page, selector) =>
   page.$eval(selector, el => {
-    for (let i = 0; i < 5; i++)
-      el.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, composed: true, pointerType: 'mouse' }));
+    for (let i = 0; i < 5; i++) el.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }));
   });
 
 const settled = async (page, selector) => {
@@ -599,15 +598,13 @@ test.describe('play bundle', () => {
             id: e.target.id,
           })
         );
-    });
-    expect(await hue(page, '#eyes'), 'the tell starts without the dance color').toBeLessThan(20);
-    await page.evaluate(() =>
       addEventListener(
         'pointerdown',
         e => (window.isTapOnTell = e.composedPath().includes(document.getElementById('eyes'))),
         { once: true }
-      )
-    );
+      );
+    });
+    expect(await hue(page, '#eyes'), 'the tell starts without the dance color').toBeLessThan(20);
     await page.locator('#eyes').click();
     expect(await page.evaluate(() => window.isTapOnTell), 'a real click reaches the tell').toBe(true);
     await tap5(page, '#eyes');
