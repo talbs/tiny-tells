@@ -43,16 +43,7 @@ Building with an AI assistant? Point it at [llms.txt](https://tinytells.dev/llms
 
 ## Develop
 
-```bash
-npm install
-npm test
-```
-
-- `src/` is the source of truth, as plain ES modules. `npm run build` builds `dist/` and the site in `site/`: the landing page, the docs, and the 404 page. Neither is committed, since CI builds them and the site deploys to GitHub Pages from `main`.
-- `npm run serve` serves the built site at `http://127.0.0.1:4173/`, the root it has on tinytells.dev, so the 404 page's absolute links work locally.
-- `npm test` runs Prettier, ESLint, the size budgets, the test-DOM and server checks, and the Playwright tests in Chromium, Firefox, and WebKit, including the canvas checks for live area, flashing, and loop seams.
-- The social card, the README strips, and the favicon PNGs are committed as finished images. Their renderers live in the private lab repo, so regenerating them after a tell changes is a manual step there.
-- Tests follow [tests/README.md](tests/README.md).
+Setup, builds, and tests are in [CONTRIBUTING.md](https://github.com/talbs/tiny-tells/blob/main/CONTRIBUTING.md#working-on-it).
 
 ## License
 
