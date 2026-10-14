@@ -2,6 +2,25 @@
 
 Each release groups its changes under Added, Changed, Deprecated, Removed, Fixed, and Security. A breaking change is marked **Breaking** and listed first.
 
+## 0.2.0 · 2026-10-14
+
+### Changed
+
+- **Breaking:** `<tiny-tell>` itself is now the image, named through `ElementInternals`, so an `aria-label` or `aria-labelledby` on the tag finally works. Playwright's `getByRole` and axe can't see that role yet, so tests that find tells by role stop finding them. Look them up by tag or `id` instead. Chrome before 103 and Firefox before 119 still label the canvas.
+- The play bundle now costs under 2.5 KB more than the core, up from under 1 KB. Doze is most of that.
+- Tells skip redraws that changed nothing: a script writing to `<html>` every frame, or a stopped clock.
+- The README and docs now give the real browser floor: Chrome 111 and Firefox 113.
+
+### Added
+
+- Doze, in the play bundle. An idle tell the mouse leaves alone for 30 seconds nods off, and wakes when the pointer comes back. It fires no events, the state stays `idle`, and touch screens never doze. Reduced motion and `paused` turn it off.
+
+### Fixed
+
+- Loading the CDN core and then CDN play no longer throws on every fifth tap. Subclasses under their own tag now dance too, and warnings name the real tag.
+- Dekatron's dance no longer flashes 5 times a second in dark mode. Its meet flash is one pulse now.
+- Setter types now allow `null`, as the setters always did. `custom-elements.json` now lists the two play event classes.
+
 ## 0.1.2 · 2026-10-11
 
 ### Changed
