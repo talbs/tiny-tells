@@ -511,18 +511,19 @@ const focusScrollers = () => {
 
 const frame = () => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
 
-/* Content shows once the layout has loaded. Components that load later can shift the #hash target, so it's scrolled to again then, unless the reader has scrolled away. */
+/* Components that load later can shift a #hash target, so it's scrolled to again then, unless the reader has scrolled away. */
 const reveal = async () => {
-  const { dataset } = document.documentElement;
   const target = location.hash ? document.getElementById(location.hash.slice(1)) : null;
   await frame();
   target?.scrollIntoView({ behavior: 'instant' });
-  delete dataset.loading;
   const top = scrollY;
-  if (waBundle) await (await import(waBundle)).allDefined();
+  /* Every element, not just wa-*, or a late undefined one would cloak the page again. Like Web Awesome's own loader, it gives up after 2 s. */
+  const defined = import(waBundle).then(wa => wa.allDefined({ match: () => true }));
+  await Promise.race([defined, new Promise(resolve => setTimeout(resolve, 2000))]).catch(() => {});
   await frame();
   if (scrollY === top) target?.scrollIntoView({ behavior: 'instant' });
-  delete dataset.upgrading;
+  delete document.documentElement.dataset.upgrading;
+  document.body.classList.remove('wa-cloak');
 };
 
 const mark = document.querySelector('.tb-name');
