@@ -85,7 +85,7 @@ export const DRONES = {
           return {
             x: lerp(from[i][0], to[i][0], e),
             z: lerp(from[i][1], to[i][1], e),
-            h: 0.16 + 0.2 * bell(pr),
+            h: 0.16 + 0.2 * bell(pr) + 0.03 * Math.sin((TAU * t) / BEAT + i),
             a: 1,
             hit: 0,
           };
