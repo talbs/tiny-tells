@@ -77,16 +77,17 @@ export const QUIET = {
 export const STATE_COLOR = { working: 'brand', done: 'emerald', error: 'red', warning: 'amber', idle: 'zinc' };
 export let isDark = false,
   palette = null,
-  gaze = null;
+  gaze = null,
+  ink = null;
 
 /* The engine draws from one shared scene. Only this sets it, around a single draw. */
 export const withScene = (scene, fn) => {
-  const was = { isDark, palette, gaze };
-  ({ isDark, palette, gaze } = scene);
+  const was = { isDark, palette, gaze, ink };
+  ({ isDark, palette, gaze, ink } = scene);
   try {
     return fn();
   } finally {
-    ({ isDark, palette, gaze } = was);
+    ({ isDark, palette, gaze, ink } = was);
   }
 };
 export const deepen = c => [Math.max(0.3, c[0] - 0.05), c[1] * 1.18, c[2]];
@@ -145,21 +146,13 @@ export const STATES = ['working', 'done', 'error', 'warning', 'idle'];
 export const LABEL = { working: 'Working', done: 'Done', error: 'Error', warning: 'Warning', idle: 'Idle' };
 export const PERIOD = { working: 4 * BEAT, done: 4 * BEAT, error: 4 * BEAT, warning: 4 * BEAT, idle: 6 * BEAT };
 
-export const FIT = {
-  flipdot: () => 0.8,
-  eyes: px => (px <= 32 ? 0.82 : 0.88),
-  lens: () => 0.92,
-  blot: px => (px <= 32 ? 1.15 : 1.3),
-  drones: px => (px <= 32 ? 0.92 : 1),
-};
-export const fitFor = (skin, px) => (FIT[skin] || (() => 1))(px);
-export const ctxFor = (cv, skin) => {
+export const ctxFor = (cv, fit) => {
   const ctx = cv.getContext('2d'),
     W = cv.width,
     px = cv._css || 100,
-    k = fitFor(skin, px);
+    k = fit ? fit(px) : 1;
   ctx.clearRect(0, 0, W, W);
-  return { ctx, W, px, small: px <= 32, unit: W * (px > 40 ? 0.4 : 0.46) * k, o: W / 2, dpr: W / px };
+  return { ctx, W, px, k, small: px <= 32, unit: W * (px > 40 ? 0.4 : 0.46) * k, o: W / 2, dpr: W / px };
 };
 export const sphere = (ctx, x, y, rx, ry, color, a, small, rot = 0) => {
   const R = Math.max(rx, ry);

@@ -1,5 +1,22 @@
 /* ---- Eyes: eyes saccade and the head follows; every hit lands on the shared beat. Light can't leave the glass. ---- */
-import { BEAT, E, G, TAU, bell, clamp, css, ctxFor, gaze, hop, isDark, lerp, mod, seg, springOff } from '../core.js';
+import {
+  BEAT,
+  E,
+  G,
+  TAU,
+  bell,
+  clamp,
+  css,
+  ctxFor,
+  gaze,
+  hop,
+  ink,
+  isDark,
+  lerp,
+  mod,
+  seg,
+  springOff,
+} from '../core.js';
 
 export const GAZE = { gx: 1, gy: 1 };
 /* Each keyframe springs from where the eye actually is, at the speed it is moving, so motion carries through instead of snapping. */
@@ -132,6 +149,7 @@ const IDLE_KEYS = () => [
 ];
 
 export const EYES = {
+  fit: px => (px <= 32 ? 0.82 : 0.88),
   keys: ['gx', 'gy', 'hx', 'hy', 'roll', 'w', 'h', 'ct', 'cb', 'sm', 'lid', 'lt', 'vsx', 'vsy'],
   pos: [],
   states: {
@@ -167,8 +185,8 @@ export const EYES = {
       ents: pair(IDLE_KEYS, t, (p, tt) => blink(p, tt, 3.7), 6 * BEAT),
     }),
   },
-  render: (cv, s, color, vel, opts = {}) => {
-    const { ctx, small, unit, o, dpr, px } = ctxFor(cv, 'eyes'),
+  render: (cv, s, color) => {
+    const { ctx, small, unit, o, dpr, px } = ctxFor(cv, EYES.fit),
       fit = seg(px, 24, 48),
       es = lerp(1, 0.78, fit),
       gap = lerp(0.39, 0.345, fit),
@@ -180,8 +198,7 @@ export const EYES = {
       roll = (body * (a.roll + b.roll)) / 2,
       vsx = 1 + body * ((a.vsx + b.vsx) / 2 - 1),
       vsy = 1 + body * ((a.vsy + b.vsy) / 2 - 1);
-    const ink = opts.ink,
-      ec = isDark ? color : [Math.min(0.86, color[0] + 0.22), color[1] * 1.1, color[2]],
+    const ec = isDark ? color : [Math.min(0.86, color[0] + 0.22), color[1] * 1.1, color[2]],
       pw = 1,
       ph = 0.7,
       pr = 0.54,

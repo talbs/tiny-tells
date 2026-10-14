@@ -1,6 +1,6 @@
 /* ---- Doze: an idle tell left alone nods off, sleeps, and wakes. Three clips per tell. Only in the play bundle. ---- */
 import { ALIAS, BEAT, E, PERIOD, PHYS, TAU, bell, hop, lerp, mod, seg } from './core.js';
-import { AERIAL, CORNERS, DRONES } from './tells/drones.js';
+import { CORNERS, DRONES } from './tells/drones.js';
 import { B, FC, FLIP, fromCells, lv, timeline } from './tells/flipdot.js';
 import { EP, EYES, pair } from './tells/eyes.js';
 import { BLOT } from './tells/blot.js';
@@ -18,10 +18,7 @@ PERIOD.wake = LEN.wake + B(0.25);
 PERIOD.doze = 8 * BEAT;
 PHYS.nod = PHYS.doze = PHYS.idle;
 PHYS.wake = { w: 14, z: 0.45 };
-for (const id of DOZE_CLIPS) {
-  ALIAS[id] = 'idle';
-  DRONES.cam[id] = AERIAL;
-}
+for (const id of DOZE_CLIPS) ALIAS[id] = 'idle';
 const held = (t, id) => Math.min(t, LEN[id] - 1e-3);
 
 /* Asleep is lids nearly shut from the top, not done's proud arcs (sm) or error's flat squint. */

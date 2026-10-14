@@ -2,6 +2,7 @@
 import { BEAT, E, G, PI, SHADOW, TAU, bell, clamp, css, ctxFor, drop, gaze, hop, lerp, seg } from '../core.js';
 
 export const BLOT = {
+  fit: px => (px <= 32 ? 1.15 : 1.3),
   keys: ['x', 'y', 'r', 'sx', 'sy'],
   still: { done: 1.6 },
   pos: ['x', 'y'],
@@ -129,7 +130,7 @@ export const BLOT = {
     },
   },
   render: (cv, s, color) => {
-    const { ctx, W, small, unit, o } = ctxFor(cv, 'blot'),
+    const { ctx, W, small, unit, o } = ctxFor(cv, BLOT.fit),
       N = Math.min(W, 256);
     const off = cv._blot || (cv._blot = { a: document.createElement('canvas'), b: document.createElement('canvas') });
     if (off.w !== W) {

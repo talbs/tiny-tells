@@ -1,7 +1,5 @@
 /* A player per skin. On a handoff it springs from current position and velocity into the next state, with anticipation, staggered starts, and an arc. */
-import { BEAT, E, PERIOD, PHYS, bell, labMix, mod, seg, springOff, tone } from './core.js';
-import { camMix } from './tells/drones.js';
-import { flipCells, renderFlip } from './tells/flipdot.js';
+import { BEAT, E, PERIOD, PHYS, bell, ink, labMix, mod, seg, springOff, tone } from './core.js';
 import { SKINS } from './registry.js';
 
 /* A wrapped key (dekatron's k) crosses its wrap point as a small step, not a jump back around the ring. */
@@ -9,7 +7,7 @@ const unwrap = (sk, k, d) => (sk.wrap?.[k] ? mod(d + sk.wrap[k] / 2, sk.wrap[k])
 
 export class EPlayer {
   constructor(skin, id = 'working', mode = 'x') {
-    Object.assign(this, { skin, id, mode, t0: 0, off: null, col0: null, cam0: null });
+    Object.assign(this, { skin, id, mode, t0: 0, off: null, from: null });
   }
   base(id, tau) {
     return SKINS[this.skin].states[id](mod(tau, PERIOD[id]));
@@ -18,10 +16,11 @@ export class EPlayer {
     const tau = T - this.t0,
       st = this.base(this.id, tau),
       sk = SKINS[this.skin];
-    const k = this.col0 ? E.inOut(seg(tau, 0, BEAT)) : 1,
-      color = this.col0 ? labMix(this.col0, tone(this.id), k) : tone(this.id);
-    const cam = sk.cam ? camMix(this.cam0 || sk.cam[this.id], sk.cam[this.id], this.cam0 ? k : 1) : null;
-    if (!this.off) return { ...st, color, cam };
+    const from = this.from,
+      k = from ? E.inOut(seg(tau, 0, BEAT)) : 1,
+      color = from ? labMix(from.color, tone(this.id), k) : tone(this.id);
+    const view = sk.view?.(from?.view, this.id, k);
+    if (!this.off) return { ...st, color, view };
     const P = PHYS[this.id],
       full = this.mode === 'x';
     const ents = st.ents.map((e, i) => {
@@ -45,10 +44,10 @@ export class EPlayer {
           o[kb] += uy * ant + ux * arc;
         }
       }
-      if (sk.cam) o.h += 0.14 * bell(seg(tt, 0, 0.7));
+      sk.handoff?.(o, tt);
       return o;
     });
-    return { ...st, ents, color, cam };
+    return { ...st, ents, color, view };
   }
   set(id, T) {
     if (id === this.id) return;
@@ -67,40 +66,18 @@ export class EPlayer {
         )
       ),
     };
-    this.col0 = a.color;
-    this.cam0 = a.cam;
+    this.from = a;
     this.id = id;
     this.t0 = T;
   }
-  draw(cv, T, opts) {
+  draw(cv, T) {
     const sk = SKINS[this.skin],
       s = this.now(T),
       s2 = sk.hasVel && this.now(T + 0.012),
       vel =
         s2 &&
         s.ents.map((e, i) => Object.fromEntries(sk.keys.map(k => [k, unwrap(sk, k, s2.ents[i][k] - e[k]) / 0.012])));
-    sk.render(cv, s, cv._ink || s.color, vel, cv._ink ? { ...opts, ink: cv._ink } : opts);
+    sk.render(cv, s, ink || s.color, vel);
   }
 }
-export class FPlayer {
-  constructor(id = 'working') {
-    Object.assign(this, { id, t0: 0, snap: null, col0: null });
-  }
-  set(id, T) {
-    if (id === this.id) return;
-    this.snap = flipCells(this.id, T - this.t0, this.snap).cells;
-    this.col0 = tone(this.id);
-    this.id = id;
-    this.t0 = T;
-  }
-  draw(cv, T) {
-    const col = tone(this.id),
-      recolor = !!this.col0 && this.col0.join() !== col.join();
-    renderFlip(
-      cv,
-      flipCells(this.id, T - this.t0, this.snap, recolor).cells,
-      cv._ink || this.col0 || col,
-      cv._ink || col
-    );
-  }
-}
+export const playerFor = (skin, id) => SKINS[skin].player?.(id) || new EPlayer(skin, id);
