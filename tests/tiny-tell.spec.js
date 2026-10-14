@@ -863,6 +863,23 @@ test.describe('site pages', () => {
     await expect(link, 'the drawer closes').toBeHidden();
   });
 
+  test('a docs link to a section lands where the section scrolls to, below the sticky header', async ({ page }) => {
+    await open(page, { path: '/docs/#testing' });
+    await page.waitForFunction(() => !('upgrading' in document.documentElement.dataset));
+    const { landed, header, settled } = await page.evaluate(() => {
+      const target = document.getElementById('testing');
+      const landed = target.getBoundingClientRect().top;
+      const header = document
+        .querySelector('wa-page')
+        .shadowRoot.querySelector('[part~="header"]')
+        .getBoundingClientRect();
+      target.scrollIntoView({ behavior: 'instant' });
+      return { landed, header: header.bottom, settled: target.getBoundingClientRect().top };
+    });
+    expect(landed, 'the section is not under the header').toBeGreaterThanOrEqual(header - 1);
+    expect(Math.abs(landed - settled), 'the page opened where the section scrolls to').toBeLessThan(2);
+  });
+
   test('the tab underline keeps sliding while the new panel fills in', async ({ page }) => {
     await open(page, { path: '/docs/' });
     const group = page.locator('wa-tab-group:has(> .tab-bar)').first();

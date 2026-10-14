@@ -479,12 +479,15 @@ export const start = async () => {
   applyPalette();
   applyTheme();
   await customElements.whenDefined('wa-page');
-  await fitScrollPadding();
+  fitScrollPadding();
   if ($('page-tell')) $('page-tell').value = page.skin;
+  reveal();
+  /* Reading the page doesn't need the rest, so it waits until the revealed page has painted: reveal() spends the first frame. */
+  await frame();
+  await frame();
   addCopyButtons();
   addTooltips();
   focusScrollers();
-  reveal();
 };
 
 // A region that scrolls sideways needs a tab stop, or keyboard users can't reach what's past the edge.
