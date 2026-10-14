@@ -481,10 +481,8 @@ export const start = async () => {
   await customElements.whenDefined('wa-page');
   fitScrollPadding();
   if ($('page-tell')) $('page-tell').value = page.skin;
-  reveal();
-  /* Reading the page doesn't need the rest, so it waits until the revealed page has painted: reveal() spends the first frame. */
-  await frame();
-  await frame();
+  /* Reading the page doesn't need the rest, so it waits until the page shows. */
+  await reveal();
   addCopyButtons();
   addTooltips();
   focusScrollers();
