@@ -42,6 +42,7 @@ const pixels = (page, selector) =>
     };
   });
 const frame = (page, selector) => page.$eval(selector, el => el.shadowRoot.querySelector('[part="tell"]').toDataURL());
+const revealed = page => page.waitForFunction(() => !('upgrading' in document.documentElement.dataset));
 const twoFrames = page => page.evaluate(() => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))));
 const drawn = page =>
   page.waitForFunction(() =>
@@ -797,20 +798,21 @@ test.describe('reserve.css', () => {
   });
 });
 
+// Font Awesome's kit only serves its allowed hosts (locally, just port 4173), and outages there or at Umami aren't our bug.
+const offline = ({ page }) =>
+  Promise.all([
+    page.route('https://ka-p.fontawesome.com/**', route =>
+      route.fulfill({
+        contentType: 'image/svg+xml',
+        body: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"/>',
+      })
+    ),
+    page.route('https://cloud.umami.is/**', route => route.fulfill({ contentType: 'text/javascript', body: '' })),
+  ]);
+
 test.describe('site pages', () => {
   test.skip(({ browserName }) => browserName !== 'chromium', 'the page wiring is the same in every engine');
-  // Font Awesome's kit only serves its allowed hosts (locally, just port 4173), and outages there or at Umami aren't our bug.
-  test.beforeEach(({ page }) =>
-    Promise.all([
-      page.route('https://ka-p.fontawesome.com/**', route =>
-        route.fulfill({
-          contentType: 'image/svg+xml',
-          body: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"/>',
-        })
-      ),
-      page.route('https://cloud.umami.is/**', route => route.fulfill({ contentType: 'text/javascript', body: '' })),
-    ])
-  );
+  test.beforeEach(offline);
   test.afterEach(noProblems);
 
   test('icon-only links and buttons show a named tooltip on hover, even after jumping far down the page', async ({
@@ -923,20 +925,9 @@ test.describe('site pages', () => {
     ).toEqual(['eyes']);
   });
 
-  test('picking a link in the mobile docs drawer closes the drawer', async ({ page }) => {
-    await page.setViewportSize({ width: 390, height: 844 });
-    await open(page, { path: '/docs/' });
-    await page.locator('.nav-toggle').click();
-    const link = page.getByRole('navigation', { name: 'Docs' }).getByRole('link', { name: 'Color' });
-    await expect(link, 'the drawer opens').toBeVisible();
-    await link.click();
-    await expect(page, 'the link still jumps to its section').toHaveURL(/#color$/);
-    await expect(link, 'the drawer closes').toBeHidden();
-  });
-
   test('a docs link to a section lands where the section scrolls to, below the sticky header', async ({ page }) => {
     await open(page, { path: '/docs/#testing' });
-    await page.waitForFunction(() => !('upgrading' in document.documentElement.dataset));
+    await revealed(page);
     const { landed, header, settled } = await page.evaluate(() => {
       const target = document.getElementById('testing');
       const landed = target.getBoundingClientRect().top;
@@ -1044,6 +1035,39 @@ test.describe('site pages', () => {
     await expect(code, 'an unknown size falls back to matching the text').not.toContainText('--tell-size');
     await expect(code, 'markup in linked words shows as text').toContainText('&lt;img src=x onerror=alert(1)&gt;');
     expect(await page.locator('#b-preview img').count(), 'markup in linked words never renders').toBe(0);
+  });
+});
+
+// WebKit's modal and scroll anchoring behave differently here, so the drawer runs in every engine.
+test.describe('docs drawer', () => {
+  test.beforeEach(offline);
+  test.afterEach(noProblems);
+
+  test('the mobile docs drawer opens without moving the page, and a far link lands as it closes', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await open(page, { path: '/docs/#states' });
+    await revealed(page);
+    const statesTop = () => page.evaluate(() => document.getElementById('states').getBoundingClientRect().top);
+    const before = await statesTop();
+    // A locator click scrolls the sticky toggle into view first, which moves the page on its own.
+    await page.locator('.nav-toggle').dispatchEvent('click');
+    const link = page.getByRole('navigation', { name: 'Docs' }).getByRole('link', { name: 'API' });
+    await expect(link, 'the drawer opens').toBeVisible();
+    expect(Math.abs((await statesTop()) - before), 'the page behind the open drawer stays put').toBeLessThan(2);
+    await link.click();
+    const drift = () =>
+      page.evaluate(() => {
+        const target = document.getElementById('api'),
+          landed = target.getBoundingClientRect().top;
+        target.scrollIntoView({ behavior: 'instant' });
+        return Math.abs(landed - target.getBoundingClientRect().top);
+      });
+    await twoFrames(page);
+    expect(await drift(), 'the section is in place two frames after the tap').toBeLessThan(2);
+    await expect(page, 'the link still updates the address').toHaveURL(/#api$/);
+    await expect(link, 'the drawer closes').toBeHidden();
+    expect(await drift(), 'the section stays in place once the drawer is gone').toBeLessThan(2);
+    await expect(page.locator('#funsies-title'), 'sections set aside behind the drawer come back').toBeVisible();
   });
 });
 

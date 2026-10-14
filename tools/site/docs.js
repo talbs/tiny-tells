@@ -127,8 +127,36 @@ spy(
   { isFirstByDefault: true }
 );
 const shell = document.querySelector('wa-page');
+const sections = [...document.querySelectorAll('.wa-prose > section')];
+const restore = section => {
+  section.style.blockSize = '';
+  delete section.dataset.offstage;
+};
+// WebKit's modal does work across the whole page, ~1.6 s on these docs, so the drawer opens over only the sections on screen. Each keeps its height so nothing moves.
+shell.addEventListener('wa-show', e => {
+  if (e.target !== shell) return;
+  const rects = sections.map(section => section.getBoundingClientRect());
+  sections.forEach((section, i) => {
+    const { top, bottom, height } = rects[i];
+    if (bottom > 0 && top < innerHeight) return;
+    section.style.blockSize = `${height}px`;
+    section.dataset.offstage = '';
+  });
+});
+// WebKit's scroll anchoring can jump thousands of pixels as the sections come back, so the one on screen is held in place.
+shell.addEventListener('wa-after-hide', e => {
+  if (e.target !== shell) return;
+  const anchor = sections.find(section => section.getBoundingClientRect().bottom > 0);
+  const top = anchor?.getBoundingClientRect().top;
+  sections.forEach(restore);
+  if (anchor) scrollBy(0, anchor.getBoundingClientRect().top - top);
+});
 shell.addEventListener('click', e => {
-  if (e.target.closest('[slot^="navigation"] a[href^="#"]')) shell.hideNavigation();
+  const link = e.target.closest('[slot^="navigation"] a[href^="#"]');
+  if (!link) return;
+  const target = $(link.hash.slice(1))?.closest('section');
+  if (target) restore(target);
+  shell.hideNavigation();
 });
 syncInstallTabs([$('docs-install'), $('play-install'), $('reserve-install')]);
 

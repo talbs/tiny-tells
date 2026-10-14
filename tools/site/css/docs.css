@@ -70,6 +70,9 @@
   .wa-prose .example-preview {
     background: var(--paper-tint);
   }
+  .wa-prose > section[data-offstage] > * {
+    display: none;
+  }
   .wa-prose > section + section {
     margin-block-start: var(--space-section);
   }

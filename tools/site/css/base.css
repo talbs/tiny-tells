@@ -22,11 +22,6 @@
   html {
     overflow-x: clip;
   }
-  @media (prefers-reduced-motion: no-preference) {
-    html {
-      scroll-behavior: smooth;
-    }
-  }
   a {
     text-decoration-thickness: 1px;
     text-underline-offset: 0.2em;
