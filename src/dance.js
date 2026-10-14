@@ -90,7 +90,7 @@ DEKATRON.states.dance = t => {
   const u4 = t / BEAT,
     u = u4 % 1,
     k = 5 * (Math.floor(u4) + E.inOut(seg(u, 0.1, 0.9))),
-    meet = Math.min(1, bell(seg(u, 0.85, 1)) + bell(seg(u, 0, 0.15)));
+    meet = bell(seg(u, 0, 0.3));
   return { flash: 0.6 * meet, twin: mod(-k, DK), ents: [{ k: mod(k, DK), g: 1 + 0.3 * meet }] };
 };
 LENS.states.dance = t => {
