@@ -181,7 +181,7 @@ export const EYES = {
       vsx = 1 + body * ((a.vsx + b.vsx) / 2 - 1),
       vsy = 1 + body * ((a.vsy + b.vsy) / 2 - 1);
     const ink = opts.ink,
-      ec = ink || (isDark ? color : [Math.min(0.86, color[0] + 0.22), color[1] * 1.1, color[2]]),
+      ec = isDark ? color : [Math.min(0.86, color[0] + 0.22), color[1] * 1.1, color[2]],
       pw = 1,
       ph = 0.7,
       pr = 0.54,
@@ -200,7 +200,7 @@ export const EYES = {
         Math.max(0, r * unit - inset)
       );
     };
-    if (ink) ctx.fillStyle = 'transparent';
+    if (ink) ctx.fillStyle = css(ink);
     else if (isDark) {
       const bz = ctx.createLinearGradient(0, -ph * unit, 0, ph * unit);
       bz.addColorStop(0, css([0.4, 0.008, 277]));
@@ -239,7 +239,8 @@ export const EYES = {
       }
       ctx.save();
       ctx.translate((sd * gap + e.gx - hx + 0.16 * (gaze?.x || 0)) * unit, (e.gy - hy + 0.12 * (gaze?.y || 0)) * unit);
-      if (!small && !ink) {
+      if (ink) ctx.globalCompositeOperation = 'destination-out';
+      else if (!small) {
         ctx.shadowColor = css(ec, 0.7);
         ctx.shadowBlur = 0.16 * unit;
       }
