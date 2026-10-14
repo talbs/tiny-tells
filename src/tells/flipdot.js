@@ -82,11 +82,12 @@ export const FLIP = {
   ],
 };
 export const FC = {};
-Object.entries(FLIP).forEach(([id, fr]) => {
+export const timeline = fr => {
   const durs = fr.map(([, h]) => Math.max(h, 0.1));
-  FC[id] = { fr, durs, total: durs.reduce((a, b) => a + b, 0) };
-});
-export const frameAt = (id, u, from0) => {
+  return { fr, durs, total: durs.reduce((a, b) => a + b, 0) };
+};
+Object.entries(FLIP).forEach(([id, fr]) => (FC[id] = timeline(fr)));
+const frameAt = (id, u) => {
   const { fr, durs, total } = FC[id],
     first = u < total;
   u = mod(u, total);
@@ -95,45 +96,52 @@ export const frameAt = (id, u, from0) => {
     u -= durs[k];
     k++;
   }
-  return { to: fr[k][0], from: k === 0 ? (first && from0 ? from0 : fr[fr.length - 1][0]) : fr[k - 1][0], u, k, first };
+  return { to: fr[k][0], from: fr[(k || fr.length) - 1][0], u, k, first };
 };
 export const DISC_T = 0.1;
-export const flipCells = (id, u, from0, recolor) => {
-  const f = frameAt(id, u, from0),
+/* cut is the last clip's drawn cells: a disc caught mid-turn (p) picks up from that phase, turning back if its new level differs from the one showing. */
+export const flipCells = (id, u, cut, recolor) => {
+  /* Frames are [cells, hold, flip?, ripple?]: flip is the turn time into the frame (default DISC_T); ripple staggers from the center, not the corner. */
+  const f = frameAt(id, u),
+    [, , T = DISC_T, rip] = FC[id].fr[f.k],
     out = [];
   for (let y = 0; y < 5; y++)
     for (let x = 0; x < 5; x++) {
-      const a = f.from[y][x],
+      const c = f.first && !f.k && cut?.[out.length],
+        a = c ? c.lvl : f.from[y][x],
         b = f.to[y][x],
-        fresh = f.first && f.k === 0 && !!from0,
-        d = (x + y) * 0.018;
+        r = Math.hypot(x - 2, y - 2),
+        h = c?.p && (c.p < 0.5 || a === b ? c.p : 1 - c.p),
+        d = h ? -h * T : rip ? rip * r : (x + y) * 0.018;
       let lvl = b,
         s = 1,
-        old = false;
-      if (a !== b || (recolor && fresh && a > 0)) {
-        const g = seg(f.u - d, 0, DISC_T);
+        old,
+        p;
+      if (a !== b || h || (recolor && c && a > 0)) {
+        const g = seg(f.u - d, 0, T);
         if (g < 1) {
           lvl = g < 0.5 ? a : b;
           s = Math.max(0.08, Math.abs(Math.cos(PI * g)));
-          old = g < 0.5 && fresh;
+          old = g < 0.5 && !!c;
+          p = g;
         } else {
-          const w = f.u - d - DISC_T,
+          const w = (f.u - d - T) / (T / DISC_T),
             th = 0.55 * Math.exp(-w * 11) * Math.sin(w * 42);
           s = Math.abs(Math.cos(th));
         }
       }
-      if (id === 'error' && b === 2 && !(fresh && f.u < 0.3)) {
-        const p = mod(u, B(4)),
-          dd = Math.hypot(x - 2, y - 2) * 0.05;
+      if (id === 'error' && b === 2 && !(c && f.u < 0.3)) {
+        const q = mod(u, B(4)),
+          dd = r * 0.05;
         [0.2, 0.5].forEach(t0 => {
-          const g = seg(p - t0 - dd, 0, 0.2);
+          const g = seg(q - t0 - dd, 0, 0.2);
           if (g > 0 && g < 1) {
             s = Math.max(0.08, Math.abs(Math.cos(TAU * g)));
             lvl = g < 0.25 || g > 0.75 ? 2 : 0;
           }
         });
       }
-      out.push({ x, y, lvl, s, old });
+      out.push({ x, y, lvl, s, old, p });
     }
   return { cells: out, bits: f.to };
 };

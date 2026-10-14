@@ -1,7 +1,8 @@
-/* ---- Play: tells notice a nearby pointer, and dance after five quick taps. Only in the play bundle; the core leaves HOOKS empty. ---- */
-import { DANCE, HOOKS, TinyTell } from './element.js';
+/* ---- Play: tells notice a nearby pointer, dance after five quick taps, and doze when left alone. Only in the play bundle; the core leaves HOOKS empty. ---- */
+import { LEN } from './doze.js';
+import { DANCE, HOOKS, MOOD, TinyTell } from './element.js';
 
-const pointer = { x: 0, y: 0, isHere: false };
+const pointer = { x: 0, y: 0, isHere: false, hasMouse: false };
 if (typeof window !== 'undefined') {
   addEventListener(
     'pointermove',
@@ -9,7 +10,7 @@ if (typeof window !== 'undefined') {
       if (e.pointerType === 'touch') return;
       pointer.x = e.clientX;
       pointer.y = e.clientY;
-      pointer.isHere = true;
+      pointer.isHere = pointer.hasMouse = true;
     },
     { passive: true }
   );
@@ -17,7 +18,7 @@ if (typeof window !== 'undefined') {
     pointer.isHere = false;
   });
 }
-HOOKS.gaze = el => {
+const near = el => {
   if (!pointer.isHere) return null;
   const r = el.getBoundingClientRect(),
     dx = pointer.x - (r.left + r.width / 2),
@@ -28,6 +29,30 @@ HOOKS.gaze = el => {
   const a = Math.sqrt(1 - d / reach),
     n = Math.max(d, r.width / 2);
   return { x: (dx / n) * a, y: (dy / n) * a };
+};
+const rest = new WeakMap(),
+  restFor = el => rest.get(el) || rest.set(el, { away: 0, at: 0, mood: null, isNear: false }).get(el);
+HOOKS.gaze = el => {
+  const g = near(el);
+  restFor(el).isNear = !!g;
+  return g;
+};
+const AWAY = 30;
+HOOKS.tick = (el, dt, t) => {
+  const r = restFor(el),
+    mood = el[MOOD],
+    isIdle = el.state === 'idle';
+  /* The core can end a mood on its own (state change, pause, dance, reduced motion), so any change restarts both timers. */
+  if (mood !== r.mood) Object.assign(r, { mood, at: t, away: 0 });
+  if (!isIdle || r.isNear) r.away = 0;
+  let next;
+  if (mood === 'nod' && t - r.at >= LEN.nod) next = 'doze';
+  else if (mood === 'wake' && t - r.at >= LEN.wake) next = null;
+  else if (r.isNear && (mood === 'nod' || mood === 'doze')) next = 'wake';
+  else if (!mood && isIdle && !r.isNear && pointer.hasMouse && (r.away += dt) >= AWAY) next = 'nod';
+  else return;
+  el[MOOD] = next;
+  Object.assign(r, { mood: el[MOOD], at: t, away: 0 });
 };
 const taps = new WeakMap();
 if (typeof window !== 'undefined')

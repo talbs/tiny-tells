@@ -1,4 +1,5 @@
 import './dance.js';
+import './doze.js';
 import './play.js';
 
 export { TinyTell } from './element.js';

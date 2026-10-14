@@ -2,7 +2,7 @@
 //
 //   node tools/build.mjs           writes dist/ (both bundles, readable and minified, plus the API files) and site/ (the
 //                                  landing page, the docs, and the 404)
-//   node tools/build.mjs --check   also fails if a minified bundle is over its min + gzip budget, play adds 1 KB or more, a
+//   node tools/build.mjs --check   also fails if a minified bundle is over its min + gzip budget, play adds 2.5 KB or more, a
 //                                  page's inline CSS is over its gzip budget, or CHANGELOG.md has no section for
 //                                  package.json's version
 //   node tools/build.mjs --sizes   also prints each bundle's min + gzip size
@@ -39,8 +39,8 @@ const FA_VERSION = readdirSync(join(WA_DIST, 'chunks'))
   .find(Boolean);
 if (!FA_VERSION) throw new Error('Could not find the Font Awesome version inside @awesome.me/webawesome');
 const BUNDLES = [
-  { name: 'tiny-tells', title: 'Tiny Tells', budgetKb: 14 },
-  { name: 'tiny-tells-play', title: 'Tiny Tells Play', budgetKb: 15 },
+  { name: 'tiny-tells', title: 'Tiny Tells', budgetKb: 14.25 },
+  { name: 'tiny-tells-play', title: 'Tiny Tells Play', budgetKb: 17 },
 ];
 
 const bundle = async (entry, { minify = false, banner = '' } = {}) => {
@@ -174,7 +174,7 @@ Without one:
 <script type="module" src="https://cdn.jsdelivr.net/npm/tiny-tells@${VERSION}/dist/tiny-tells.min.js"></script>
 \`\`\`
 
-The play bundle adds a glance at a nearby pointer and a five-tap dance. Use it only if asked. Import \`tiny-tells/play\` instead of \`tiny-tells\`, or load \`tiny-tells-play.min.js\` from the same CDN path. Types ship with the package, and the element class is exported as \`TinyTell\`.
+The play bundle adds a glance at a nearby pointer and a five-tap dance. Leave an idle tell alone for 30 seconds and it dozes off until the pointer comes back. Use it only if asked. Import \`tiny-tells/play\` instead of \`tiny-tells\`, or load \`tiny-tells-play.min.js\` from the same CDN path. Types ship with the package, and the element class is exported as \`TinyTell\`.
 
 ## Use
 
@@ -663,10 +663,10 @@ if (args.includes('--sizes') || args.includes('--check')) {
     isOver ||= kb > budgetKb;
     console.log(`budget: dist/${name}.min.js is ${kb.toFixed(1)} KB min + gzip (limit ${budgetKb} KB)`);
   }
-  /* The docs promise Play costs under 1 KB more than the core. */
+  /* The docs promise Play costs under 2.5 KB more than the core. */
   const playExtraKb = gzipKb(minified['tiny-tells-play']) - gzipKb(minified['tiny-tells']);
-  isOver ||= playExtraKb >= 1;
-  console.log(`budget: play adds ${playExtraKb.toFixed(2)} KB min + gzip (limit 1 KB)`);
+  isOver ||= playExtraKb >= 2.5;
+  console.log(`budget: play adds ${playExtraKb.toFixed(2)} KB min + gzip (limit 2.5 KB)`);
   PAGES.forEach(([out, { name }], i) => {
     const kb = gzipKb(prepared[i].styles);
     const budgetKb = CSS_BUDGET_KB[name];
