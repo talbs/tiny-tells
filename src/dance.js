@@ -103,7 +103,6 @@ LENS.states.dance = t => {
       {
         glow: 0.75 + 0.35 * p,
         size: 0.62,
-        flick: 0,
         ap: 0.4 + 0.14 * p,
         bloom: 0.3 * p,
         ox: 0.2 * Math.sin(PI * u4),

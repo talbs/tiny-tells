@@ -216,7 +216,7 @@ LENS.states.nod = t => {
       {
         glow: 0.1 + 0.1 * E.inOut(seg(t, 1.1, LEN.nod)),
         size: lerp(0.55, 0.2, shut),
-        flick: 0,
+        ox: 0,
         ap: lerp(0.36, 0.12, shut),
         bloom: 0,
       },
@@ -225,7 +225,7 @@ LENS.states.nod = t => {
 };
 LENS.states.doze = t => {
   const b = breathe(t);
-  return { ents: [{ glow: 0.2 + 0.3 * b, size: 0.2, flick: 0, ap: 0.12, bloom: 0.2 * b }] };
+  return { ents: [{ glow: 0.2 + 0.3 * b, size: 0.2, ox: 0, ap: 0.12, bloom: 0.2 * b }] };
 };
 LENS.states.wake = t => {
   const open = E.out(seg(t, 0, 0.3)),
@@ -236,7 +236,7 @@ LENS.states.wake = t => {
       {
         glow: lerp(0.2, 0.1, seg(t, 0.5, 0.8)) + 0.55 * wide,
         size: lerp(0.2, 0.55, open),
-        flick: 0,
+        ox: 0,
         ap: lerp(0.12, 0.36, open) + 0.22 * wide,
         bloom: 0.3 * bell(seg(t, 0.05, 0.4)),
       },
