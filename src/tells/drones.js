@@ -67,6 +67,7 @@ export const FORMS = [
   ],
 ];
 export const DRONES = {
+  fit: px => (px <= 32 ? 0.92 : 1),
   keys: ['x', 'z', 'h', 'a'],
   hasVel: true,
   pos: ['x', 'z'],
@@ -163,7 +164,7 @@ export const DRONES = {
     }),
   },
   render: (cv, s, color, vel) => {
-    const { ctx, small, unit, o } = ctxFor(cv, 'drones'),
+    const { ctx, small, unit, o } = ctxFor(cv, DRONES.fit),
       cam = s.cam,
       sh = s.shake || [0, 0],
       r = 0.12,

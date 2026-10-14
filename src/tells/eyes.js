@@ -149,6 +149,7 @@ const IDLE_KEYS = () => [
 ];
 
 export const EYES = {
+  fit: px => (px <= 32 ? 0.82 : 0.88),
   keys: ['gx', 'gy', 'hx', 'hy', 'roll', 'w', 'h', 'ct', 'cb', 'sm', 'lid', 'lt', 'vsx', 'vsy'],
   pos: [],
   states: {
@@ -185,7 +186,7 @@ export const EYES = {
     }),
   },
   render: (cv, s, color) => {
-    const { ctx, small, unit, o, dpr, px } = ctxFor(cv, 'eyes'),
+    const { ctx, small, unit, o, dpr, px } = ctxFor(cv, EYES.fit),
       fit = seg(px, 24, 48),
       es = lerp(1, 0.78, fit),
       gap = lerp(0.39, 0.345, fit),

@@ -18,6 +18,7 @@ import {
 } from '../core.js';
 
 export const LENS = {
+  fit: () => 0.92,
   keys: ['glow', 'size', 'ox', 'ap', 'bloom'],
   pos: [],
   states: {
@@ -82,7 +83,7 @@ export const LENS = {
     },
   },
   render: (cv, s, color) => {
-    const { ctx, small, unit, o, dpr } = ctxFor(cv, 'lens'),
+    const { ctx, small, unit, o, dpr } = ctxFor(cv, LENS.fit),
       e = s.ents[0],
       sh = s.shake || [0, 0],
       Rb = 0.86 * unit,

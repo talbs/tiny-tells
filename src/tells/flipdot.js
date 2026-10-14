@@ -1,4 +1,4 @@
-import { BEAT, INK, OFF_A, PI, TAU, css, ctxFor, fitFor, gaze, ink, mod, seg, tone } from '../core.js';
+import { BEAT, INK, OFF_A, PI, TAU, css, ctxFor, gaze, ink, mod, seg, tone } from '../core.js';
 
 export const lv = fn => Array.from({ length: 5 }, (_, y) => Array.from({ length: 5 }, (_, x) => fn(x, y) | 0));
 export const fromCells = (list, level = 2) => lv((x, y) => (list.some(([a, b]) => a === x && b === y) ? level : 0));
@@ -143,7 +143,7 @@ export const flipCells = (id, u, cut, recolor) => {
 export const renderFlip = (cv, cells, colOld, colNew) => {
   const { ctx, W, px } = ctxFor(cv),
     big = px > 40,
-    cell = (W * fitFor('flipdot', px)) / 5,
+    cell = (W * FLIPDOT.fit(px)) / 5,
     off = (W - cell * 5) / 2;
   const near =
     gaze && Math.hypot(gaze.x, gaze.y) > 0.2
@@ -183,4 +183,4 @@ class FPlayer {
     renderFlip(cv, flipCells(this.id, T - this.t0, this.snap, recolor).cells, ink || this.col0 || col, ink || col);
   }
 }
-export const FLIPDOT = { player: id => new FPlayer(id), period: id => FC[id].total };
+export const FLIPDOT = { fit: () => 0.8, player: id => new FPlayer(id), period: id => FC[id].total };
