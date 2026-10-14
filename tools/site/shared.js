@@ -43,10 +43,14 @@ const applyTheme = () => {
   lamp.label = isDark ? 'Switch to Light' : '';
   emit('theme');
 };
+const crossfade = update => {
+  if (document.startViewTransition && !isStill()) document.startViewTransition(update).ready.catch(() => {});
+  else update();
+};
 $('theme').addEventListener('click', () => {
   const next = isDarkPage() ? 'light' : 'dark';
   store.set('tells-site-theme', (next === 'dark') === systemDark.matches ? null : next);
-  applyTheme();
+  crossfade(applyTheme);
 });
 systemDark.addEventListener('change', applyTheme);
 
@@ -68,8 +72,10 @@ export const setSkin = next => {
   if (next !== page.skin) track('pick-tell', { tell: next });
   page.skin = next;
   store.set('tells-site-skin', next === 'drones' ? null : next);
-  if ($('page-tell')) $('page-tell').value = next;
-  emit('skin');
+  crossfade(() => {
+    if ($('page-tell')) $('page-tell').value = next;
+    emit('skin');
+  });
 };
 $('page-tell')?.addEventListener('change', e => setSkin(e.target.value));
 

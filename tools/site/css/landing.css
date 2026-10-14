@@ -1029,7 +1029,7 @@
     background: var(--muted);
     opacity: 0.4;
     transition:
-      inline-size var(--wa-transition-fast) var(--ease-move),
+      inline-size var(--wa-transition-slow) var(--ease-detent),
       opacity var(--wa-transition-fast) var(--wa-transition-easing);
   }
   .cast-dots [aria-current='true']::before {
@@ -1077,7 +1077,13 @@
     aspect-ratio: 5 / 4;
     border-radius: var(--wa-border-radius-s);
     background: color-mix(in oklab, var(--paper) 80%, var(--paper-edge));
-    transition: background-color var(--wa-transition-normal) var(--wa-transition-easing);
+    transition:
+      background-color var(--wa-transition-normal) var(--wa-transition-easing),
+      scale var(--wa-transition-slow) var(--ease-detent);
+  }
+  .cast-pick wa-radio[appearance='button']:active .cast-field {
+    scale: 0.98;
+    transition-duration: var(--wa-transition-fast);
   }
   .cast-field tiny-tell {
     opacity: 0.35;
