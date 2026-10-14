@@ -471,6 +471,8 @@ const addTooltip = el => {
   sync();
   new MutationObserver(sync).observe(el, { subtree: true, attributes: true });
   document.body.append(tip);
+  /* A jump (a hash link, the End key) can build it under a resting pointer, which never enters again to open it. */
+  if (el.matches(':hover')) tip.updateComplete.then(() => tip.show());
 };
 const addTooltips = () => {
   const targets = [...document.querySelectorAll('a, button, wa-button')].filter(

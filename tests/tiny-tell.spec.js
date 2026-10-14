@@ -753,14 +753,15 @@ test.describe('site pages', () => {
   );
   test.afterEach(noProblems);
 
-  test('icon-only links and buttons name themselves in a tooltip, even far down the page', async ({ page }) => {
+  test('icon-only links and buttons show a named tooltip on hover, even after jumping far down the page', async ({
+    page,
+  }) => {
     await open(page, { path: '/docs/' });
-    const anchor = page.locator('.heading-anchor').last();
+    const anchor = page.locator('#funsies .heading-anchor');
     await anchor.hover();
-    await expect(
-      page.locator(`wa-tooltip[for="${await anchor.getAttribute('id')}"]`),
-      'the last heading anchor gets its tooltip once scrolled near'
-    ).toHaveText(/\S/);
+    const tip = page.locator(`wa-tooltip[for="${await anchor.getAttribute('id')}"]`);
+    await expect(tip, 'the Funsies anchor gets a named tooltip').toHaveText(/\S/);
+    await expect(tip, 'the first hover opens it, though it was built under the pointer').toHaveJSProperty('open', true);
   });
 
   test('landing, docs, and 404 load and switch theme without errors', async ({ page }) => {
