@@ -14,7 +14,7 @@ import { dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { gzipSync } from 'node:zlib';
 import { BOX } from '../src/box.js';
-import { AGENT_RULES, ASSISTANT_PROMPT } from './shared/copy.js';
+import { AGENT_RULES, ASSISTANT_PROMPT, V1 } from './shared/copy.js';
 import { setScheme } from './site/scheme.js';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -28,6 +28,9 @@ const write = (text, ...parts) => {
 
 const { version: VERSION, homepage: HOMEPAGE } = JSON.parse(read('package.json'));
 const API = JSON.parse(read('src', 'api.json'));
+const ATTR = Object.fromEntries(API.attributes.map(a => [a.name, a]));
+if (V1.join() !== Object.keys(ATTR.skin.values).join())
+  throw new Error('V1 in tools/shared/copy.js must list the skins in src/api.json');
 const REPO = 'https://github.com/talbs/tiny-tells';
 const SUPPORT = { Chrome: '111', Firefox: '113', Safari: '16.4' };
 const FA_KIT = '3572f3662e';
@@ -43,27 +46,27 @@ const BUNDLES = [
   { name: 'tiny-tells-play', title: 'Tiny Tells Play', budgetKb: 17 },
 ];
 
-const bundle = async (entry, { minify = false, banner = '' } = {}) => {
+const ESM = {
+  bundle: true,
+  format: 'esm',
+  target: 'es2022',
+  write: false,
+  legalComments: 'inline',
+  define: { __TINY_TELLS_VERSION__: JSON.stringify(VERSION) },
+};
+const bundle = async (entry, banner) => {
   const result = await build({
+    ...ESM,
     entryPoints: [join(ROOT, entry)],
-    bundle: true,
-    format: 'esm',
-    target: 'es2022',
-    minify,
-    write: false,
-    legalComments: 'inline',
+    minify: true,
     banner: banner ? { js: banner } : undefined,
-    define: { __TINY_TELLS_VERSION__: JSON.stringify(VERSION) },
   });
   return result.outputFiles[0].text;
 };
 
 const gzipKb = text => gzipSync(text, { level: 9 }).length / 1024;
 /* data-domains keeps local serves, previews, and Playwright out of the numbers. */
-const umamiTag = () =>
-  UMAMI_WEBSITE_ID
-    ? `\n<script async src="https://cloud.umami.is/script.js" data-website-id="${UMAMI_WEBSITE_ID}" data-domains="tinytells.dev" data-do-not-track="true" data-exclude-search="true"></script>`
-    : '';
+const UMAMI_TAG = `\n<script async src="https://cloud.umami.is/script.js" data-website-id="${UMAMI_WEBSITE_ID}" data-domains="tinytells.dev" data-do-not-track="true" data-exclude-search="true"></script>`;
 
 const tsType = attr =>
   attr.values
@@ -73,7 +76,7 @@ const tsType = attr =>
     : { string: 'string | null', boolean: 'boolean' }[attr.type];
 
 const manifest = () => {
-  const stateValues = API.attributes.find(a => a.name === 'state').values;
+  const stateValues = ATTR.state.values;
   const decl = {
     kind: 'class',
     name: API.class,
@@ -141,7 +144,7 @@ const manifest = () => {
 /* A plain-text brief for coding assistants (llmstxt.org). The reference sections come from api.json; the rules are written by hand and mirror the docs' Your Part list. */
 const llmsTxt = sizeKb => {
   const docs = `${HOMEPAGE}docs/`;
-  const skins = Object.keys(API.attributes.find(a => a.name === 'skin').values).length;
+  const skins = Object.keys(ATTR.skin.values).length;
   const list = (items, line) => items.map(line).join('\n');
   const attr = a =>
     `- \`${a.name}\`${a.default == null || a.type === 'boolean' ? '' : ` (default \`${a.default}\`)`}: ${a.description}` +
@@ -210,11 +213,11 @@ ${list(API.cssParts, p => `- \`::part(${p.name})\`: ${p.description}`)}
 
 ## Statics
 
-${list(API.statics ?? [], s => `- \`TinyTell.${s.name}\`: ${s.description}`)}
+${list(API.statics, s => `- \`TinyTell.${s.name}\`: ${s.description}`)}
 
 ## Events
 
-${list(API.events ?? [], e => `- \`${e.name}\`${e.cancelable ? ' (cancelable)' : ''}${e.bundle ? `, ${e.bundle} bundle only` : ''}: ${e.description}`)}
+${list(API.events, e => `- \`${e.name}\`${e.cancelable ? ' (cancelable)' : ''}${e.bundle ? `, ${e.bundle} bundle only` : ''}: ${e.description}`)}
 
 ## Docs
 
@@ -342,7 +345,6 @@ const pageMeta = ({ title, description, path }) => {
 
 /* The docs' reference tables are copied from api.json, so the build writes them: they're in the HTML for readers without JS, and they can't drift from the API. */
 const docsTables = () => {
-  const ATTR = Object.fromEntries(API.attributes.map(a => [a.name, a]));
   const USE_IT = {
     working: 'For the whole wait, from the first step to the last.',
     done: 'Once the work is really finished, not just sent.',
@@ -448,8 +450,10 @@ const addAnchors = html => {
   return anchored;
 };
 
+const DOCS_TABLES = docsTables();
+
 const preparePage = async ({ body, script, root, size, hasAnchors, name }) => {
-  const js = await bundle(`tools/site/${script}`, { minify: true });
+  const js = await bundle(`tools/site/${script}`);
   /* tokens.css declares the layer order, so it comes first. */
   const css = ['tokens', 'base', 'shell', 'components', name].map(file => read('tools', 'site', 'css', `${file}.css`));
   const { code: styles } = await transform(css.join('\n'), { loader: 'css', minify: true });
@@ -457,7 +461,7 @@ const preparePage = async ({ body, script, root, size, hasAnchors, name }) => {
     header: read('tools', 'site', 'header.html'),
     footer: read('tools', 'site', 'footer.html'),
     wordmark: read('tools', 'site', 'wordmark.html'),
-    ...docsTables(),
+    ...DOCS_TABLES,
   };
   const values = {
     root,
@@ -469,7 +473,7 @@ const preparePage = async ({ body, script, root, size, hasAnchors, name }) => {
   const source = read('tools', 'site', body);
   const html = (hasAnchors ? addAnchors(source) : source)
     .replace(/\{\{([\w-]+)\}\}/g, (match, name) => fills[name] ?? match)
-    .replace(/\{\{(root|version|size|prompt|rules)\}\}/g, (_, name) => values[name]);
+    .replace(/\{\{([\w-]+)\}\}/g, (match, name) => values[name] ?? match);
   const leftover = html.match(/\{\{[\w-]+\}\}/);
   if (leftover) throw new Error(`${body}: unfilled placeholder ${leftover[0]}`);
   const components = [...(html + js).matchAll(/<(wa-[a-z-]+)|createElement\(['"](wa-[a-z-]+)['"]\)/g)].map(m =>
@@ -520,7 +524,7 @@ ${pageMeta({ title, description, path })}${isNoindex ? '\n<meta name="robots" co
 (${setScheme})();</script>
 <link rel="preconnect" href="https://ka-p.fontawesome.com" crossorigin>
 <link rel="stylesheet" href="${root}assets/vendor.css">${isHandLettered ? `\n<link rel="stylesheet" href="${root}assets/hand.css">` : ''}
-<script type="module" src="${root}assets/${waFile}" data-webawesome="${root}assets"></script>${umamiTag()}
+<script type="module" src="${root}assets/${waFile}" data-webawesome="${root}assets"></script>${UMAMI_TAG}
 <style>
 ${styles}</style>
 </head>
@@ -539,24 +543,16 @@ const minified = {};
 /* The npm entries share one chunk, so a library importing the core and an app importing play get one element. The minified CDN files stay standalone. */
 rmSync(join(ROOT, 'dist', 'chunks'), { recursive: true, force: true });
 const shared = await build({
+  ...ESM,
   entryPoints: BUNDLES.map(({ name }) => join(ROOT, 'src', `${name}.js`)),
-  bundle: true,
   splitting: true,
-  format: 'esm',
-  target: 'es2022',
   outdir: join(ROOT, 'dist'),
   chunkNames: 'chunks/[name]-[hash]',
-  write: false,
-  legalComments: 'inline',
   banner: { js: `/*! Tiny Tells ${VERSION} · <tiny-tell> · MIT · ${REPO} */` },
-  define: { __TINY_TELLS_VERSION__: JSON.stringify(VERSION) },
 });
 shared.outputFiles.forEach(file => console.log('wrote', write(file.text, relative(ROOT, file.path))));
 for (const { name, title } of BUNDLES) {
-  minified[name] = await bundle(`src/${name}.js`, {
-    banner: `/*! ${title} ${VERSION} · <tiny-tell> · MIT · ${REPO} */`,
-    minify: true,
-  });
+  minified[name] = await bundle(`src/${name}.js`, `/*! ${title} ${VERSION} · <tiny-tell> · MIT · ${REPO} */`);
   console.log('wrote', write(minified[name], 'dist', `${name}.min.js`));
 }
 write(
