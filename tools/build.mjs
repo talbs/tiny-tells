@@ -222,6 +222,7 @@ ${list(API.events ?? [], e => `- \`${e.name}\`${e.cancelable ? ' (cancelable)' :
 - [Color](${docs}#color)
 - [Frameworks and Editors](${docs}#frameworks-and-editors)
 - [React](${docs}#react)
+- [Agent Status](${docs}#agent-status)
 - [Testing Your App](${docs}#testing)
 - [Before It Loads](${docs}#before-it-loads)
 - [API](${docs}#api)
