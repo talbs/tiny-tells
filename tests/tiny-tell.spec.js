@@ -787,6 +787,51 @@ test.describe('play bundle', () => {
     expect(result.removed, 'a tell off the page refuses').toBe(false);
     expect(result.fired, 'tell-dance fired for the first dance and the canceled one only').toBe(2);
   });
+
+  test('noplay: a tell ignores the pointer and five taps, still dances on dance(), and plays again without it', async ({
+    page,
+  }) => {
+    await page.evaluate(() => {
+      customElements.get('tiny-tell').timeScale = 0;
+      window.danced = 0;
+      document.addEventListener('tell-dance', () => window.danced++);
+    });
+    const neutral = await settled(page, '#eyes');
+    const box = await page.locator('#eyes').boundingBox(),
+      cx = box.x + box.width / 2,
+      cy = box.y + box.height / 2;
+    await page.$eval('#eyes', el => el.toggleAttribute('noplay', true));
+    await page.mouse.move(cx - 90, cy);
+    expect(await settled(page, '#eyes'), 'a noplay tell doesn’t look at a nearby pointer').toBe(neutral);
+    await tap5(page, '#eyes');
+    expect(await page.evaluate(() => window.danced), 'five taps don’t dance it').toBe(0);
+    expect(await page.$eval('#eyes', el => el.dance()), 'dance() still works on it').toBe(true);
+    await page.$eval('#eyes', el => {
+      el.state = 'done';
+      el.state = 'idle';
+      el.toggleAttribute('noplay', false);
+    });
+    await page.mouse.move(cx + 90, cy);
+    expect(await settled(page, '#eyes'), 'without noplay it looks again').not.toBe(neutral);
+  });
+
+  test('noplay: adding it wakes a dozing tell, and a noplay tell stays awake', async ({ page }) => {
+    const box = await page.locator('#eyes').boundingBox(),
+      cx = box.x + box.width / 2,
+      cy = box.y + box.height / 2;
+    await page.mouse.move(cx, cy);
+    await page.mouse.move(cx + 2000, cy + 2000);
+    const awake = await peakOpen(page, '#eyes');
+    await page.evaluate(() => (customElements.get('tiny-tell').timeScale = 60));
+    await expect
+      .poll(() => peakOpen(page, '#eyes'), { message: 'left alone, it dozes', timeout: 5000 })
+      .toBeLessThan(awake * 0.5);
+    await page.$eval('#eyes', el => el.toggleAttribute('noplay', true));
+    await expect.poll(() => peakOpen(page, '#eyes'), { message: 'noplay wakes it' }).toBeGreaterThan(awake * 0.8);
+    // At 60× speed, 60 frame pairs cover well past the 30s doze timer.
+    for (let i = 0; i < 60; i++) await twoFrames(page);
+    expect(await peakOpen(page, '#eyes'), 'a noplay tell never dozes').toBeGreaterThan(awake * 0.8);
+  });
 });
 
 test.describe('reserve.css', () => {
