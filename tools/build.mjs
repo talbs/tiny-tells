@@ -207,6 +207,7 @@ Rules:
 - Size follows the text. Set \`--tell-size\` to pin it.
 - If a tell can move for more than five seconds, add a pause button that sets \`paused\`.
 - \`paused\` is a boolean attribute. Any value pauses, \`paused="false"\` included. Remove it to resume.
+- With the play bundle, give tells in dense lists or tables \`noplay\`, so only the ones meant to play do. They still animate their state.
 - If you override \`--tell-color-*\`, keep 3:1 contrast against the surface behind it.
 - Reduced motion and forced colors are handled for you.
 - Custom tells aren't supported.
@@ -382,6 +383,7 @@ const docsTables = () => {
     scheme: '#match-scheme',
     label: '#labels',
     paused: '#pausing',
+    noplay: '#play',
   };
   const codeify = text => text.replace(/\b[\w-]+\(\)/g, '<code>$&</code>');
   const codeOrDash = v => (v == null || v === false ? '—' : `<code>${v}</code>`);
@@ -401,7 +403,7 @@ const docsTables = () => {
     'attr-rows': API.attributes
       .map(
         a =>
-          `<tr><th scope="row"><code>${a.name}</code></th><td>${
+          `<tr><th scope="row"><span class="wa-cluster wa-gap-xs wa-flex-nowrap"><code>${a.name}</code>${a.bundle ? `<wa-tag class="studio" appearance="outlined" size="xs">${a.bundle[0].toUpperCase()}${a.bundle.slice(1)} Only</wa-tag>` : ''}</span></th><td>${
             a.name === 'skin'
               ? 'One of the six <a href="#tells">tells</a>'
               : a.name === 'state'
@@ -441,6 +443,12 @@ const docsTables = () => {
       .map(
         m =>
           `<tr><th scope="row"><span class="wa-cluster wa-gap-xs wa-flex-nowrap"><code>${API.class}.${m.name}</code>${m.readonly ? '<wa-tag class="studio" appearance="outlined" size="xs">Read-Only</wa-tag>' : ''}</span></th><td><code>${m.type}</code></td><td>${m.description}</td></tr>`
+      )
+      .join(''),
+    'method-rows': API.methods
+      .map(
+        m =>
+          `<tr><th scope="row"><span class="wa-cluster wa-gap-xs wa-flex-nowrap"><code>${m.name}()</code><wa-tag class="studio" appearance="outlined" size="xs">Play Only</wa-tag></span></th><td><code>${m.returns}</code></td><td>${codeify(m.description)}</td></tr>`
       )
       .join(''),
   };

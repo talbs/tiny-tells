@@ -1154,6 +1154,7 @@ test.describe('docs without JavaScript', () => {
     await expect(rows('attr-rows'), 'one row per attribute in api.json').toHaveCount(API.attributes.length);
     await expect(rows('event-rows'), 'one row per event in api.json').toHaveCount(API.events.length);
     await expect(rows('static-rows'), 'one row per static in api.json').toHaveCount(API.statics.length);
+    await expect(rows('method-rows'), 'one row per method in api.json').toHaveCount(API.methods.length);
     await expect(rows('css-property-rows'), 'one row per CSS custom property in api.json').toHaveCount(
       API.cssProperties.length
     );
