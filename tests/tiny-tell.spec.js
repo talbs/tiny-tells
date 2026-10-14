@@ -74,9 +74,11 @@ const hue = (page, selector) =>
       if (d[i + 3] > 200) most = Math.max(most, d[i + 2] - Math.max(d[i], d[i + 1]));
     return most;
   });
-const tap5 = async (page, selector) => {
-  for (let i = 0; i < 5; i++) await page.locator(selector).click();
-};
+// Five real clicks can span more than play's 1.5s tap window on a busy machine, so they're dispatched in one go.
+const tap5 = (page, selector) =>
+  page.$eval(selector, el => {
+    for (let i = 0; i < 5; i++) el.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }));
+  });
 
 const settled = async (page, selector) => {
   let last = await frame(page, selector);
@@ -553,10 +555,12 @@ test.describe('play bundle', () => {
     await tap5(page, '#eyes');
     expect(await page.evaluate(() => window.danced), 'a paused tell ignores five taps').toBe(0);
     await page.emulateMedia({ reducedMotion: 'reduce' });
+    await twoFrames(page);
     await page.$eval('#eyes', el => (el.paused = false));
     await tap5(page, '#eyes');
     expect(await page.evaluate(() => window.danced), 'so does any tell under reduced motion').toBe(0);
     await page.emulateMedia({ reducedMotion: 'no-preference' });
+    await twoFrames(page);
     await tap5(page, '#eyes');
     await expect.poll(() => page.evaluate(() => window.danced), { message: 'with both off, five taps dance' }).toBe(1);
   });
@@ -594,8 +598,15 @@ test.describe('play bundle', () => {
             id: e.target.id,
           })
         );
+      addEventListener(
+        'pointerdown',
+        e => (window.isTapOnTell = e.composedPath().includes(document.getElementById('eyes'))),
+        { once: true }
+      );
     });
     expect(await hue(page, '#eyes'), 'the tell starts without the dance color').toBeLessThan(20);
+    await page.locator('#eyes').click();
+    expect(await page.evaluate(() => window.isTapOnTell), 'a real click reaches the tell').toBe(true);
     await tap5(page, '#eyes');
     await expect
       .poll(() => hue(page, '#eyes'), { message: 'five taps start the dance', timeout: 3000 })
@@ -608,7 +619,7 @@ test.describe('play bundle', () => {
     await expect
       .poll(() => page.evaluate(() => window.heard.length), { message: 'the dance ends on its own', timeout: 5000 })
       .toBe(2);
-    expect(await hue(page, '#eyes'), 'the dance color is gone once it ends').toBeLessThan(20);
+    await expect.poll(() => hue(page, '#eyes'), { message: 'the dance color is gone once it ends' }).toBeLessThan(20);
     expect(
       await page.evaluate(() => window.heard),
       'both events reach the document, and only the first can be canceled'
