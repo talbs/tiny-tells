@@ -62,7 +62,13 @@ export const FLIP = {
     ]),
     [fromCells(CHECK5, 1), B(0.375)],
   ],
-  error: [[fromCells(CROSS3), B(4)]],
+  error: [
+    [fromCells(CROSS3), 0.2, , 0.05],
+    [ZERO, 0.17, , 0.05],
+    [fromCells(CROSS3), 0.13, , 0.05],
+    [ZERO, 0.17, , 0.05],
+    [fromCells(CROSS3), B(4) - 0.67, , 0.05],
+  ],
   warning: [
     [ZERO, B(0.25)],
     [fromCells(STEM.slice(0, 1)), B(0.125)],
@@ -129,17 +135,6 @@ export const flipCells = (id, u, cut, recolor) => {
             th = 0.55 * Math.exp(-w * 11) * Math.sin(w * 42);
           s = Math.abs(Math.cos(th));
         }
-      }
-      if (id === 'error' && b === 2 && !(c && f.u < 0.3)) {
-        const q = mod(u, B(4)),
-          dd = r * 0.05;
-        [0.2, 0.5].forEach(t0 => {
-          const g = seg(q - t0 - dd, 0, 0.2);
-          if (g > 0 && g < 1) {
-            s = Math.max(0.08, Math.abs(Math.cos(TAU * g)));
-            lvl = g < 0.25 || g > 0.75 ? 2 : 0;
-          }
-        });
       }
       out.push({ x, y, lvl, s, old, p });
     }
