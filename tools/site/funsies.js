@@ -1,7 +1,7 @@
 import { BEAT } from '../../src/core.js';
 import { DANCE } from '../../src/element.js';
 import { V1 } from '../shared/copy.js';
-import { $, holdAll, isStill, onMotionChange, reducedMotion, tag } from './shared.js';
+import { $, holdAll, isStill, onMotionChange, reducedMotion, tag, whenNear } from './shared.js';
 
 const BEAT_MS = BEAT * 1000;
 const section = $('funsies');
@@ -139,12 +139,7 @@ $('audience-stage').addEventListener('pointermove', wake, { passive: true });
 $('audience-stage').addEventListener('pointerdown', wake, { passive: true });
 toys.push({ build: () => (seats = fill($('audience'), 24, () => 'eyes')) });
 
-new IntersectionObserver(
-  ([e], observer) => {
-    if (!e.isIntersecting) return;
-    observer.disconnect();
-    toys.forEach(toy => toy.build());
-    holdAll(section);
-  },
-  { rootMargin: '100% 0px' }
-).observe(section);
+whenNear([section], () => {
+  toys.forEach(toy => toy.build());
+  holdAll(section);
+});

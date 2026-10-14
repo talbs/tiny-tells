@@ -338,22 +338,26 @@ const addCopyButton = pre => {
     .join('');
   pre.append(btn);
 };
-/* A copy button is eight Web Awesome components (icons, tooltip, popup), so each one is added as its code block nears the screen. */
-const addCopyButtons = () => {
+/* Web Awesome components are costly to upgrade in bulk (a copy button is eight of them), so each is built as its element nears the screen. */
+export const whenNear = (elements, build) => {
   const near = new IntersectionObserver(
     entries =>
       entries.forEach(({ isIntersecting, target }) => {
         if (!isIntersecting) return;
         near.unobserve(target);
-        addCopyButton(target);
+        build(target);
       }),
     { rootMargin: '100% 0px' }
   );
-  document.querySelectorAll('pre[data-copy]').forEach(pre => {
+  elements.forEach(el => near.observe(el));
+};
+const addCopyButtons = () => {
+  const blocks = document.querySelectorAll('pre[data-copy]');
+  blocks.forEach(pre => {
     pre.insertAdjacentHTML('afterbegin', PROMPT);
     pre.querySelector('code').insertAdjacentHTML('afterend', '<span class="caret" aria-hidden="true"></span>');
-    near.observe(pre);
   });
+  whenNear(blocks, addCopyButton);
 };
 
 export const syncInstallTabs = groups => {
@@ -460,18 +464,23 @@ const tipText = el =>
     [...el.querySelectorAll('wa-icon')].find(icon => icon.label && icon.checkVisibility?.() !== false) ??
     el.querySelector('wa-icon')
   )?.label;
-const addTooltips = () =>
-  [...document.querySelectorAll('a, button, wa-button')]
-    .filter(el => !el.textContent.trim() && el.querySelector('wa-icon'))
-    .forEach((el, i) => {
-      el.id ||= `tip-target-${i}`;
-      const tip = document.createElement('wa-tooltip');
-      tip.setAttribute('for', el.id);
-      const sync = () => (tip.textContent = tipText(el) ?? '');
-      sync();
-      new MutationObserver(sync).observe(el, { subtree: true, attributes: true });
-      document.body.append(tip);
-    });
+const addTooltip = el => {
+  const tip = document.createElement('wa-tooltip');
+  tip.setAttribute('for', el.id);
+  const sync = () => (tip.textContent = tipText(el) ?? '');
+  sync();
+  new MutationObserver(sync).observe(el, { subtree: true, attributes: true });
+  /* A jump (a hash link, the End key) can build it under a resting pointer, which never enters again to open it. */
+  tip.open = el.matches(':hover');
+  document.body.append(tip);
+};
+const addTooltips = () => {
+  const targets = [...document.querySelectorAll('a, button, wa-button')].filter(
+    el => !el.textContent.trim() && el.querySelector('wa-icon')
+  );
+  targets.forEach((el, i) => (el.id ||= `tip-target-${i}`));
+  whenNear(targets, addTooltip);
+};
 
 const waBundle = document.querySelector('script[data-webawesome]')?.src;
 
