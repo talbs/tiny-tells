@@ -1,9 +1,8 @@
 import '../src/dance.js';
 import { DOZE_CLIPS, LEN } from '../src/doze.js';
-import { EPlayer } from '../src/players.js';
+import { playerFor } from '../src/players.js';
 import { SKINS } from '../src/registry.js';
-import { FC, flipCells, renderFlip } from '../src/tells/flipdot.js';
-import { PERIOD, PI, STATES, mod, tone, withScene } from '../src/core.js';
+import { PERIOD, PI, STATES, withScene } from '../src/core.js';
 
 const INSET = 0.08,
   FLASH_STEP = 0.1,
@@ -13,10 +12,7 @@ const INSET = 0.08,
   SEAM_RATIO = 2.5;
 const draw = (cv, skin, id, t, scene) =>
   withScene(scene, () => {
-    if (skin === 'flipdot') {
-      const total = FC[id].total;
-      renderFlip(cv, flipCells(id, mod(t, total) + total).cells, tone(id), tone(id));
-    } else new EPlayer(skin, id).draw(cv, t);
+    playerFor(skin, id).draw(cv, t);
     return cv.getContext('2d').getImageData(0, 0, cv.width, cv.height).data;
   });
 const luminance = (d, bg) => {
@@ -87,7 +83,7 @@ export const runEngineChecks = () => {
           const sc = document.createElement('canvas');
           sc.width = sc.height = 40;
           sc._css = 20;
-          const P = skin === 'flipdot' ? FC[id].total : PERIOD[id],
+          const P = SKINS[skin].period?.(id) ?? PERIOD[id],
             step = (a, b) => {
               let d = 0;
               for (let i = 0; i < a.length; i += 4)

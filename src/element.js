@@ -2,7 +2,7 @@
 import { LABEL, PERIOD, STATES, clamp, lerp, rgbToOklch, withScene } from './core.js';
 import { TellAfterDanceEvent, TellDanceEvent } from './events.js';
 import { SKINS } from './registry.js';
-import { EPlayer, FPlayer } from './players.js';
+import { playerFor } from './players.js';
 import { BOX } from './box.js';
 
 const VERSION = __TINY_TELLS_VERSION__;
@@ -49,7 +49,6 @@ const wake = () => {
 };
 const put = (el, name, v) => (v == null ? el.removeAttribute(name) : el.setAttribute(name, v));
 const MAX_CANVAS = 2048;
-const playerFor = (skin, state) => (skin === 'flipdot' ? new FPlayer(state) : new EPlayer(skin, state));
 
 /* Browser-only setup waits for the first connected tell, so importing the module on a server is safe. */
 const setup = () => {
@@ -459,7 +458,7 @@ class TinyTell extends (typeof HTMLElement === 'undefined' ? class {} : HTMLElem
     }
     try {
       this.#within(() =>
-        this.#player.draw(cv, still ? (SKINS[this.skin]?.still?.[this.state] ?? STILL[this.state]) : clock.t)
+        this.#player.draw(cv, still ? (SKINS[this.skin].still?.[this.state] ?? STILL[this.state]) : clock.t)
       );
     } catch (err) {
       clock.live.delete(this);

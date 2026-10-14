@@ -1,7 +1,6 @@
 /* A player per skin. On a handoff it springs from current position and velocity into the next state, with anticipation, staggered starts, and an arc. */
 import { BEAT, E, PERIOD, PHYS, bell, ink, labMix, mod, seg, springOff, tone } from './core.js';
 import { camMix } from './tells/drones.js';
-import { flipCells, renderFlip } from './tells/flipdot.js';
 import { SKINS } from './registry.js';
 
 /* A wrapped key (dekatron's k) crosses its wrap point as a small step, not a jump back around the ring. */
@@ -82,20 +81,4 @@ export class EPlayer {
     sk.render(cv, s, ink || s.color, vel);
   }
 }
-export class FPlayer {
-  constructor(id = 'working') {
-    Object.assign(this, { id, t0: 0, snap: null, col0: null });
-  }
-  set(id, T) {
-    if (id === this.id) return;
-    this.snap = flipCells(this.id, T - this.t0, this.snap).cells;
-    this.col0 = tone(this.id);
-    this.id = id;
-    this.t0 = T;
-  }
-  draw(cv, T) {
-    const col = tone(this.id),
-      recolor = !!this.col0 && this.col0.join() !== col.join();
-    renderFlip(cv, flipCells(this.id, T - this.t0, this.snap, recolor).cells, ink || this.col0 || col, ink || col);
-  }
-}
+export const playerFor = (skin, id) => SKINS[skin].player?.(id) || new EPlayer(skin, id);
