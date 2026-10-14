@@ -79,14 +79,18 @@ export const LENS = {
     const metal = isDark ? [0.42, 0.006, 277] : [0.86, 0.005, 277];
     ctx.save();
     ctx.translate(sh[0] * unit, sh[1] * unit);
-    if (!ink) {
+    if (ink) ctx.fillStyle = css(ink);
+    else {
       const bz = ctx.createLinearGradient(0, o - Rb, 0, o + Rb);
       bz.addColorStop(0, css(metal, 1, 0.05));
       bz.addColorStop(1, css(metal, 1, -0.07));
       ctx.fillStyle = bz;
-      ctx.beginPath();
-      ctx.arc(o, o, Rb, 0, TAU);
-      ctx.fill();
+    }
+    ctx.beginPath();
+    ctx.arc(o, o, Rb, 0, TAU);
+    ctx.fill();
+    if (ink) ctx.globalCompositeOperation = 'destination-out';
+    else {
       if (isDark) ctx.fillStyle = css([0.13, 0.008, 277]);
       else {
         const sm = ctx.createLinearGradient(0, o - Rg, 0, o + Rg),
@@ -127,6 +131,7 @@ export const LENS = {
       ctx.arc(o, o, lerp(ap, Rb * 1.02, E.out(s.rip)), 0, TAU);
       ctx.stroke();
     }
+    ctx.globalCompositeOperation = 'source-over';
     if (e.bloom > 0.02) {
       const hb = ctx.createRadialGradient(o, o, Rg * 0.6, o, o, Rb * 1.12);
       hb.addColorStop(0, css(color, 0));
