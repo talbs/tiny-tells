@@ -230,12 +230,12 @@
       transition-timing-function: var(--wa-transition-easing);
     }
   }
+  /* Web Awesome's cloak lifts once everything is defined, before reveal() scrolls a #section link into place, so it's held until then, or the page would show at the top and jump. */
   [data-upgrading] {
     scroll-behavior: auto;
-  }
-  /* A #section link stays hidden until reveal() scrolls it into place, or the page would show at the top and jump. */
-  [data-upgrading='hash'] {
-    animation: 2s step-end wa-fouce-cloak;
+    & body {
+      animation: 2s step-end wa-fouce-cloak;
+    }
   }
   wa-page::part(header) {
     view-transition-name: site-header;
