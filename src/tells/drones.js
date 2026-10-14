@@ -126,16 +126,16 @@ export const DRONES = {
         flash: bell(seg(t, 0.48, 0.8)),
         ents: CORNERS.map(([cx, cz]) => {
           const inn = E.in(seg(t, 0.2, 0.5)),
-            back = E.out(seg(t, 0.5, 1.05)),
-            r = t < 0.5 ? lerp(1, 0.32, inn) : lerp(0.32, 1.1, back) - 0.1 * E.inOut(seg(t, 1.05, 1.6));
+            back = E.inOut(seg(t, 0.5, 1.05)),
+            r = 1 - 0.25 * inn + 0.35 * back - 0.1 * E.inOut(seg(t, 1.05, 1.6));
           const dr = drop(0.25, t - 0.95),
             up = seg(t, 2.85, 3.2),
             h = t < 0.95 ? 0.27 : lerp(0.02 + dr.h, 0.27, E.inOut(up));
           return {
             x: cx * r,
-            z: cz * r,
+            z: cz * r + 0.5 * (0.27 - h),
             h,
-            a: 1 - 0.4 * E.inOut(seg(t, 1.3, 1.6)) * (1 - E.inOut(seg(t, 2.8, 3.1))),
+            a: 1,
             hit: (t > 0.76 && t < 0.86 ? 1 : 0) + dr.hit * (1 - up),
           };
         }),
