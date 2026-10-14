@@ -246,8 +246,7 @@ class TinyTell extends (typeof HTMLElement === 'undefined' ? class {} : HTMLElem
     seen.observe(this);
     sized.observe(this);
     if (this.#player && this.#built === this.skin) {
-      this.#endPlay();
-      this.#within(() => this.#player.set(this.state, clock.t));
+      this.#settle();
     } else this.#build();
     fresh.add(this);
     if (fresh.size === 1)
@@ -274,13 +273,11 @@ class TinyTell extends (typeof HTMLElement === 'undefined' ? class {} : HTMLElem
     }
     if (name === 'state') {
       this.#validate();
-      this.#endPlay();
-      this.#within(() => this.#player?.set(this.state, clock.t));
+      this.#settle();
     }
     if (name === 'paused' && this.#mood) {
       this.#mood = null;
-      this.#player = playerFor(this.skin, this.state);
-      this.#player.t0 = clock.t;
+      this.#player = playerFor(this.skin, this.state, clock.t);
     }
     this[TICK](name === 'color' || name === 'scheme');
   }
@@ -293,10 +290,7 @@ class TinyTell extends (typeof HTMLElement === 'undefined' ? class {} : HTMLElem
       g = this.#gaze || { x: 0, y: 0 };
     const next = { x: lerp(g.x, want?.x || 0, 0.15), y: lerp(g.y, want?.y || 0, 0.15) };
     this.#gaze = want || Math.hypot(next.x, next.y) > 0.01 ? next : null;
-    if (this.#danceUntil && clock.t > this.#danceUntil) {
-      this.#endPlay();
-      this.#within(() => this.#player?.set(this.state, clock.t));
-    }
+    if (this.#danceUntil && clock.t > this.#danceUntil) this.#settle();
     if (isStale || performance.now() - this.#checked > 1000) {
       this.#look();
       this.#fit();
@@ -329,6 +323,11 @@ class TinyTell extends (typeof HTMLElement === 'undefined' ? class {} : HTMLElem
     this.dispatchEvent(new TellAfterDanceEvent());
   }
 
+  #settle() {
+    this.#endPlay();
+    this.#within(() => this.#player?.set(this.state, clock.t));
+  }
+
   #validate() {
     const s = this.getAttribute('state');
     if (s != null && !STATES.includes(s))
@@ -345,8 +344,7 @@ class TinyTell extends (typeof HTMLElement === 'undefined' ? class {} : HTMLElem
       );
     this.#validate();
     this.#canvas._blot = null;
-    this.#player = playerFor(this.skin, this.state);
-    this.#player.t0 = clock.t;
+    this.#player = playerFor(this.skin, this.state, clock.t);
     this.#built = this.skin;
   }
 
@@ -481,4 +479,4 @@ if (typeof customElements !== 'undefined') {
     );
 }
 
-export { DANCE, HOOKS, MOOD, STILL, TinyTell };
+export { DANCE, HOOKS, MOOD, TinyTell };

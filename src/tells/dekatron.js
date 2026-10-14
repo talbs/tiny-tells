@@ -115,7 +115,7 @@ export const DEKATRON = {
       ctx.save();
       ctx.translate(x, y);
       ctx.rotate(ang);
-      ctx.fillStyle = css(color, Math.min(1, g), isDark ? 0.08 * Math.max(0, g - 1) : 0);
+      ctx.fillStyle = css(color, g, isDark ? 0.08 * Math.max(0, g - 1) : 0);
       ctx.beginPath();
       ctx.ellipse(0, 0, dot * st, dot / Math.sqrt(st), 0, 0, TAU);
       ctx.fill();

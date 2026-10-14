@@ -91,6 +91,7 @@ export const withScene = (scene, fn) => {
   }
 };
 export const deepen = c => [Math.max(0.3, c[0] - 0.05), c[1] * 1.18, c[2]];
+export const lift = c => [Math.min(0.86, c[0] + 0.22), c[1] * 1.1, c[2]];
 export const hop = (h0, tt) => {
   if (tt <= 0) return 0;
   const tUp = Math.sqrt((2 * h0) / G);
@@ -115,10 +116,10 @@ export const toSrgb = ([L, C, H]) => {
   ].map(gamma);
 };
 export const css = ([L, C, H], a = 1, dl = 0) => `oklch(${clamp(L + dl)} ${Math.max(0, C)} ${H} / ${clamp(a)})`;
-export const toLab = ([L, C, H]) => [L, C * Math.cos((H * PI) / 180), C * Math.sin((H * PI) / 180)];
+const toLab = ([L, C, H]) => [L, C * Math.cos((H * PI) / 180), C * Math.sin((H * PI) / 180)];
+export const linear = c => ((c /= 255) <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4);
 export const rgbToOklch = ([r, g, b]) => {
-  const lin = c => ((c /= 255) <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4),
-    [R, G, B] = [r, g, b].map(lin);
+  const [R, G, B] = [r, g, b].map(linear);
   const l = Math.cbrt(0.4122214708 * R + 0.5363325363 * G + 0.0514459929 * B),
     m = Math.cbrt(0.2119034982 * R + 0.6806995451 * G + 0.1073969566 * B),
     s = Math.cbrt(0.0883024619 * R + 0.2817188376 * G + 0.6299787005 * B);
@@ -128,7 +129,7 @@ export const rgbToOklch = ([r, g, b]) => {
     0.0259040371 * l + 0.7827717662 * m - 0.808675766 * s,
   ]);
 };
-export const fromLab = ([L, a, b]) => {
+const fromLab = ([L, a, b]) => {
   let H = (Math.atan2(b, a) * 180) / PI;
   if (H < 0) H += 360;
   return [L, Math.hypot(a, b), H];

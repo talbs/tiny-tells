@@ -1,6 +1,8 @@
 /* ---- Blot: liquid. Stretchy drops, necks, drips, splats, and a sheen. ---- */
 import { BEAT, E, G, PI, SHADOW, TAU, bell, clamp, css, ctxFor, drop, gaze, hop, lerp, seg } from '../core.js';
 
+export const NONE = { x: 0, y: 0, r: 0, sx: 1, sy: 1 };
+
 export const BLOT = {
   fit: px => (px <= 32 ? 1.15 : 1.3),
   keys: ['x', 'y', 'r', 'sx', 'sy'],
@@ -50,7 +52,7 @@ export const BLOT = {
             const a = (deg * PI) / 180;
             return { x: R * Math.cos(a), y: R * Math.sin(a) - up * (1 - out), r: 0.22, sx, sy };
           })
-          .concat([{ x: 0, y: 0, r: 0, sx: 1, sy: 1 }]),
+          .concat([NONE]),
       };
     },
     error: t => {
@@ -79,7 +81,7 @@ export const BLOT = {
             sy: 1,
           },
           { x: spread * (1 - back), y: lerp(0.3, -0.05, back) + 0.02, r: impact ? 0.12 * (1 - back) : 0, sx: 1, sy: 1 },
-          { x: 0, y: 0, r: 0, sx: 1, sy: 1 },
+          NONE,
         ],
       };
     },
@@ -108,12 +110,7 @@ export const BLOT = {
           bell(seg(t, 1.1, 1.45)) +
           (t > 1.6 ? 0.6 * bell(seg((t % BEAT) / BEAT, 0, 0.9)) : 0);
       return {
-        ents: [
-          { x: 0, y: -0.12 + 0.04 * sag, r: 0.36, sx: 1 - 0.06 * sag, sy: 1 + 0.1 * sag },
-          a,
-          b,
-          { x: 0, y: 0, r: 0, sx: 1, sy: 1 },
-        ],
+        ents: [{ x: 0, y: -0.12 + 0.04 * sag, r: 0.36, sx: 1 - 0.06 * sag, sy: 1 + 0.1 * sag }, a, b, NONE],
       };
     },
     idle: t => {
@@ -123,8 +120,8 @@ export const BLOT = {
         ents: [
           { x: -sep, y: 0.04 * Math.sin(TAU * 2 * p), r: 0.24, sx: 1, sy: 1 },
           { x: sep, y: -0.04 * Math.sin(TAU * 2 * p), r: 0.2, sx: 1, sy: 1 },
-          { x: 0, y: 0, r: 0, sx: 1, sy: 1 },
-          { x: 0, y: 0, r: 0, sx: 1, sy: 1 },
+          NONE,
+          NONE,
         ],
       };
     },

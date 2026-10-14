@@ -1,9 +1,9 @@
 /* ---- Dance: a hidden fun state, one loop per tell. Only in the play bundle. ---- */
 import { BEAT, E, PERIOD, PHYS, PI, STATE_COLOR, bell, mod, seg } from './core.js';
 import { CORNERS, DRONES } from './tells/drones.js';
-import { B, FC, FLIP, fromCells } from './tells/flipdot.js';
+import { B, FC, FLIP, fromCells, timeline } from './tells/flipdot.js';
 import { EP, EYES, pair } from './tells/eyes.js';
-import { BLOT } from './tells/blot.js';
+import { BLOT, NONE } from './tells/blot.js';
 import { DEKATRON, DK } from './tells/dekatron.js';
 import { LENS } from './tells/lens.js';
 
@@ -22,7 +22,7 @@ const EQ = [
 ];
 const bars = h => h.flatMap((n, x) => [...Array(n)].map((_, k) => [x, 4 - k]));
 FLIP.dance = EQ.map(h => [fromCells(bars(h)), B(0.5)]);
-FC.dance = { fr: FLIP.dance, durs: FLIP.dance.map(([, h]) => h), total: B(4) };
+FC.dance = timeline(FLIP.dance);
 DRONES.states.dance = t => {
   const u4 = t / BEAT,
     step = Math.floor(u4),
@@ -68,8 +68,7 @@ BLOT.states.dance = t => {
   const u4 = t / BEAT,
     u = u4 % 1,
     land = Math.exp(-u * 10) * Math.min(1, u / 0.05),
-    st = 0.12 * Math.abs(Math.cos(PI * u)) * (1 - land),
-    none = { x: 0, y: 0, r: 0, sx: 1, sy: 1 };
+    st = 0.12 * Math.abs(Math.cos(PI * u)) * (1 - land);
   return {
     ents: [
       {
@@ -79,9 +78,9 @@ BLOT.states.dance = t => {
         sx: (1 + 0.3 * land) / (1 + st),
         sy: (1 - 0.3 * land) * (1 + st),
       },
-      none,
-      none,
-      none,
+      NONE,
+      NONE,
+      NONE,
     ],
   };
 };
