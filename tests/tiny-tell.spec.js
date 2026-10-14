@@ -620,7 +620,7 @@ test.describe('play bundle', () => {
     await expect
       .poll(() => page.evaluate(() => window.heard.length), { message: 'the dance ends on its own', timeout: 5000 })
       .toBe(2);
-    expect(await hue(page, '#eyes'), 'the dance color is gone once it ends').toBeLessThan(20);
+    await expect.poll(() => hue(page, '#eyes'), { message: 'the dance color is gone once it ends' }).toBeLessThan(20);
     expect(
       await page.evaluate(() => window.heard),
       'both events reach the document, and only the first can be canceled'
