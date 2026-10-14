@@ -7,6 +7,7 @@ import { PERIOD, PI, STATES, mod, tone, withScene } from '../src/core.js';
 const INSET = 0.08,
   FLASH_STEP = 0.1,
   FLASH_LIMIT = 3,
+  FPS = 60,
   SEAM_MIN = 1,
   SEAM_RATIO = 2.5;
 const draw = (cv, skin, id, t, scene) =>
@@ -29,9 +30,28 @@ const luminance = (d, bg) => {
   }
   return sum / (d.length / 4);
 };
+const flashesPerSecond = series => {
+  const turns = [];
+  let dir = 0,
+    ext = series[0];
+  series.forEach((v, i) => {
+    if (dir && (dir > 0 ? v > ext : v < ext)) ext = v;
+    else if (Math.abs(v - ext) >= FLASH_STEP * Math.max(v, ext, 0.05)) {
+      turns.push(i / FPS);
+      dir = v > ext ? 1 : -1;
+      ext = v;
+    }
+  });
+  return Math.max(0, ...turns.map(t0 => turns.filter(t => t >= t0 && t < t0 + 1).length / 2));
+};
+const frames = (seconds, f) => Array.from({ length: Math.round(seconds * FPS) }, (_, i) => f(i / FPS));
 export const runEngineChecks = () => {
   const failures = [],
     rows = [];
+  const flicker = flashesPerSecond(frames(2, t => (Math.floor(t * 12) % 2 ? 0.8 : 0.1))),
+    fade = flashesPerSecond(frames(4, t => 0.45 + 0.35 * Math.sin(t * PI)));
+  if (flicker <= FLASH_LIMIT) failures.push(`flash detector: a 6 Hz flicker counts as ${flicker} flashes a second`);
+  if (fade > 1) failures.push(`flash detector: a 0.5 Hz fade counts as ${fade} flashes a second`);
   for (const dark of [false, true]) {
     const still = { isDark: dark, palette: null, gaze: null };
     for (const skin of Object.keys(SKINS))
@@ -89,24 +109,7 @@ export const runEngineChecks = () => {
         cv.width = cv.height = 96;
         cv._css = 48;
         const bg = dark ? 0.01 : 0.87,
-          series = [];
-        for (let t = 0; t < PERIOD[id]; t += 1 / 60) series.push(luminance(draw(cv, skin, id, t, still), bg));
-        let turns = [],
-          dir = 0,
-          ext = series[0];
-        series.forEach((v, i) => {
-          if (dir >= 0 && v > ext) ext = v;
-          else if (dir <= 0 && v < ext) ext = v;
-          if (Math.abs(v - ext) >= FLASH_STEP * Math.max(v, ext, 0.05)) {
-            turns.push(i / 60);
-            dir = v > ext ? 1 : -1;
-            ext = v;
-          }
-        });
-        let worst = 0;
-        turns.forEach(t0 => {
-          worst = Math.max(worst, turns.filter(t => t >= t0 && t < t0 + 1).length / 2);
-        });
+          worst = flashesPerSecond(frames(PERIOD[id], t => luminance(draw(cv, skin, id, t, still), bg)));
         rows.push(`${skin},${id},${dark ? 'dark' : 'light'},${worst}`);
         if (worst > FLASH_LIMIT)
           failures.push(`flashing: ${skin} ${id} ${dark ? 'dark' : 'light'} has ${worst} flashes in one second`);
