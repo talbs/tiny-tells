@@ -179,7 +179,7 @@ class FPlayer {
   }
   draw(cv, T) {
     const col = tone(this.id),
-      recolor = !!this.col0 && this.col0.join() !== col.join();
+      recolor = this.col0?.some((v, i) => v !== col[i]);
     renderFlip(cv, flipCells(this.id, T - this.t0, this.snap, recolor).cells, ink || this.col0 || col, ink || col);
   }
 }
