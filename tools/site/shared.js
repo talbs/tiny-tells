@@ -662,11 +662,13 @@ const placeTabBar = (group, isInstant) => {
 };
 const follow = (group, items, attr, place) => {
   const queue = perFrame(isInstant => place(group, isInstant));
-  const widths = new WeakMap();
+  const boxes = new WeakMap();
+  // The group grows taller when a tab panel fills in; re-placing then would cut the slide short.
+  const box = ({ target, contentRect: r }) => (target === group ? r.width : `${r.width}x${r.height}`);
   const sizes = new ResizeObserver(entries => {
-    const isWider = entries.some(e => widths.get(e.target) !== e.contentRect.width);
-    entries.forEach(e => widths.set(e.target, e.contentRect.width));
-    if (isWider) queue(true);
+    const isResized = entries.some(e => boxes.get(e.target) !== box(e));
+    entries.forEach(e => boxes.set(e.target, box(e)));
+    if (isResized) queue(true);
   });
   const watch = () => [group, ...group.querySelectorAll(items)].forEach(el => sizes.observe(el));
   new MutationObserver(records => {
