@@ -528,7 +528,7 @@ test.describe('Chromium only', () => {
     ).toContain('aria-hidden-focus');
   });
 
-  test('every tell stays in its live area, loops without a seam, and never flashes more than 3 times a second', async ({
+  test('every tell stays in its live area, loops without a seam, and never flashes more than 3 times a second, and Lens’s halo keeps to its color="current" ink (#98)', async ({
     page,
   }) => {
     test.setTimeout(120000);
@@ -539,7 +539,7 @@ test.describe('Chromium only', () => {
     expect(flashes, 'every tell × state × scheme was checked for flashing').toHaveLength(
       SKINS.length * (STATES.length + 1 + 3) * 2 // dance, plus doze's nod, doze, and wake
     );
-    expect(failures, 'no live-area, seam, or flash failures').toEqual([]);
+    expect(failures, 'no live-area, seam, flash, or ink failures').toEqual([]);
   });
 });
 
