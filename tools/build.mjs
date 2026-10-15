@@ -39,6 +39,7 @@ const peeks = readdirSync(join(ROOT, 'tools', 'site'))
   .filter(file => file.endsWith('.js'))
   .filter(file => /src\/element\.js|\b(HOOKS|MOOD|DANCE)\b/.test(read('tools', 'site', file)));
 if (peeks.length) throw new Error(`The site uses engine internals; use the public API instead: ${peeks.join(', ')}`);
+const WORDMARK = read('tools', 'site', 'wordmark.html');
 const REPO = 'https://github.com/talbs/tiny-tells';
 const SUPPORT = { Chrome: '111', Firefox: '113', Safari: '16.4' };
 const FA_KIT = '3572f3662e';
@@ -502,7 +503,7 @@ const preparePage = async ({ body, script, root, size, hasAnchors, name }) => {
   const fills = {
     header: read('tools', 'site', 'header.html'),
     footer: read('tools', 'site', 'footer.html'),
-    wordmark: read('tools', 'site', 'wordmark.html'),
+    wordmark: WORDMARK,
     ...DOCS_TABLES,
   };
   const values = {
@@ -684,14 +685,15 @@ PAGES.forEach(([out, opts], i) => {
   copyFileSync(join(ROOT, 'tools', 'og', name), join(ROOT, 'site', name))
 );
 /* The README's marks are drawn from the site's own wordmark and studio ink, so the three can't drift apart. */
-const mark = read('tools', 'site', 'wordmark.html'),
-  viewBox = mark.match(/viewBox="([^"]+)"/)[1],
-  d = [...mark.matchAll(/ d="([^"]+)"/g)].map(([, path]) => path).join(''),
-  inks = [...read('tools', 'site', 'css', 'tokens.css').matchAll(/--ink: (#\w+);/g)].map(([, ink]) => ink);
-if (inks.length !== 2) throw new Error(`tokens.css should set --ink for light and dark, found ${inks.length}`);
-['light', 'dark'].forEach((theme, i) =>
+const viewBox = WORDMARK.match(/viewBox="([^"]+)"/)[1],
+  d = [...WORDMARK.matchAll(/ d="([^"]+)"/g)].map(([, path]) => path).join(''),
+  [light, dark, extra] = [...read('tools', 'site', 'css', 'tokens.css').matchAll(/--ink: (#\w+);/g)].map(
+    ([, ink]) => ink
+  );
+if (!dark || extra) throw new Error('tokens.css should set --ink once for light, then once for dark');
+Object.entries({ light, dark }).forEach(([theme, ink]) =>
   write(
-    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${viewBox}"><path fill="${inks[i]}" fill-rule="evenodd" d="${d}"/></svg>\n`,
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${viewBox}"><path fill="${ink}" fill-rule="evenodd" d="${d}"/></svg>\n`,
     'site',
     `tiny-tells-wordmark-${theme}.svg`
   )
