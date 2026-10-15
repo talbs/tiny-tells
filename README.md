@@ -1,4 +1,9 @@
-# Tiny Tells
+<h1>
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://tinytells.dev/tiny-tells-wordmark-dark.svg">
+    <img src="https://tinytells.dev/tiny-tells-wordmark-light.svg" alt="Tiny Tells" width="320">
+  </picture>
+</h1>
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://tinytells.dev/readme-dark.gif">

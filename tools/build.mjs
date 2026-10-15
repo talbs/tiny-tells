@@ -680,11 +680,11 @@ PAGES.forEach(([out, opts], i) => {
   const html = sitePage(opts, prepared[i], waFile);
   console.log('wrote', write(html, ...out), `(${Math.round(html.length / 1024)} KB)`);
 });
-['og.png', 'readme.gif', 'readme-dark.gif'].forEach(name =>
-  copyFileSync(join(ROOT, 'tools', 'og', name), join(ROOT, 'site', name))
+['og.png', 'readme.gif', 'readme-dark.gif', 'tiny-tells-wordmark-light.svg', 'tiny-tells-wordmark-dark.svg'].forEach(
+  name => copyFileSync(join(ROOT, 'tools', 'og', name), join(ROOT, 'site', name))
 );
 ICONS.forEach(name => copyFileSync(join(ROOT, 'tools', 'favicon', name), join(ROOT, 'site', name)));
-console.log('wrote site/og.png, the README strips, and the favicons');
+console.log('wrote site/og.png, the README strips and wordmarks, and the favicons');
 const llms = llmsTxt(SIZE_KB);
 const builtDocs = read('site', 'docs', 'index.html');
 const deadAnchors = [...llms.matchAll(/docs\/#([\w-]+)\)/g)]
