@@ -314,7 +314,7 @@
     background: transparent;
   }
   wa-button.doc-link::part(label) {
-    text-decoration: underline 2px transparent;
+    text-decoration: underline var(--link-hover-thickness) transparent;
     text-decoration-skip-ink: none;
     text-underline-offset: 0.35em;
   }

@@ -216,7 +216,7 @@
     text-underline-offset: 0.35em;
   }
   :where(main, .site-footer, [slot='main-header']) a:hover {
-    text-decoration-thickness: 2px;
+    text-decoration-thickness: var(--link-hover-thickness);
     text-decoration-color: var(--tell-color-working, var(--working-default));
   }
   :where(main, .site-footer, [slot='main-header']) a:active {

@@ -30,6 +30,7 @@
     --dark-well: color-mix(in oklab, var(--slate-900) 63%, var(--slate-950));
     --font-body: 'Schibsted Grotesk', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
     --font-mono: 'Martian Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+    --link-hover-thickness: max(1px, 0.1em);
   }
   :root,
   .force-dark {
