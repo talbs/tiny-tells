@@ -13,6 +13,7 @@ import {
   ink,
   isDark,
   lerp,
+  lift,
   seg,
   springOff,
 } from '../core.js';
@@ -88,9 +89,8 @@ export const LENS = {
       sh = s.shake || [0, 0],
       Rb = 0.86 * unit,
       Rg = 0.74 * unit,
-      fix = !ink && !isDark,
-      spill = fix ? deepen(color) : null;
-    color = ink || (isDark ? color : [Math.min(0.86, color[0] + 0.22), color[1] * 1.1, color[2]]);
+      spill = ink || isDark ? null : deepen(color);
+    color = ink || (isDark ? color : lift(color));
     const metal = isDark ? [0.42, 0.006, 277] : [0.86, 0.005, 277];
     ctx.save();
     ctx.translate(sh[0] * unit, sh[1] * unit);
@@ -108,10 +108,9 @@ export const LENS = {
     else {
       if (isDark) ctx.fillStyle = css([0.13, 0.008, 277]);
       else {
-        const sm = ctx.createLinearGradient(0, o - Rg, 0, o + Rg),
-          k = fix ? -0.08 : 0;
-        sm.addColorStop(0, css([0.3 + k, 0.012, 277]));
-        sm.addColorStop(1, css([0.42 + k, 0.01, 277]));
+        const sm = ctx.createLinearGradient(0, o - Rg, 0, o + Rg);
+        sm.addColorStop(0, css([0.22, 0.012, 277]));
+        sm.addColorStop(1, css([0.34, 0.01, 277]));
         ctx.fillStyle = sm;
       }
       ctx.beginPath();
@@ -128,13 +127,13 @@ export const LENS = {
     ctx.arc(cx, cy, ap, 0, TAU);
     ctx.clip();
     const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, rc);
-    g.addColorStop(0, css(color, Math.min(1, glow), 0.34 * Math.min(1, glow)));
-    g.addColorStop(0.6, css(color, Math.min(1, glow * 0.7)));
+    g.addColorStop(0, css(color, glow, 0.34 * Math.min(1, glow)));
+    g.addColorStop(0.6, css(color, glow * 0.7));
     g.addColorStop(1, css(color, 0.1 * glow));
     ctx.fillStyle = g;
     ctx.fillRect(cx - rc, cy - rc, rc * 2, rc * 2);
     ctx.restore();
-    ctx.strokeStyle = css(color, Math.min(1, 0.3 + 0.5 * glow), 0.12);
+    ctx.strokeStyle = css(color, 0.3 + 0.5 * glow, 0.12);
     ctx.lineWidth = Math.max(dpr * (small ? 0.9 : 1), 0.028 * unit);
     ctx.beginPath();
     ctx.arc(cx, cy, ap, 0, TAU);

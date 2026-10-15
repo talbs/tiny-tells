@@ -6,8 +6,8 @@ import { SKINS } from './registry.js';
 const unwrap = (sk, k, d) => (sk.wrap?.[k] ? mod(d + sk.wrap[k] / 2, sk.wrap[k]) - sk.wrap[k] / 2 : d);
 
 export class EPlayer {
-  constructor(skin, id = 'working', mode = 'x') {
-    Object.assign(this, { skin, id, mode, t0: 0, off: null, from: null });
+  constructor(skin, id = 'working') {
+    Object.assign(this, { skin, id, t0: 0, off: null, from: null });
   }
   base(id, tau) {
     return SKINS[this.skin].states[id](mod(tau, PERIOD[id]));
@@ -21,18 +21,17 @@ export class EPlayer {
       color = from ? labMix(from.color, tone(this.id), k) : tone(this.id);
     const view = sk.view?.(from?.view, this.id, k);
     if (!this.off) return { ...st, color, view };
-    const P = PHYS[this.id],
-      full = this.mode === 'x';
+    const P = PHYS[this.id];
     const ents = st.ents.map((e, i) => {
       const o = { ...e },
-        stg = full ? i * 0.045 : 0,
+        stg = i * 0.045,
         tt = tau - stg,
         d = this.off.d[i],
         v = this.off.v[i];
       sk.keys.forEach(key => {
         o[key] = tt < 0 ? this.off.tg0[i][key] + d[key] : e[key] + springOff(d[key], v[key], tt, P.w, P.z);
       });
-      if (full && sk.pos.length === 2) {
+      if (sk.pos.length === 2) {
         const [ka, kb] = sk.pos,
           dist = Math.hypot(d[ka], d[kb]);
         if (dist > 0.02) {
@@ -80,4 +79,4 @@ export class EPlayer {
     sk.render(cv, s, ink || s.color, vel);
   }
 }
-export const playerFor = (skin, id) => SKINS[skin].player?.(id) || new EPlayer(skin, id);
+export const playerFor = (skin, id, t0 = 0) => Object.assign(SKINS[skin].player?.(id) || new EPlayer(skin, id), { t0 });

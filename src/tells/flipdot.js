@@ -3,9 +3,9 @@ import { BEAT, INK, OFF_A, PI, TAU, css, ctxFor, gaze, ink, mod, seg, tone } fro
 export const lv = fn => Array.from({ length: 5 }, (_, y) => Array.from({ length: 5 }, (_, x) => fn(x, y) | 0));
 export const fromCells = (list, level = 2) => lv((x, y) => (list.some(([a, b]) => a === x && b === y) ? level : 0));
 export const merge = (...g) => lv((x, y) => Math.max(...g.map(q => q[y][x])));
-export const ZERO = lv(() => 0),
-  B = n => n * BEAT;
-export const PERIM = [
+const ZERO = lv(() => 0);
+export const B = n => n * BEAT;
+const PERIM = [
   [0, 0],
   [1, 0],
   [2, 0],
@@ -23,7 +23,7 @@ export const PERIM = [
   [0, 2],
   [0, 1],
 ];
-export const CHECK5 = [
+const CHECK5 = [
     [1, 2],
     [2, 3],
     [3, 2],
@@ -104,7 +104,7 @@ const frameAt = (id, u) => {
   }
   return { to: fr[k][0], from: fr[(k || fr.length) - 1][0], u, k, first };
 };
-export const DISC_T = 0.1;
+const DISC_T = 0.1;
 /* cut is the last clip's drawn cells: a disc caught mid-turn (p) picks up from that phase, turning back if its new level differs from the one showing. */
 export const flipCells = (id, u, cut, recolor) => {
   /* Frames are [cells, hold, flip?, ripple?]: flip is the turn time into the frame (default DISC_T); ripple staggers from the center, not the corner. */

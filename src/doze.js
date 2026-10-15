@@ -3,7 +3,7 @@ import { ALIAS, BEAT, E, PERIOD, PHYS, TAU, bell, hop, lerp, mod, seg } from './
 import { CORNERS, DRONES } from './tells/drones.js';
 import { B, FC, FLIP, fromCells, lv, timeline } from './tells/flipdot.js';
 import { EP, EYES, pair } from './tells/eyes.js';
-import { BLOT } from './tells/blot.js';
+import { BLOT, NONE } from './tells/blot.js';
 import { DEKATRON, DK } from './tells/dekatron.js';
 import { LENS } from './tells/lens.js';
 
@@ -129,8 +129,7 @@ FLIP.wake = [
 for (const id of DOZE_CLIPS) FC[id] = timeline(FLIP[id]);
 
 /* The dome stays rounder than error's splat (sx 1.9, sy 0.45), and the bead always leaves and fades, so it never reads as splitting. */
-const DOME = { x: 0, y: 0.12, r: 0.34, sx: 1.25, sy: 0.8 },
-  NONE = { x: 0, y: 0, r: 0, sx: 1, sy: 1 };
+const DOME = { x: 0, y: 0.12, r: 0.34, sx: 1.25, sy: 0.8 };
 BLOT.states.nod = t => {
   const k = E.inOut(seg(t, 0, LEN.nod)),
     land = bell(seg(t, 1.25, LEN.nod));

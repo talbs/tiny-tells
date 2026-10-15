@@ -1,5 +1,5 @@
 import { LABEL, STATES } from '../../src/core.js';
-import { DANCE, HOOKS, MOOD } from '../../src/element.js';
+import { DANCE } from '../../src/element.js';
 import API from '../../src/api.json';
 import { version as VERSION } from '../../package.json';
 import { ASSISTANT_PROMPT, GOES, MODEL, NAMES, NOTES, V1 } from '../shared/copy.js';
@@ -13,6 +13,7 @@ import {
   bindPaletteSelect,
   fillCode,
   holdAll,
+  holdPlay,
   isStill,
   morphInto,
   on,
@@ -39,6 +40,9 @@ const HERO_SAY = {
   idle: 'Ready when you are.',
 };
 const UPLOAD_PCT = { working: 40, done: 100, error: 40, warning: 100, idle: 0 };
+const CI_SAY = { working: 'Running', done: 'Passed', error: 'Failed', warning: 'Needs approval', idle: 'Queued' };
+const ciChecks = (skin, t, c, say = '') =>
+  `<p class="cel-ci-title">Checks</p><ul class="ci-list wa-list-plain"><li>${tag(skin, 'state="done" label=""')}<span>Lint</span><em>Passed</em></li><li>${t}<span>Unit tests</span><em${say}>${c}</em></li><li>${tag(skin, 'state="idle" label=""')}<span>Deploy preview</span><em>Queued</em></li></ul>`;
 const CELS = [
   {
     name: 'chat',
@@ -76,15 +80,8 @@ const CELS = [
   {
     name: 'ci',
     skin: 'drones',
-    say: {
-      working: 'Running',
-      done: 'Passed',
-      error: 'Failed',
-      warning: 'Needs approval',
-      idle: 'Queued',
-    },
-    html: (t, c) =>
-      `<p class="cel-ci-title">Checks</p><ul class="ci-list wa-list-plain"><li>${tag('drones', 'state="done" label=""')}<span>Lint</span><em>Passed</em></li><li>${t}<span>Unit tests</span><em data-say>${c}</em></li><li>${tag('drones', 'state="idle" label=""')}<span>Deploy preview</span><em>Queued</em></li></ul>`,
+    say: CI_SAY,
+    html: (t, c) => ciChecks('drones', t, c, ' data-say'),
   },
 ];
 const heroCels = CELS.map((cel, i) => ({ ...cel, at: (i * 2) % STATES.length, timer: 0 }));
@@ -275,10 +272,7 @@ const applyGuides = () => document.querySelectorAll('.studio').forEach(el => el.
 $('guides-toggle').checked = isGuides;
 applyGuides();
 let isCastPlay = true;
-const playGaze = HOOKS.gaze;
-HOOKS.gaze = el => (!isCastPlay && el.closest('#tells') ? null : playGaze?.(el));
-const playTick = HOOKS.tick;
-HOOKS.tick = (el, dt, t) => (!isCastPlay && el.closest('#tells') ? (el[MOOD] = null) : playTick?.(el, dt, t));
+holdPlay(el => !isCastPlay && el.closest('#tells'));
 $('tells').addEventListener('pointerdown', e => isCastPlay || e.stopPropagation());
 $('play-toggle').addEventListener('change', e => (isCastPlay = e.target.checked));
 $('guides-toggle').addEventListener('change', e => {
@@ -313,9 +307,8 @@ const WILD = [
   {
     name: 'CI Checks',
     skin: 'flipdot',
-    copy: { working: 'Running', done: 'Passed', error: 'Failed', warning: 'Needs approval', idle: 'Queued' },
-    html: (t, c, sk) =>
-      `<div class="wild-ci"><p class="cel-ci-title">Checks</p><ul class="ci-list wa-list-plain"><li>${tag(sk, 'state="done" label=""')}<span>Lint</span><em>Passed</em></li><li>${t}<span>Unit tests</span><em>${c}</em></li><li>${tag(sk, 'state="idle" label=""')}<span>Deploy preview</span><em>Queued</em></li></ul></div>`,
+    copy: CI_SAY,
+    html: (t, c, sk) => `<div class="wild-ci">${ciChecks(sk, t, c)}</div>`,
   },
   {
     name: 'File Upload',

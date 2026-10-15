@@ -13,12 +13,13 @@ import {
   ink,
   isDark,
   lerp,
+  lift,
   mod,
   seg,
   springOff,
 } from '../core.js';
 
-export const GAZE = { gx: 1, gy: 1 };
+const GAZE = { gx: 1, gy: 1 };
 /* Each keyframe springs from where the eye actually is, at the speed it is moving, so motion carries through instead of snapping. */
 const run = (ks, from, to, t, slow, damp, [x0, v0]) => {
   const x = { ...x0 },
@@ -38,7 +39,7 @@ const run = (ks, from, to, t, slow, damp, [x0, v0]) => {
   }
   return [x, v];
 };
-export const tween = (fn, sd, t, slow = 1, P = 0, damp = 1) => {
+const tween = (fn, sd, t, slow = 1, P = 0, damp = 1) => {
   const { ks, b } = ((fn.cache ||= {})[`${sd},${slow},${P},${damp}`] ||= (() => {
     const ks = fn(sd),
       rest = [{ ...ks[ks.length - 1][1] }, {}],
@@ -51,7 +52,7 @@ export const tween = (fn, sd, t, slow = 1, P = 0, damp = 1) => {
   while (i > 0 && t < ks[i][0]) i--;
   return run(ks, i, i, t, slow, damp, b[i])[0];
 };
-export const blink = (p, t, t0) => {
+const blink = (p, t, t0) => {
   const k = E.in(seg(t, t0, t0 + 0.06)) * (1 - E.out(seg(t, t0 + 0.09, t0 + 0.21))),
     a = t - t0 - 0.21,
     os = a > 0 ? 0.06 * Math.exp(-a * 14) * Math.sin(a * 32) : 0;
@@ -198,7 +199,7 @@ export const EYES = {
       roll = (body * (a.roll + b.roll)) / 2,
       vsx = 1 + body * ((a.vsx + b.vsx) / 2 - 1),
       vsy = 1 + body * ((a.vsy + b.vsy) / 2 - 1);
-    const ec = isDark ? color : [Math.min(0.86, color[0] + 0.22), color[1] * 1.1, color[2]],
+    const ec = isDark ? color : lift(color),
       pw = 1,
       ph = 0.7,
       pr = 0.54,

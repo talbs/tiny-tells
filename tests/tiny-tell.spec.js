@@ -3,12 +3,10 @@ import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 import { LABEL } from '../src/core.js';
 
-const API = JSON.parse(readFileSync(new URL('../dist/custom-elements.json', import.meta.url))).modules[0]
-  .declarations[0];
-const valuesOf = name => [...API.attributes.find(a => a.name === name).type.text.matchAll(/'([^']+)'/g)].map(m => m[1]);
+const API = JSON.parse(readFileSync(new URL('../src/api.json', import.meta.url)));
+const valuesOf = name => Object.keys(API.attributes.find(a => a.name === name).values);
 const SKINS = valuesOf('skin');
 const STATES = valuesOf('state');
-const SOURCE_API = JSON.parse(readFileSync(new URL('../src/api.json', import.meta.url)));
 
 const pixels = (page, selector) =>
   page.$eval(selector, el => {
@@ -1082,13 +1080,13 @@ test.describe('docs without JavaScript', () => {
     await page.route(/^https:\/\/(ka-p\.fontawesome\.com|cloud\.umami\.is)\//, route => route.abort());
     await page.goto('/docs/');
     const rows = id => page.locator(`#${id} > tr`);
-    await expect(rows('attr-rows'), 'one row per attribute in api.json').toHaveCount(SOURCE_API.attributes.length);
-    await expect(rows('event-rows'), 'one row per event in api.json').toHaveCount(SOURCE_API.events.length);
-    await expect(rows('static-rows'), 'one row per static in api.json').toHaveCount(SOURCE_API.statics.length);
+    await expect(rows('attr-rows'), 'one row per attribute in api.json').toHaveCount(API.attributes.length);
+    await expect(rows('event-rows'), 'one row per event in api.json').toHaveCount(API.events.length);
+    await expect(rows('static-rows'), 'one row per static in api.json').toHaveCount(API.statics.length);
     await expect(rows('css-property-rows'), 'one row per CSS custom property in api.json').toHaveCount(
-      SOURCE_API.cssProperties.length
+      API.cssProperties.length
     );
-    await expect(rows('css-part-rows'), 'one row per CSS part in api.json').toHaveCount(SOURCE_API.cssParts.length);
+    await expect(rows('css-part-rows'), 'one row per CSS part in api.json').toHaveCount(API.cssParts.length);
     await expect(rows('custom-state-rows'), 'one custom state per state').toHaveCount(STATES.length);
     await expect(rows('tell-rows'), 'one row per tell').toHaveCount(SKINS.length);
     await expect(rows('state-rows'), 'one row per state').toHaveCount(STATES.length);

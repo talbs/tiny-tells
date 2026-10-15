@@ -1,7 +1,7 @@
 import { BEAT, E, PI, SHADOW, TAU, bell, clamp, ctxFor, drop, gaze, lerp, seg, sphere } from '../core.js';
 
-export const rotX = ([x, y, z], a) => [x, y * Math.cos(a) - z * Math.sin(a), y * Math.sin(a) + z * Math.cos(a)];
-export const rotY = ([x, y, z], a) => [x * Math.cos(a) + z * Math.sin(a), y, -x * Math.sin(a) + z * Math.cos(a)];
+const rotX = ([x, y, z], a) => [x, y * Math.cos(a) - z * Math.sin(a), y * Math.sin(a) + z * Math.cos(a)];
+const rotY = ([x, y, z], a) => [x * Math.cos(a) + z * Math.sin(a), y, -x * Math.sin(a) + z * Math.cos(a)];
 const AERIAL = { pitch: 1.05, yaw: 0, lift: 0.08 },
   FLAT = { pitch: PI / 2 - 0.001, yaw: 0, lift: 0 },
   CAM = { done: FLAT, error: FLAT };
@@ -21,12 +21,12 @@ export const CORNERS = [
   [0.42, 0.42],
   [-0.42, 0.42],
 ];
-export const CHECK = [
+const CHECK = [
   [-0.62, 0.02],
   [-0.18, 0.46],
   [0.64, -0.42],
 ];
-export const along = (pl, d) => {
+const along = (pl, d) => {
   for (let i = 1; i < pl.length; i++) {
     const l = Math.hypot(pl[i][0] - pl[i - 1][0], pl[i][1] - pl[i - 1][1]);
     if (d <= l || i === pl.length - 1) {
@@ -38,10 +38,10 @@ export const along = (pl, d) => {
 };
 const CHECK_SHORT = Math.hypot(CHECK[1][0] - CHECK[0][0], CHECK[1][1] - CHECK[0][1]),
   CHECK_LONG = Math.hypot(CHECK[2][0] - CHECK[1][0], CHECK[2][1] - CHECK[1][1]);
-export const CHECK_SLOTS = [0, CHECK_SHORT, CHECK_SHORT + CHECK_LONG / 2, CHECK_SHORT + CHECK_LONG].map(d =>
+const CHECK_SLOTS = [0, CHECK_SHORT, CHECK_SHORT + CHECK_LONG / 2, CHECK_SHORT + CHECK_LONG].map(d =>
   along(CHECK, d).map(v => v * 0.85)
 );
-export const FORMS = [
+const FORMS = [
   [
     [-0.42, -0.42],
     [0.42, -0.42],

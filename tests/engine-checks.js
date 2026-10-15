@@ -2,7 +2,7 @@ import '../src/dance.js';
 import { DOZE_CLIPS, LEN } from '../src/doze.js';
 import { playerFor } from '../src/players.js';
 import { SKINS } from '../src/registry.js';
-import { PERIOD, PI, STATES, withScene } from '../src/core.js';
+import { PERIOD, PI, STATES, linear, withScene } from '../src/core.js';
 
 const INSET = 0.08,
   FLASH_STEP = 0.1,
@@ -18,15 +18,12 @@ const draw = (cv, skin, id, t, scene) =>
     playerFor(skin, id).draw(cv, t);
     return cv.getContext('2d').getImageData(0, 0, cv.width, cv.height).data;
   });
+const LIN = Float64Array.from({ length: 256 }, (_, c) => linear(c));
 const luminance = (d, bg) => {
   let sum = 0;
   for (let i = 0; i < d.length; i += 4) {
-    const a = d[i + 3] / 255,
-      lin = c => {
-        c /= 255;
-        return c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
-      };
-    sum += (1 - a) * bg + a * (0.2126 * lin(d[i]) + 0.7152 * lin(d[i + 1]) + 0.0722 * lin(d[i + 2]));
+    const a = d[i + 3] / 255;
+    sum += (1 - a) * bg + a * (0.2126 * LIN[d[i]] + 0.7152 * LIN[d[i + 1]] + 0.0722 * LIN[d[i + 2]]);
   }
   return sum / (d.length / 4);
 };

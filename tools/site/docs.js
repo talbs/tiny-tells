@@ -1,5 +1,5 @@
 import { BEAT, LABEL, STATES } from '../../src/core.js';
-import { DANCE, HOOKS, MOOD } from '../../src/element.js';
+import { DANCE } from '../../src/element.js';
 import { V1 } from '../shared/copy.js';
 import {
   $,
@@ -8,6 +8,7 @@ import {
   contrast,
   fillCode,
   holdAll,
+  holdPlay,
   isStill,
   on,
   onMotionChange,
@@ -87,10 +88,7 @@ restingNote();
 // The page runs play, so tells act as core by hand: everywhere when Core is picked, and always in the comparison.
 let isCorePicked = true;
 const isCore = el => el.matches('.is-core') || (isCorePicked && !el.closest('#play, #events-demo, #funsies'));
-const playGaze = HOOKS.gaze;
-HOOKS.gaze = el => (isCore(el) ? null : playGaze(el));
-const playTick = HOOKS.tick;
-HOOKS.tick = (el, dt, t) => (isCore(el) ? (el[MOOD] = null) : playTick(el, dt, t));
+holdPlay(isCore);
 document.addEventListener(
   'pointerdown',
   e => {
