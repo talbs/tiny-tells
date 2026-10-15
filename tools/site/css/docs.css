@@ -483,21 +483,6 @@
       flex-basis: 100%;
     }
   }
-  @container (width <= 23rem) {
-    .handoff-state {
-      inline-size: 100%;
-    }
-    .handoff-state::part(form-control-input) {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: var(--wa-space-2xs);
-    }
-    .handoff-state wa-radio {
-      justify-content: center;
-      margin: 0;
-      border-radius: var(--wa-form-control-border-radius);
-    }
-  }
   .label-cases {
     inline-size: 100%;
     border-collapse: collapse;

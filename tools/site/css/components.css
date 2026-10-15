@@ -368,6 +368,44 @@
       block-size var(--wa-transition-slow) var(--ease-move),
       border-radius var(--wa-transition-slow) var(--ease-move);
   }
+  @media (width < 600px) {
+    .seg-grid {
+      inline-size: 100%;
+    }
+    .seg-grid::part(form-control-input) {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+    }
+    .seg-grid > wa-radio {
+      grid-column: span 2;
+      justify-content: center;
+      white-space: nowrap;
+      border-radius: 0;
+      &:first-of-type {
+        border-start-start-radius: var(--wa-border-radius-m);
+      }
+      &:nth-of-type(3) {
+        border-start-end-radius: var(--wa-border-radius-m);
+      }
+      &:first-of-type:nth-last-of-type(-n + 3),
+      &:nth-of-type(4) {
+        border-end-start-radius: var(--wa-border-radius-m);
+      }
+      &:nth-of-type(4) {
+        margin-inline-start: 0;
+      }
+      &:nth-of-type(n + 4) {
+        margin-block-start: calc(-1 * var(--wa-form-control-border-width));
+      }
+      &:nth-of-type(4):nth-last-of-type(2),
+      &:nth-of-type(5):last-of-type {
+        grid-column: span 3;
+      }
+      &:last-of-type {
+        border-end-end-radius: var(--wa-border-radius-m);
+      }
+    }
+  }
   wa-switch::part(thumb) {
     transition:
       translate var(--wa-transition-slow) var(--ease-detent),
