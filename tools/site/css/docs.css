@@ -1,6 +1,6 @@
 @layer page {
   .docs-wordmark {
-    margin: 0 0 var(--wa-space-s) -0.035em;
+    margin: 0 0 var(--wa-space-s);
     font-size: clamp(2.75rem, 5vw, 4rem);
   }
   .mark-docs {
