@@ -1,6 +1,6 @@
 {
   "name": "tiny-tells",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Give your app's status a face: six tiny animated characters in one <tiny-tell> element.",
   "keywords": [
     "web-components",

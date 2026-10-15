@@ -2,6 +2,22 @@
 
 Each release groups its changes under Added, Changed, Deprecated, Removed, Fixed, and Security. A breaking change is marked **Breaking** and listed first.
 
+## 0.3.0 · 2026-10-14
+
+### Added
+
+- `el.dance()`, in the play bundle. One dance, same as five quick taps. Returns `false` when the tell can't dance right now: paused, reduced motion, already dancing, off the page, or `tell-dance` canceled.
+- `noplay`, in the play bundle. The tell stops following the pointer, dancing to taps, and dozing. It still animates its state. There's no property, because one would break if play loaded late. Set it in markup or with `toggleAttribute('noplay')`.
+
+### Changed
+
+- States show more of what each tell is made of. Flipdot's error X lands from the center out. Drones' error stops short of a pile-up and stays at full brightness. Lens's pan and Drones' bob are small enough that you'll only see them at 48px.
+
+### Fixed
+
+- `color="current"` broke Eyes and Lens. Eyes lost its visor and looked like a typing indicator. Lens shrank to a faint dot that looked like a status bullet. Both now fill with the text color and cut the eyes or iris out, and Lens keeps its halo. Eyes is heavier at 16 to 20px: a solid pill, not two dots.
+- Blot was blurry. It drew at half resolution and stretched to fit. Now it draws at full resolution, 2 to 4 times sharper from 20px to 128px. Above 128px on 2× screens it still stretches.
+
 ## 0.2.0 · 2026-10-14
 
 ### Changed
