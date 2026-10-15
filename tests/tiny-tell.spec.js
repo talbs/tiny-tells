@@ -73,6 +73,10 @@ const hue = (page, selector) =>
       if (d[i + 3] > 200) most = Math.max(most, d[i + 2] - Math.max(d[i], d[i + 1]));
     return most;
   });
+const center = async (page, selector) => {
+  const box = await page.locator(selector).boundingBox();
+  return [box.x + box.width / 2, box.y + box.height / 2];
+};
 // Five real clicks can span more than play's 1.5s tap window on a busy machine, so they're dispatched in one go.
 const tap5 = (page, selector) =>
   page.$eval(selector, el => {
@@ -550,9 +554,7 @@ test.describe('play bundle', () => {
       customElements.get('tiny-tell').timeScale = 0;
     });
     const neutral = await settled(page, '#eyes');
-    const box = await page.locator('#eyes').boundingBox(),
-      cx = box.x + box.width / 2,
-      cy = box.y + box.height / 2;
+    const [cx, cy] = await center(page, '#eyes');
     await page.mouse.move(cx - 90, cy);
     const left = await settled(page, '#eyes');
     await page.mouse.move(cx + 90, cy);
@@ -649,9 +651,7 @@ test.describe('play bundle', () => {
   test('doze: an idle tell left alone nods off, wakes when the pointer comes back, and never covers a real state', async ({
     page,
   }) => {
-    const box = await page.locator('#eyes').boundingBox(),
-      cx = box.x + box.width / 2,
-      cy = box.y + box.height / 2;
+    const [cx, cy] = await center(page, '#eyes');
     await page.mouse.move(cx, cy);
     await page.mouse.move(cx + 2000, cy + 2000);
     const awake = await peakOpen(page, '#eyes'),
@@ -797,9 +797,7 @@ test.describe('play bundle', () => {
       document.addEventListener('tell-dance', () => window.danced++);
     });
     const neutral = await settled(page, '#eyes');
-    const box = await page.locator('#eyes').boundingBox(),
-      cx = box.x + box.width / 2,
-      cy = box.y + box.height / 2;
+    const [cx, cy] = await center(page, '#eyes');
     await page.$eval('#eyes', el => el.toggleAttribute('noplay', true));
     await page.mouse.move(cx - 90, cy);
     expect(await settled(page, '#eyes'), 'a noplay tell doesn’t look at a nearby pointer').toBe(neutral);
@@ -816,9 +814,7 @@ test.describe('play bundle', () => {
   });
 
   test('noplay: adding it wakes a dozing tell, and a noplay tell stays awake', async ({ page }) => {
-    const box = await page.locator('#eyes').boundingBox(),
-      cx = box.x + box.width / 2,
-      cy = box.y + box.height / 2;
+    const [cx, cy] = await center(page, '#eyes');
     await page.mouse.move(cx, cy);
     await page.mouse.move(cx + 2000, cy + 2000);
     const awake = await peakOpen(page, '#eyes');

@@ -29,8 +29,10 @@ const write = (text, ...parts) => {
 const { version: VERSION, homepage: HOMEPAGE } = JSON.parse(read('package.json'));
 const API = JSON.parse(read('src', 'api.json'));
 const ATTR = Object.fromEntries(API.attributes.map(a => [a.name, a]));
-const note = item => `${item.bundle === 'play' ? 'Play bundle only. ' : ''}${item.description}`;
+const isPlay = item => item.bundle === 'play';
+const note = item => `${isPlay(item) ? 'Play bundle only. ' : ''}${item.description}`;
 const hasField = a => a.property !== false;
+const cap = text => text[0].toUpperCase() + text.slice(1);
 if (V1.join() !== Object.keys(ATTR.skin.values).join())
   throw new Error('V1 in tools/shared/copy.js must list the skins in src/api.json');
 const peeks = readdirSync(join(ROOT, 'tools', 'site'))
@@ -277,8 +279,8 @@ const vscodeData = () => ({
 });
 
 const dts = () => {
-  const alias = a => (a.values ? `Tell${a.name[0].toUpperCase()}${a.name.slice(1)}` : null);
-  const coreAttrs = API.attributes.filter(a => a.bundle !== 'play');
+  const alias = a => (a.values ? `Tell${cap(a.name)}` : null);
+  const coreAttrs = API.attributes.filter(a => !isPlay(a));
   const types = coreAttrs
     .filter(alias)
     .map(a => `export type ${alias(a)} = ${tsType(a)};\n`)
@@ -289,6 +291,7 @@ const dts = () => {
     .join('');
   /* Setting null or undefined removes the attribute, so setters take them even where getters never return them. */
   const props = coreAttrs
+    .filter(hasField)
     .map(a => {
       const type = alias(a) || tsType(a);
       const doc = `  /** ${a.description} */\n`;
@@ -320,7 +323,7 @@ ${API.events.map(e => `/** ${note(e)} */\nexport declare class ${e.class} extend
 declare module './tiny-tells.js' {
   interface ${API.class}Attributes {
 ${API.attributes
-  .filter(a => a.bundle === 'play')
+  .filter(isPlay)
   .map(a => `    /** ${note(a)} */\n    ${a.name}?: ${a.type};\n`)
   .join('')}  }
   interface ${API.class} {
@@ -391,6 +394,22 @@ const docsTables = () => {
   };
   const codeify = text => text.replace(/\b[\w-]+\(\)/g, '<code>$&</code>');
   const codeOrDash = v => (v == null || v === false ? '—' : `<code>${v}</code>`);
+  const xsTag = text => `<wa-tag class="studio" appearance="outlined" size="xs">${text}</wa-tag>`;
+  const bundleTag = item => (item.bundle ? xsTag(`${cap(item.bundle)} Only`) : '');
+  const nameCell = (code, tag = '') =>
+    `<th scope="row"><span class="wa-cluster wa-gap-xs wa-flex-nowrap"><code>${code}</code>${tag}</span></th>`;
+  const kindOf = a =>
+    a.name === 'skin'
+      ? 'One of the six <a href="#tells">tells</a>'
+      : a.name === 'state'
+        ? 'One of the five <a href="#states">states</a>'
+        : a.values
+          ? Object.keys(a.values)
+              .map(v => `<code>${v}</code>`)
+              .join(', ')
+          : a.type === 'boolean'
+            ? 'boolean'
+            : 'text';
   return {
     'tell-rows': Object.entries(ATTR.skin.values)
       .map(
@@ -407,19 +426,7 @@ const docsTables = () => {
     'attr-rows': API.attributes
       .map(
         a =>
-          `<tr><th scope="row"><span class="wa-cluster wa-gap-xs wa-flex-nowrap"><code>${a.name}</code>${a.bundle ? `<wa-tag class="studio" appearance="outlined" size="xs">${a.bundle[0].toUpperCase()}${a.bundle.slice(1)} Only</wa-tag>` : ''}</span></th><td>${
-            a.name === 'skin'
-              ? 'One of the six <a href="#tells">tells</a>'
-              : a.name === 'state'
-                ? 'One of the five <a href="#states">states</a>'
-                : a.values
-                  ? Object.keys(a.values)
-                      .map(v => `<code>${v}</code>`)
-                      .join(', ')
-                  : a.type === 'boolean'
-                    ? 'boolean'
-                    : 'text'
-          }<br><span class="wa-caption-s">${a.description} <a href="${GUIDE[a.name]}">How to use it</a>.</span></td><td>${codeOrDash(a.default)}</td></tr>`
+          `<tr>${nameCell(a.name, bundleTag(a))}<td>${kindOf(a)}<br><span class="wa-caption-s">${a.description} <a href="${GUIDE[a.name]}">How to use it</a>.</span></td><td>${codeOrDash(a.default)}</td></tr>`
       )
       .join(''),
     'css-property-rows': API.cssProperties
@@ -435,7 +442,7 @@ const docsTables = () => {
       .map(([s, about]) => `<tr><th scope="row"><code>:state(${s})</code></th><td>${about}</td></tr>`)
       .join(''),
     'support-tags': Object.entries(SUPPORT)
-      .map(([browser, v]) => `<li><wa-tag class="studio" appearance="outlined" size="xs">${browser} ${v}</wa-tag></li>`)
+      .map(([browser, v]) => `<li>${xsTag(`${browser} ${v}`)}</li>`)
       .join(''),
     'event-rows': API.events
       .map(
@@ -446,13 +453,13 @@ const docsTables = () => {
     'static-rows': API.statics
       .map(
         m =>
-          `<tr><th scope="row"><span class="wa-cluster wa-gap-xs wa-flex-nowrap"><code>${API.class}.${m.name}</code>${m.readonly ? '<wa-tag class="studio" appearance="outlined" size="xs">Read-Only</wa-tag>' : ''}</span></th><td><code>${m.type}</code></td><td>${m.description}</td></tr>`
+          `<tr>${nameCell(`${API.class}.${m.name}`, m.readonly ? xsTag('Read-Only') : '')}<td><code>${m.type}</code></td><td>${m.description}</td></tr>`
       )
       .join(''),
     'method-rows': API.methods
       .map(
         m =>
-          `<tr><th scope="row"><span class="wa-cluster wa-gap-xs wa-flex-nowrap"><code>${m.name}()</code><wa-tag class="studio" appearance="outlined" size="xs">Play Only</wa-tag></span></th><td><code>${m.returns}</code></td><td>${codeify(m.description)}</td></tr>`
+          `<tr>${nameCell(`${m.name}()`, bundleTag(m))}<td><code>${m.returns}</code></td><td>${codeify(m.description)}</td></tr>`
       )
       .join(''),
   };

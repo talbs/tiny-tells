@@ -84,7 +84,6 @@ eventsTell.addEventListener('tell-after-dance', event => {
 $('events-dance').addEventListener('click', () => eventsTell.dance());
 reducedMotion.addEventListener('change', restingNote);
 restingNote();
-// The page runs play, so tells act as core by hand: everywhere when Core is picked, and always in the comparison.
 
 const renderStateTells = () => {
   document.querySelectorAll('#state-rows tiny-tell, tiny-tell[data-follow]').forEach(t => (t.skin = page.skin));

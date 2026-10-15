@@ -6,7 +6,8 @@ import { installGlobals } from './dom-globals.mjs';
 
 const MANIFEST = JSON.parse(readFileSync(new URL('../dist/custom-elements.json', import.meta.url)));
 const API = MANIFEST.modules[0].declarations[0];
-const FIELDS = API.members.filter(m => m.kind === 'field' && !m.static).map(m => m.name);
+const FIELD_MEMBERS = API.members.filter(m => m.kind === 'field' && !m.static);
+const FIELDS = FIELD_MEMBERS.map(m => m.name);
 const ATTR = Object.fromEntries(API.attributes.map(a => [a.name, a]));
 const valuesOf = name => [...ATTR[name].type.text.matchAll(/'([^']+)'/g)].map(m => m[1]);
 
@@ -39,10 +40,9 @@ describe('the public surface matches custom-elements.json', () => {
 
   test('defaults', () => {
     const el = document.createElement('tiny-tell');
-    const fields = API.attributes.filter(a => FIELDS.includes(a.name));
     assert.deepEqual(
-      Object.fromEntries(fields.map(a => [a.name, el[a.name]])),
-      Object.fromEntries(fields.map(a => [a.name, JSON.parse(a.default)])),
+      Object.fromEntries(FIELD_MEMBERS.map(m => [m.name, el[m.name]])),
+      Object.fromEntries(FIELD_MEMBERS.map(m => [m.name, JSON.parse(m.default)])),
       'each property starts at its documented default'
     );
   });
@@ -98,7 +98,7 @@ describe('statics', () => {
 describe('play bundle', () => {
   test('play adds the documented methods, and core never observes play-only attributes', async () => {
     const methods = API.members.filter(m => m.kind === 'method').map(m => m.name);
-    const playOnly = API.attributes.filter(a => !FIELDS.includes(a.name)).map(a => a.name);
+    const playOnly = API.attributes.filter(a => !a.fieldName).map(a => a.name);
     assert.deepEqual(methods, ['dance'], 'the manifest documents dance()');
     assert.deepEqual(playOnly, ['noplay'], 'and noplay as an attribute with no property');
     await import('../dist/tiny-tells-play.js');

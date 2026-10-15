@@ -36,11 +36,7 @@ const near = el => {
 };
 const rest = new WeakMap(),
   restFor = el => rest.get(el) || rest.set(el, { away: 0, at: 0, mood: null, isNear: false }).get(el);
-const isOff = el => {
-  if (!el.hasAttribute('noplay')) return false;
-  rest.delete(el);
-  return true;
-};
+const isOff = el => el.hasAttribute('noplay');
 HOOKS.gaze = el => {
   if (isOff(el)) return null;
   const g = near(el);
@@ -49,7 +45,10 @@ HOOKS.gaze = el => {
 };
 const AWAY = 30;
 HOOKS.tick = (el, dt, t) => {
-  if (isOff(el)) return void (el[MOOD] = null);
+  if (isOff(el)) {
+    rest.delete(el);
+    return void (el[MOOD] = null);
+  }
   const r = restFor(el),
     mood = el[MOOD],
     isIdle = el.state === 'idle';
@@ -71,7 +70,7 @@ if (typeof window !== 'undefined')
     'pointerdown',
     e => {
       const el = e.composedPath().find(n => n instanceof TinyTell);
-      if (!el || el.hasAttribute('noplay')) return;
+      if (!el || isOff(el)) return;
       const now = performance.now(),
         log = (taps.get(el) || []).filter(t => now - t < 1500).concat(now);
       if (log.length < 5) return taps.set(el, log);

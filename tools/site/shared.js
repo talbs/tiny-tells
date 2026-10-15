@@ -38,11 +38,9 @@ export const perFrame = fn => {
 };
 export const tag = (skin, attrs = '') => `<tiny-tell skin="${skin}" ${attrs}></tiny-tell>`;
 
+const tellsIn = root => (root.localName === 'tiny-tell' ? [root] : root.querySelectorAll('tiny-tell'));
 export const keepCore = isCore => {
-  const stamp = root =>
-    (root.localName === 'tiny-tell' ? [root] : root.querySelectorAll('tiny-tell')).forEach(t =>
-      t.toggleAttribute('noplay', isCore(t))
-    );
+  const stamp = root => tellsIn(root).forEach(t => t.toggleAttribute('noplay', isCore(t)));
   new MutationObserver(records =>
     records.forEach(r => r.addedNodes.forEach(n => n.nodeType === 1 && stamp(n)))
   ).observe(document.body, { childList: true, subtree: true });
@@ -60,7 +58,7 @@ export const page = {
   isPaused: false,
   skin: V1.includes(store.get('tells-site-skin')) ? store.get('tells-site-skin') : 'drones',
 };
-export const holdAll = root => root.querySelectorAll('tiny-tell').forEach(t => (t.paused = page.isPaused));
+export const holdAll = root => tellsIn(root).forEach(t => (t.paused = page.isPaused));
 
 const systemDark = matchMedia('(prefers-color-scheme: dark)');
 const applyTheme = () => {

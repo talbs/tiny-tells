@@ -271,7 +271,7 @@ const applyGuides = () => document.querySelectorAll('.studio').forEach(el => el.
 $('guides-toggle').checked = isGuides;
 applyGuides();
 let isCastPlay = true;
-const refreshCast = keepCore(el => !isCastPlay && !!el.closest('#tells'));
+const refreshCast = keepCore(el => !isCastPlay && el.closest('#tells'));
 $('play-toggle').addEventListener('change', e => {
   isCastPlay = e.target.checked;
   refreshCast();
