@@ -58,7 +58,7 @@
       align-items: start;
     }
   }
-  .builder-controls :where(wa-radio-group)::part(form-control-input) {
+  .builder-controls :where(wa-radio-group:not(.seg-grid))::part(form-control-input) {
     display: flex;
     flex-wrap: nowrap;
   }
@@ -66,31 +66,6 @@
     flex: 1 1 0;
     justify-content: center;
     white-space: nowrap;
-  }
-  @media (width < 600px) {
-    .builder-tell::part(form-control-input) {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
-    .builder-tell wa-radio {
-      border-radius: 0;
-      &:nth-of-type(1) {
-        border-start-start-radius: var(--wa-border-radius-m);
-      }
-      &:nth-of-type(3) {
-        border-start-end-radius: var(--wa-border-radius-m);
-      }
-      &:nth-of-type(4) {
-        margin-inline-start: 0;
-        border-end-start-radius: var(--wa-border-radius-m);
-      }
-      &:nth-of-type(n + 4) {
-        margin-block-start: calc(-1 * var(--wa-form-control-border-width));
-      }
-      &:nth-of-type(6) {
-        border-end-end-radius: var(--wa-border-radius-m);
-      }
-    }
   }
   .steps pre,
   .color-body pre,
@@ -413,16 +388,6 @@
     display: inline-flex;
     align-items: flex-start;
     gap: var(--wa-space-2xs);
-  }
-  @media (width < 600px) {
-    :is(.wild-state, .builder-state)::part(form-control-input) {
-      display: grid;
-      grid-template-columns: repeat(5, minmax(0, 1fr));
-    }
-    :is(.wild-state, .builder-state) wa-radio {
-      justify-content: center;
-      padding-inline: var(--wa-space-2xs);
-    }
   }
   .palette-tabs::part(form-control-input) {
     display: flex;
