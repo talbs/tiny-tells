@@ -932,6 +932,29 @@ test.describe('site pages', () => {
     }
   });
 
+  test('the wordmark reports the load in the state color on light, and keeps its dot in ink on dark', async ({
+    page,
+  }) => {
+    await page.addInitScript(() => {
+      window.markSeen = new Set();
+      new MutationObserver(() => {
+        const tell = document.querySelector('h1 tiny-tell');
+        if (tell) window.markSeen.add(`${tell.getAttribute('state')} ${tell.getAttribute('color')}`);
+      }).observe(document, { subtree: true, childList: true, attributes: true });
+    });
+    for (const scheme of ['light', 'dark']) {
+      await page.emulateMedia({ colorScheme: scheme });
+      await open(page, { path: '/' });
+      const tell = page.locator('h1 tiny-tell');
+      await expect(tell, `${scheme}: the bead settles to idle`).toHaveAttribute('state', 'idle', { timeout: 15_000 });
+      const tint = scheme === 'light' ? 'state' : 'current';
+      expect(
+        (await page.evaluate(() => [...window.markSeen])).filter(seen => !seen.endsWith(' null')),
+        `${scheme}: the bead plays working and done in ${tint}, then idles in ink`
+      ).toEqual([`working ${tint}`, `done ${tint}`, 'idle current']);
+    }
+  });
+
   test('pages load Web Awesome as one file, define every wa-* element, and keep the kit’s system icons', async ({
     page,
   }) => {

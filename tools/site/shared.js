@@ -1,5 +1,5 @@
 import '../../src/tiny-tells-play.js';
-import { LABEL, QUIET, STATES, STATE_COLOR, linear, toSrgb } from '../../src/core.js';
+import { BEAT, LABEL, QUIET, STATES, STATE_COLOR, linear, toSrgb } from '../../src/core.js';
 import { NAMES, V1 } from '../shared/copy.js';
 import { setScheme } from './scheme.js';
 import { track } from './track.js';
@@ -497,6 +497,7 @@ const waBundle = document.querySelector('script[data-webawesome]')?.src;
 export const start = async () => {
   applyPalette();
   applyTheme();
+  reportLoad();
   await customElements.whenDefined('wa-page');
   fitScrollPadding();
   if ($('page-tell')) $('page-tell').value = page.skin;
@@ -505,6 +506,30 @@ export const start = async () => {
   addCopyButtons();
   addTooltips();
   focusScrollers();
+};
+
+/* The wordmark's bead plays working (3 beats at least) while the page loads, then done, then idle. The state color
+   shows on light only: on dark its visor goes dark gray and the i loses its dot. Under a 40px font the eyes are too
+   small to read, so the static bead stands in. */
+const reportLoad = async () => {
+  const tell = document.querySelector('.mark tiny-tell');
+  if (!tell) return;
+  if (parseFloat(getComputedStyle(tell.parentElement).fontSize) < 40) return tell.remove();
+  const show = state => {
+    tell.state = state;
+    tell.setAttribute('color', !isDarkPage() && state !== 'idle' ? 'state' : 'current');
+  };
+  on('theme', () => show(tell.state));
+  if (isStill()) return show('idle');
+  show('working');
+  const beats = n => new Promise(resolve => setTimeout(resolve, n * BEAT * 1000));
+  const loaded = new Promise(resolve =>
+    document.readyState === 'complete' ? resolve() : addEventListener('load', resolve, { once: true })
+  );
+  await Promise.all([loaded, beats(3)]);
+  show('done');
+  await beats(4);
+  show('idle');
 };
 
 // A region that scrolls sideways needs a tab stop, or keyboard users can't reach what's past the edge.

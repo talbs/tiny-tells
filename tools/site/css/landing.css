@@ -694,7 +694,7 @@
     white-space: nowrap;
   }
   .hero-title {
-    margin: 0 0 0 -0.035em;
+    margin: 0;
     font-size: clamp(3.5rem, 7vw, 6rem);
   }
   .hero-cast {
