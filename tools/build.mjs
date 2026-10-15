@@ -370,7 +370,7 @@ const pageMeta = ({ title, description, path }) => {
 <meta property="og:image" content="${HOMEPAGE}og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="The Tiny Tells wordmark with the Eyes tell as the dot on its i, circled in red pencil with the note “keep an i on it.” All six tells stand below it, above a timing ruler.">
+<meta property="og:image:alt" content="The Tiny Tells wordmark, with the Eyes tell as the dot on its i, above the line “Give your app’s status a face.” Below, all six tells stand in a row over a timing ruler on a dark drafting grid.">
 <meta name="twitter:card" content="summary_large_image">`;
 };
 
