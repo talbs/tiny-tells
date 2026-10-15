@@ -1,5 +1,4 @@
 import { BEAT, LABEL, STATES } from '../../src/core.js';
-import { DANCE } from '../../src/element.js';
 import { V1 } from '../shared/copy.js';
 import {
   $,
@@ -8,7 +7,7 @@ import {
   contrast,
   fillCode,
   holdAll,
-  holdPlay,
+  keepCore,
   isStill,
   on,
   onMotionChange,
@@ -63,7 +62,7 @@ const describeA11y = () => {
     ` With the current one, the lowest state is ${worst[0].toFixed(1)}:1 on light and ${worst[1].toFixed(1)}:1 on dark.`;
 };
 
-$('dance').addEventListener('click', () => $('play-tell')[DANCE]?.());
+$('dance').addEventListener('click', () => $('play-tell').dance());
 
 const eventsTell = $('events-tell'),
   eventsStatus = $('events-status');
@@ -82,21 +81,9 @@ eventsTell.addEventListener('tell-dance', event => {
 eventsTell.addEventListener('tell-after-dance', event => {
   eventsStatus.textContent = `Back to ${event.target.state}.`;
 });
-$('events-dance').addEventListener('click', () => eventsTell[DANCE]?.());
+$('events-dance').addEventListener('click', () => eventsTell.dance());
 reducedMotion.addEventListener('change', restingNote);
 restingNote();
-// The page runs play, so tells act as core by hand: everywhere when Core is picked, and always in the comparison.
-let isCorePicked = true;
-const isCore = el => el.matches('.is-core') || (isCorePicked && !el.closest('#play, #events-demo, #funsies'));
-holdPlay(isCore);
-document.addEventListener(
-  'pointerdown',
-  e => {
-    const tell = e.composedPath().find(n => n.localName === 'tiny-tell');
-    if (tell && isCore(tell)) e.stopPropagation();
-  },
-  true
-);
 
 const renderStateTells = () => {
   document.querySelectorAll('#state-rows tiny-tell, tiny-tell[data-follow]').forEach(t => (t.skin = page.skin));
@@ -158,11 +145,16 @@ shell.addEventListener('click', e => {
 });
 syncInstallTabs([$('docs-install'), $('play-install'), $('reserve-install')]);
 
+let isCorePicked = true;
+const refreshCore = keepCore(
+  el => el.matches('.is-core') || (isCorePicked && !el.closest('#play, #events-demo, #funsies'))
+);
 const bundled = [...document.querySelectorAll('[data-bundle]')].map(el => [el, el.textContent]);
 const toPlay = text =>
   text.replace("'tiny-tells'", "'tiny-tells/play'").replace(/tiny-tells(\.min)?\.js/, 'tiny-tells-play$1.js');
 const setBundle = isPlay => {
   isCorePicked = !isPlay;
+  refreshCore();
   bundled.forEach(([el, text]) => {
     const next = isPlay ? toPlay(text) : text;
     if (el.textContent === next) return;

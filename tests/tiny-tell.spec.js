@@ -73,6 +73,10 @@ const hue = (page, selector) =>
       if (d[i + 3] > 200) most = Math.max(most, d[i + 2] - Math.max(d[i], d[i + 1]));
     return most;
   });
+const center = async (page, selector) => {
+  const box = await page.locator(selector).boundingBox();
+  return [box.x + box.width / 2, box.y + box.height / 2];
+};
 // Five real clicks can span more than play's 1.5s tap window on a busy machine, so they're dispatched in one go.
 const tap5 = (page, selector) =>
   page.$eval(selector, el => {
@@ -550,9 +554,7 @@ test.describe('play bundle', () => {
       customElements.get('tiny-tell').timeScale = 0;
     });
     const neutral = await settled(page, '#eyes');
-    const box = await page.locator('#eyes').boundingBox(),
-      cx = box.x + box.width / 2,
-      cy = box.y + box.height / 2;
+    const [cx, cy] = await center(page, '#eyes');
     await page.mouse.move(cx - 90, cy);
     const left = await settled(page, '#eyes');
     await page.mouse.move(cx + 90, cy);
@@ -649,9 +651,7 @@ test.describe('play bundle', () => {
   test('doze: an idle tell left alone nods off, wakes when the pointer comes back, and never covers a real state', async ({
     page,
   }) => {
-    const box = await page.locator('#eyes').boundingBox(),
-      cx = box.x + box.width / 2,
-      cy = box.y + box.height / 2;
+    const [cx, cy] = await center(page, '#eyes');
     await page.mouse.move(cx, cy);
     await page.mouse.move(cx + 2000, cy + 2000);
     const awake = await peakOpen(page, '#eyes'),
@@ -761,6 +761,73 @@ test.describe('play bundle', () => {
     await page.evaluate(() => document.getElementById('eyes').remove());
     expect(await page.evaluate(() => window.ended), 'removing the tell reports the end right away').toBe(1);
   });
+
+  test('dance(): starts a dance and says so, and returns false when it can’t', async ({ page }) => {
+    const result = await page.evaluate(() => {
+      const el = document.getElementById('eyes'),
+        fired = [];
+      el.addEventListener('tell-dance', e => fired.push(e.type));
+      const first = el.dance(),
+        again = el.dance();
+      el.state = 'done';
+      el.paused = true;
+      const paused = el.dance();
+      el.paused = false;
+      el.addEventListener('tell-dance', e => e.preventDefault(), { once: true });
+      const canceled = el.dance();
+      const gone = document.createElement('tiny-tell');
+      document.body.append(gone);
+      gone.remove();
+      return { first, again, paused, canceled, removed: gone.dance(), fired: fired.length };
+    });
+    expect(result.first, 'a free tell starts dancing').toBe(true);
+    expect(result.again, 'a dancing tell refuses a second dance').toBe(false);
+    expect(result.paused, 'a paused tell refuses').toBe(false);
+    expect(result.canceled, 'a canceled tell-dance refuses').toBe(false);
+    expect(result.removed, 'a tell off the page refuses').toBe(false);
+    expect(result.fired, 'tell-dance fired for the first dance and the canceled one only').toBe(2);
+  });
+
+  test('noplay: a tell ignores the pointer and five taps, still dances on dance(), and plays again without it', async ({
+    page,
+  }) => {
+    await page.evaluate(() => {
+      customElements.get('tiny-tell').timeScale = 0;
+      window.danced = 0;
+      document.addEventListener('tell-dance', () => window.danced++);
+    });
+    const neutral = await settled(page, '#eyes');
+    const [cx, cy] = await center(page, '#eyes');
+    await page.$eval('#eyes', el => el.toggleAttribute('noplay', true));
+    await page.mouse.move(cx - 90, cy);
+    expect(await settled(page, '#eyes'), 'a noplay tell doesn’t look at a nearby pointer').toBe(neutral);
+    await tap5(page, '#eyes');
+    expect(await page.evaluate(() => window.danced), 'five taps don’t dance it').toBe(0);
+    expect(await page.$eval('#eyes', el => el.dance()), 'dance() still works on it').toBe(true);
+    await page.$eval('#eyes', el => {
+      el.state = 'done';
+      el.state = 'idle';
+      el.toggleAttribute('noplay', false);
+    });
+    await page.mouse.move(cx + 90, cy);
+    expect(await settled(page, '#eyes'), 'without noplay it looks again').not.toBe(neutral);
+  });
+
+  test('noplay: adding it wakes a dozing tell, and a noplay tell stays awake', async ({ page }) => {
+    const [cx, cy] = await center(page, '#eyes');
+    await page.mouse.move(cx, cy);
+    await page.mouse.move(cx + 2000, cy + 2000);
+    const awake = await peakOpen(page, '#eyes');
+    await page.evaluate(() => (customElements.get('tiny-tell').timeScale = 60));
+    await expect
+      .poll(() => peakOpen(page, '#eyes'), { message: 'left alone, it dozes', timeout: 5000 })
+      .toBeLessThan(awake * 0.5);
+    await page.$eval('#eyes', el => el.toggleAttribute('noplay', true));
+    await expect.poll(() => peakOpen(page, '#eyes'), { message: 'noplay wakes it' }).toBeGreaterThan(awake * 0.8);
+    // At 60× speed, 60 frame pairs cover well past the 30s doze timer.
+    for (let i = 0; i < 60; i++) await twoFrames(page);
+    expect(await peakOpen(page, '#eyes'), 'a noplay tell never dozes').toBeGreaterThan(awake * 0.8);
+  });
 });
 
 test.describe('reserve.css', () => {
@@ -822,6 +889,31 @@ test.describe('site pages', () => {
     const tip = page.locator(`wa-tooltip[for="${await anchor.getAttribute('id')}"]`);
     await expect(tip, 'the Funsies anchor gets a named tooltip').toHaveText(/\S/);
     await expect(tip, 'the first hover opens it, though it was built under the pointer').toHaveJSProperty('open', true);
+  });
+
+  test('docs in Core mode keep every example tell out of play, even after a skin change', async ({ page }) => {
+    await open(page, { path: '/docs/' });
+    const playing = () =>
+      page.$$eval(
+        'tiny-tell',
+        els => els.filter(el => !el.closest('#play, #events-demo, #funsies') && !el.hasAttribute('noplay')).length
+      );
+    expect(await playing(), 'every example tell starts with noplay').toBe(0);
+    await page.evaluate(() => {
+      const select = document.getElementById('page-tell');
+      select.value = 'blot';
+      select.dispatchEvent(new Event('change', { bubbles: true }));
+    });
+    await expect.poll(playing, { message: 'tells rebuilt for the new skin get noplay too' }).toBe(0);
+    await page.evaluate(() => {
+      const picker = document.getElementById('examples-play');
+      picker.value = 'play';
+      picker.dispatchEvent(new Event('change', { bubbles: true }));
+    });
+    expect(
+      await page.$$eval('tiny-tell[noplay]', els => els.filter(el => !el.matches('.is-core')).length),
+      'picking Play clears it from everything but the core comparison'
+    ).toBe(0);
   });
 
   test('landing, docs, and 404 load and switch theme without errors', async ({ page }) => {
@@ -1083,6 +1175,7 @@ test.describe('docs without JavaScript', () => {
     await expect(rows('attr-rows'), 'one row per attribute in api.json').toHaveCount(API.attributes.length);
     await expect(rows('event-rows'), 'one row per event in api.json').toHaveCount(API.events.length);
     await expect(rows('static-rows'), 'one row per static in api.json').toHaveCount(API.statics.length);
+    await expect(rows('method-rows'), 'one row per method in api.json').toHaveCount(API.methods.length);
     await expect(rows('css-property-rows'), 'one row per CSS custom property in api.json').toHaveCount(
       API.cssProperties.length
     );

@@ -59,6 +59,22 @@
       "type": "boolean",
       "default": false,
       "description": "Holds the current frame."
+    },
+    {
+      "name": "noplay",
+      "type": "boolean",
+      "default": false,
+      "bundle": "play",
+      "property": false,
+      "description": "Turns play off for this tell. It won’t follow the pointer, dance to five taps, or doze, but it still animates its state. Set it in markup or with toggleAttribute('noplay')."
+    }
+  ],
+  "methods": [
+    {
+      "name": "dance",
+      "returns": "boolean",
+      "bundle": "play",
+      "description": "Dances once, same as five quick taps. Works on a noplay tell too. Returns false when it can’t: paused, reduced motion, already dancing, off the page, or tell-dance canceled."
     }
   ],
   "events": [

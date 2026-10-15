@@ -461,6 +461,10 @@ words.textContent = 'Synced 3 files.';</code></pre>
               >WCAG 2.2.2</a
             >). <a href="#pause-demo">Copy one</a>.
           </li>
+          <li>
+            <strong>If you load play,</strong> put <code>noplay</code> on busy lists, so only the tells you want playing
+            do. <a href="#play">See play</a>.
+          </li>
         </ol>
         <h3 id="handled-for-you">Handled for You</h3>
         <ul id="a11y">
@@ -1016,6 +1020,11 @@ words.textContent = 'Synced 3 files.';</code></pre>
           The core bundle reports status and that’s it. Reach for play when the tell is part of the product’s
           personality, not just a progress signal. Reduced motion and <code>paused</code> both switch it off.
         </p>
+        <p>
+          Some tells shouldn’t play. A dense table, for one. Give those <code>noplay</code>. They still animate their
+          state, but they won’t follow the pointer, dance to taps, or doze. To dance one on cue, call
+          <code>tell.dance()</code>. It works on <code>noplay</code> tells too.
+        </p>
         <figure class="example wa-not-prose">
           <div class="example-preview studio wa-grid wa-gap-l compare">
             <div class="wa-stack wa-gap-s wa-align-items-center">
@@ -1561,8 +1570,8 @@ tiny-tell:not(:defined)[state="warning"]::before { content: "!"; }</code></pre>
         <h2 id="attributes-title">API</h2>
         <h3 id="attributes">Attributes and Properties</h3>
         <p>
-          Every attribute is also a property (<code>tell.state = 'error'</code>). Unknown values fall back to the
-          default, and an unknown skin or state logs a warning too.
+          Every attribute except <code>noplay</code> is also a property (<code>tell.state = 'error'</code>). Unknown
+          values fall back to the default. An unknown skin or state logs a warning too.
         </p>
         <wa-scroller orientation="horizontal"
           ><table>
@@ -1708,6 +1717,21 @@ tell.addEventListener('tell-after-dance', () => {
             </thead>
             <tbody id="static-rows">
               {{static-rows}}
+            </tbody>
+          </table></wa-scroller
+        >
+        <h3 id="methods">Methods</h3>
+        <wa-scroller orientation="horizontal"
+          ><table>
+            <thead>
+              <tr>
+                <th scope="col">Method</th>
+                <th scope="col">Returns</th>
+                <th scope="col">Does</th>
+              </tr>
+            </thead>
+            <tbody id="method-rows">
+              {{method-rows}}
             </tbody>
           </table></wa-scroller
         >

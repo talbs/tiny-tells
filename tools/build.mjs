@@ -29,8 +29,16 @@ const write = (text, ...parts) => {
 const { version: VERSION, homepage: HOMEPAGE } = JSON.parse(read('package.json'));
 const API = JSON.parse(read('src', 'api.json'));
 const ATTR = Object.fromEntries(API.attributes.map(a => [a.name, a]));
+const isPlay = item => item.bundle === 'play';
+const note = item => `${isPlay(item) ? 'Play bundle only. ' : ''}${item.description}`;
+const hasField = a => a.property !== false;
+const cap = text => text[0].toUpperCase() + text.slice(1);
 if (V1.join() !== Object.keys(ATTR.skin.values).join())
   throw new Error('V1 in tools/shared/copy.js must list the skins in src/api.json');
+const peeks = readdirSync(join(ROOT, 'tools', 'site'))
+  .filter(file => file.endsWith('.js'))
+  .filter(file => /src\/element\.js|\b(HOOKS|MOOD|DANCE)\b/.test(read('tools', 'site', file)));
+if (peeks.length) throw new Error(`The site uses engine internals; use the public API instead: ${peeks.join(', ')}`);
 const REPO = 'https://github.com/talbs/tiny-tells';
 const SUPPORT = { Chrome: '111', Firefox: '113', Safari: '16.4' };
 const FA_KIT = '3572f3662e';
@@ -86,13 +94,13 @@ const manifest = () => {
     superclass: { name: 'HTMLElement' },
     attributes: API.attributes.map(a => ({
       name: a.name,
-      fieldName: a.name,
+      ...(hasField(a) && { fieldName: a.name }),
       type: { text: tsType(a) },
       default: JSON.stringify(a.default),
-      description: a.description,
+      description: note(a),
     })),
     members: [
-      ...API.attributes.map(a => ({
+      ...API.attributes.filter(hasField).map(a => ({
         kind: 'field',
         name: a.name,
         attribute: a.name,
@@ -109,8 +117,14 @@ const manifest = () => {
         type: { text: m.type },
         description: m.description,
       })),
+      ...API.methods.map(m => ({
+        kind: 'method',
+        name: m.name,
+        return: { type: { text: m.returns } },
+        description: note(m),
+      })),
     ],
-    events: API.events.map(e => ({ name: e.name, type: { text: e.class }, description: eventNote(e) })),
+    events: API.events.map(e => ({ name: e.name, type: { text: e.class }, description: note(e) })),
     cssProperties: API.cssProperties,
     cssParts: API.cssParts,
     cssStates: Object.entries(stateValues).map(([name, description]) => ({ name, description })),
@@ -132,7 +146,7 @@ const manifest = () => {
     kind: 'class',
     name: e.class,
     superclass: { name: 'Event', package: 'global:' },
-    description: eventNote(e),
+    description: note(e),
   }));
   return {
     schemaVersion: '2.1.0',
@@ -146,8 +160,9 @@ const llmsTxt = sizeKb => {
   const docs = `${HOMEPAGE}docs/`;
   const skins = Object.keys(ATTR.skin.values).length;
   const list = (items, line) => items.map(line).join('\n');
+  const only = x => (x.bundle ? `, ${x.bundle} bundle only` : '');
   const attr = a =>
-    `- \`${a.name}\`${a.default == null || a.type === 'boolean' ? '' : ` (default \`${a.default}\`)`}: ${a.description}` +
+    `- \`${a.name}\`${only(a)}${a.default == null || a.type === 'boolean' ? '' : ` (default \`${a.default}\`)`}: ${a.description}` +
     (a.values ? '\n' + list(Object.entries(a.values), ([v, d]) => `  - \`${v}\`: ${d}`) : '');
   return `# Tiny Tells
 
@@ -198,6 +213,7 @@ Rules:
 - Size follows the text. Set \`--tell-size\` to pin it.
 - If a tell can move for more than five seconds, add a pause button that sets \`paused\`.
 - \`paused\` is a boolean attribute. Any value pauses, \`paused="false"\` included. Remove it to resume.
+- With the play bundle, put \`noplay\` on tells in dense lists or tables, so only the ones meant to play do. They still animate their state.
 - If you override \`--tell-color-*\`, keep 3:1 contrast against the surface behind it.
 - Reduced motion and forced colors are handled for you.
 - Custom tells aren't supported.
@@ -205,6 +221,10 @@ Rules:
 ## Attributes
 
 ${list(API.attributes, attr)}
+
+## Methods
+
+${list(API.methods, m => `- \`${m.name}()\`${only(m)}: ${m.description}`)}
 
 ## CSS
 
@@ -217,7 +237,7 @@ ${list(API.statics, s => `- \`TinyTell.${s.name}\`: ${s.description}`)}
 
 ## Events
 
-${list(API.events, e => `- \`${e.name}\`${e.cancelable ? ' (cancelable)' : ''}${e.bundle ? `, ${e.bundle} bundle only` : ''}: ${e.description}`)}
+${list(API.events, e => `- \`${e.name}\`${e.cancelable ? ' (cancelable)' : ''}${only(e)}: ${e.description}`)}
 
 ## Docs
 
@@ -246,7 +266,7 @@ const vscodeData = () => ({
       description: API.description,
       attributes: API.attributes.map(a => ({
         name: a.name,
-        description: a.description,
+        description: note(a),
         ...(a.values
           ? { values: Object.entries(a.values).map(([name, description]) => ({ name, description })) }
           : a.type === 'boolean'
@@ -259,17 +279,19 @@ const vscodeData = () => ({
 });
 
 const dts = () => {
-  const alias = a => (a.values ? `Tell${a.name[0].toUpperCase()}${a.name.slice(1)}` : null);
-  const types = API.attributes
+  const alias = a => (a.values ? `Tell${cap(a.name)}` : null);
+  const coreAttrs = API.attributes.filter(a => !isPlay(a));
+  const types = coreAttrs
     .filter(alias)
     .map(a => `export type ${alias(a)} = ${tsType(a)};\n`)
     .join('');
-  const attrs = API.attributes.map(a => `  ${a.name}?: ${alias(a) || a.type};\n`).join('');
+  const attrs = coreAttrs.map(a => `  ${a.name}?: ${alias(a) || a.type};\n`).join('');
   const statics = API.statics
     .map(m => `  /** ${m.description} */\n  static ${m.readonly ? 'readonly ' : ''}${m.name}: ${m.type};\n`)
     .join('');
   /* Setting null or undefined removes the attribute, so setters take them even where getters never return them. */
-  const props = API.attributes
+  const props = coreAttrs
+    .filter(hasField)
     .map(a => {
       const type = alias(a) || tsType(a);
       const doc = `  /** ${a.description} */\n`;
@@ -295,10 +317,19 @@ declare global {
 `;
 };
 
-const eventNote = e => `${e.bundle === 'play' ? 'Play bundle only. ' : ''}${e.description}`;
 const playDts = () => `export * from './tiny-tells.js';
 
-${API.events.map(e => `/** ${eventNote(e)} */\nexport declare class ${e.class} extends Event {\n  constructor();\n}\n`).join('\n')}
+${API.events.map(e => `/** ${note(e)} */\nexport declare class ${e.class} extends Event {\n  constructor();\n}\n`).join('\n')}
+declare module './tiny-tells.js' {
+  interface ${API.class}Attributes {
+${API.attributes
+  .filter(isPlay)
+  .map(a => `    /** ${note(a)} */\n    ${a.name}?: ${a.type};\n`)
+  .join('')}  }
+  interface ${API.class} {
+${API.methods.map(m => `    /** ${note(m)} */\n    ${m.name}(): ${m.returns};\n`).join('')}  }
+}
+
 declare global {
   interface HTMLElementEventMap {
 ${API.events.map(e => `    '${e.name}': ${e.class};\n`).join('')}  }
@@ -359,9 +390,26 @@ const docsTables = () => {
     scheme: '#match-scheme',
     label: '#labels',
     paused: '#pausing',
+    noplay: '#play',
   };
   const codeify = text => text.replace(/\b[\w-]+\(\)/g, '<code>$&</code>');
   const codeOrDash = v => (v == null || v === false ? '—' : `<code>${v}</code>`);
+  const xsTag = text => `<wa-tag class="studio" appearance="outlined" size="xs">${text}</wa-tag>`;
+  const bundleTag = item => (item.bundle ? xsTag(`${cap(item.bundle)} Only`) : '');
+  const nameCell = (code, tag = '') =>
+    `<th scope="row"><span class="wa-cluster wa-gap-xs wa-flex-nowrap"><code>${code}</code>${tag}</span></th>`;
+  const kindOf = a =>
+    a.name === 'skin'
+      ? 'One of the six <a href="#tells">tells</a>'
+      : a.name === 'state'
+        ? 'One of the five <a href="#states">states</a>'
+        : a.values
+          ? Object.keys(a.values)
+              .map(v => `<code>${v}</code>`)
+              .join(', ')
+          : a.type === 'boolean'
+            ? 'boolean'
+            : 'text';
   return {
     'tell-rows': Object.entries(ATTR.skin.values)
       .map(
@@ -378,19 +426,7 @@ const docsTables = () => {
     'attr-rows': API.attributes
       .map(
         a =>
-          `<tr><th scope="row"><code>${a.name}</code></th><td>${
-            a.name === 'skin'
-              ? 'One of the six <a href="#tells">tells</a>'
-              : a.name === 'state'
-                ? 'One of the five <a href="#states">states</a>'
-                : a.values
-                  ? Object.keys(a.values)
-                      .map(v => `<code>${v}</code>`)
-                      .join(', ')
-                  : a.type === 'boolean'
-                    ? 'boolean'
-                    : 'text'
-          }<br><span class="wa-caption-s">${a.description} <a href="${GUIDE[a.name]}">How to use it</a>.</span></td><td>${codeOrDash(a.default)}</td></tr>`
+          `<tr>${nameCell(a.name, bundleTag(a))}<td>${kindOf(a)}<br><span class="wa-caption-s">${a.description} <a href="${GUIDE[a.name]}">How to use it</a>.</span></td><td>${codeOrDash(a.default)}</td></tr>`
       )
       .join(''),
     'css-property-rows': API.cssProperties
@@ -406,7 +442,7 @@ const docsTables = () => {
       .map(([s, about]) => `<tr><th scope="row"><code>:state(${s})</code></th><td>${about}</td></tr>`)
       .join(''),
     'support-tags': Object.entries(SUPPORT)
-      .map(([browser, v]) => `<li><wa-tag class="studio" appearance="outlined" size="xs">${browser} ${v}</wa-tag></li>`)
+      .map(([browser, v]) => `<li>${xsTag(`${browser} ${v}`)}</li>`)
       .join(''),
     'event-rows': API.events
       .map(
@@ -417,7 +453,13 @@ const docsTables = () => {
     'static-rows': API.statics
       .map(
         m =>
-          `<tr><th scope="row"><span class="wa-cluster wa-gap-xs wa-flex-nowrap"><code>${API.class}.${m.name}</code>${m.readonly ? '<wa-tag class="studio" appearance="outlined" size="xs">Read-Only</wa-tag>' : ''}</span></th><td><code>${m.type}</code></td><td>${m.description}</td></tr>`
+          `<tr>${nameCell(`${API.class}.${m.name}`, m.readonly ? xsTag('Read-Only') : '')}<td><code>${m.type}</code></td><td>${m.description}</td></tr>`
+      )
+      .join(''),
+    'method-rows': API.methods
+      .map(
+        m =>
+          `<tr>${nameCell(`${m.name}()`, bundleTag(m))}<td><code>${m.returns}</code></td><td>${codeify(m.description)}</td></tr>`
       )
       .join(''),
   };

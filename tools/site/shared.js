@@ -1,5 +1,4 @@
 import '../../src/tiny-tells-play.js';
-import { DANCE, HOOKS, MOOD } from '../../src/element.js';
 import { LABEL, QUIET, STATES, STATE_COLOR, linear, toSrgb } from '../../src/core.js';
 import { NAMES, V1 } from '../shared/copy.js';
 import { setScheme } from './scheme.js';
@@ -39,10 +38,15 @@ export const perFrame = fn => {
 };
 export const tag = (skin, attrs = '') => `<tiny-tell skin="${skin}" ${attrs}></tiny-tell>`;
 
-export const holdPlay = isHeld => {
-  const { gaze, tick } = HOOKS;
-  HOOKS.gaze = el => (isHeld(el) ? null : gaze?.(el));
-  HOOKS.tick = (el, dt, t) => (isHeld(el) ? (el[MOOD] = null) : tick?.(el, dt, t));
+const tellsIn = root => (root.localName === 'tiny-tell' ? [root] : root.querySelectorAll('tiny-tell'));
+export const keepCore = isCore => {
+  const stamp = root => tellsIn(root).forEach(t => t.toggleAttribute('noplay', isCore(t)));
+  new MutationObserver(records =>
+    records.forEach(r => r.addedNodes.forEach(n => n.nodeType === 1 && stamp(n)))
+  ).observe(document.body, { childList: true, subtree: true });
+  const refresh = () => stamp(document.body);
+  refresh();
+  return refresh;
 };
 const isDarkPage = () => document.documentElement.classList.contains('wa-dark');
 
@@ -54,7 +58,7 @@ export const page = {
   isPaused: false,
   skin: V1.includes(store.get('tells-site-skin')) ? store.get('tells-site-skin') : 'drones',
 };
-export const holdAll = root => root.querySelectorAll('tiny-tell').forEach(t => (t.paused = page.isPaused));
+export const holdAll = root => tellsIn(root).forEach(t => (t.paused = page.isPaused));
 
 const systemDark = matchMedia('(prefers-color-scheme: dark)');
 const applyTheme = () => {
@@ -538,7 +542,7 @@ mark?.addEventListener('pointerdown', () => {
   markTaps = recentTaps(markTaps, 1500);
   if (markTaps.length < 5) return;
   markTaps = [];
-  document.querySelectorAll('tiny-tell').forEach(t => t[DANCE]?.());
+  document.querySelectorAll('tiny-tell').forEach(t => t.dance());
 });
 
 $('made-with')?.addEventListener('click', e => e.currentTarget.querySelector('wa-random-content').randomize());

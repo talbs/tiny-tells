@@ -43,7 +43,7 @@ Building with an AI assistant? Point it at [llms.txt](https://tinytells.dev/llms
 
 ## Develop
 
-Setup, builds, and tests are in [CONTRIBUTING.md](https://github.com/talbs/tiny-tells/blob/main/CONTRIBUTING.md#working-on-it).
+Setup, builds, and tests live in [CONTRIBUTING.md](https://github.com/talbs/tiny-tells/blob/main/CONTRIBUTING.md#working-on-it).
 
 ## License
 
