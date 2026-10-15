@@ -90,7 +90,7 @@ export const LENS = {
       Rg = 0.74 * unit,
       fix = !ink && !isDark,
       spill = fix ? deepen(color) : null;
-    color = isDark ? color : [Math.min(0.86, color[0] + (fix ? 0.22 : 0.18)), color[1] * (fix ? 1.1 : 1), color[2]];
+    color = ink || (isDark ? color : [Math.min(0.86, color[0] + 0.22), color[1] * 1.1, color[2]]);
     const metal = isDark ? [0.42, 0.006, 277] : [0.86, 0.005, 277];
     ctx.save();
     ctx.translate(sh[0] * unit, sh[1] * unit);

@@ -9,7 +9,10 @@ const INSET = 0.08,
   FLASH_LIMIT = 3,
   FPS = 60,
   SEAM_MIN = 1,
-  SEAM_RATIO = 2.5;
+  SEAM_RATIO = 2.5,
+  LENS_INK = [0.2, 0.02, 260],
+  INK_ALPHA = 25,
+  INK_LIFT = 30;
 const draw = (cv, skin, id, t, scene) =>
   withScene(scene, () => {
     playerFor(skin, id).draw(cv, t);
@@ -113,6 +116,26 @@ export const runEngineChecks = () => {
         if (worst > FLASH_LIMIT)
           failures.push(`flashing: ${skin} ${id} ${dark ? 'dark' : 'light'} has ${worst} flashes in one second`);
       }
+  }
+  // Other tells tint color="current" on purpose. Lens draws only the ink, so anything lighter reads as a second tone.
+  const lens = document.createElement('canvas');
+  lens.width = lens.height = 96;
+  lens._css = 48;
+  for (const id of STATES) {
+    let darkest = 255,
+      lightest = 0;
+    for (let t = 0.05; t < PERIOD[id]; t += 0.1) {
+      const d = draw(lens, 'lens', id, t, { isDark: false, palette: null, gaze: null, ink: LENS_INK });
+      for (let i = 0; i < d.length; i += 4) {
+        const lum = (d[i] + d[i + 1] + d[i + 2]) / 3;
+        if (d[i + 3] > 250) darkest = Math.min(darkest, lum);
+        if (d[i + 3] > INK_ALPHA) lightest = Math.max(lightest, lum);
+      }
+    }
+    if (lightest - darkest > INK_LIFT)
+      failures.push(
+        `ink: lens ${id} light draws ${Math.round(lightest - darkest)} lighter than its color="current" ink`
+      );
   }
   return { failures, flashes: rows };
 };
