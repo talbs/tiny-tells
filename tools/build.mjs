@@ -680,8 +680,21 @@ PAGES.forEach(([out, opts], i) => {
   const html = sitePage(opts, prepared[i], waFile);
   console.log('wrote', write(html, ...out), `(${Math.round(html.length / 1024)} KB)`);
 });
-['og.png', 'readme.gif', 'readme-dark.gif', 'tiny-tells-wordmark-light.svg', 'tiny-tells-wordmark-dark.svg'].forEach(
-  name => copyFileSync(join(ROOT, 'tools', 'og', name), join(ROOT, 'site', name))
+['og.png', 'readme.gif', 'readme-dark.gif'].forEach(name =>
+  copyFileSync(join(ROOT, 'tools', 'og', name), join(ROOT, 'site', name))
+);
+/* The README's marks are drawn from the site's own wordmark and studio ink, so the three can't drift apart. */
+const mark = read('tools', 'site', 'wordmark.html'),
+  viewBox = mark.match(/viewBox="([^"]+)"/)[1],
+  d = [...mark.matchAll(/ d="([^"]+)"/g)].map(([, path]) => path).join(''),
+  inks = [...read('tools', 'site', 'css', 'tokens.css').matchAll(/--ink: (#\w+);/g)].map(([, ink]) => ink);
+if (inks.length !== 2) throw new Error(`tokens.css should set --ink for light and dark, found ${inks.length}`);
+['light', 'dark'].forEach((theme, i) =>
+  write(
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${viewBox}"><path fill="${inks[i]}" fill-rule="evenodd" d="${d}"/></svg>\n`,
+    'site',
+    `tiny-tells-wordmark-${theme}.svg`
+  )
 );
 ICONS.forEach(name => copyFileSync(join(ROOT, 'tools', 'favicon', name), join(ROOT, 'site', name)));
 console.log('wrote site/og.png, the README strips and wordmarks, and the favicons');
