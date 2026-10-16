@@ -334,7 +334,7 @@ document.querySelectorAll('.system-well').forEach(well => {
 let isDemoPaused = false;
 $('pause-demo-button').addEventListener('click', e => {
   isDemoPaused = !isDemoPaused;
-  e.currentTarget.textContent = isDemoPaused ? 'Play Animations' : 'Pause Animations';
+  e.currentTarget.textContent = isDemoPaused ? 'Resume Animations' : 'Pause Animations';
   $('pause-demo')
     .querySelectorAll('tiny-tell')
     .forEach(tell => (tell.paused = isDemoPaused));

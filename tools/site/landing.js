@@ -418,7 +418,7 @@ $('b-state').innerHTML = radios(
   STATES.map(s => LABEL[s])
 );
 $('b-state').value = builder.state;
-$('b-size').innerHTML = radios(SIZES, ['Match Text', ...SIZES.slice(1)]);
+$('b-size').innerHTML = radios(SIZES, ['Follow Text', ...SIZES.slice(1)]);
 $('b-size').value = builder.size;
 [
   ['b-tell', 'tell', 'change'],
