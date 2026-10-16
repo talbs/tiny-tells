@@ -1183,7 +1183,9 @@ test.describe('docs drawer', () => {
   test.beforeEach(offline);
   test.afterEach(noProblems);
 
-  test('the mobile docs drawer opens without moving the page, and a far link lands as it closes', async ({ page }) => {
+  test('the mobile docs drawer opens without moving the page, and a far link glides into place once it closes', async ({
+    page,
+  }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await open(page, { path: '/docs/#states' });
     await revealed(page);
@@ -1195,18 +1197,23 @@ test.describe('docs drawer', () => {
     await expect(link, 'the drawer opens').toBeVisible();
     expect(Math.abs((await statesTop()) - before), 'the page behind the open drawer stays put').toBeLessThan(2);
     await link.click();
-    const drift = () =>
-      page.evaluate(() => {
-        const target = document.getElementById('api'),
-          landed = target.getBoundingClientRect().top;
-        target.scrollIntoView({ behavior: 'instant' });
-        return Math.abs(landed - target.getBoundingClientRect().top);
-      });
     await twoFrames(page);
-    expect(await drift(), 'the section is in place two frames after the tap').toBeLessThan(2);
-    await expect(page, 'the link still updates the address').toHaveURL(/#api$/);
+    expect(Math.abs((await statesTop()) - before), 'the page waits for the drawer before it moves').toBeLessThan(2);
     await expect(link, 'the drawer closes').toBeHidden();
-    expect(await drift(), 'the section stays in place once the drawer is gone').toBeLessThan(2);
+    const apiTop = () => page.evaluate(() => document.getElementById('api').getBoundingClientRect().top);
+    await expect
+      .poll(async () => Math.abs((await apiTop()) - before), {
+        message: 'the page glides the section to where #states opened',
+      })
+      .toBeLessThan(2);
+    await expect(page, 'the link still updates the address').toHaveURL(/#api$/);
+    const drift = await page.evaluate(() => {
+      const target = document.getElementById('api'),
+        landed = target.getBoundingClientRect().top;
+      target.scrollIntoView({ behavior: 'instant' });
+      return Math.abs(landed - target.getBoundingClientRect().top);
+    });
+    expect(drift, 'the section lands where it scrolls to').toBeLessThan(2);
     await expect(page.locator('#funsies-title'), 'sections set aside behind the drawer come back').toBeVisible();
   });
 });
