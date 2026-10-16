@@ -1065,23 +1065,6 @@ test.describe('site pages', () => {
     ).toEqual(['eyes']);
   });
 
-  test('a docs link to a section lands where the section scrolls to, below the sticky header', async ({ page }) => {
-    await open(page, { path: '/docs/#testing' });
-    await revealed(page);
-    const { landed, header, settled } = await page.evaluate(() => {
-      const target = document.getElementById('testing');
-      const landed = target.getBoundingClientRect().top;
-      const header = document
-        .querySelector('wa-page')
-        .shadowRoot.querySelector('[part~="header"]')
-        .getBoundingClientRect();
-      target.scrollIntoView({ behavior: 'instant' });
-      return { landed, header: header.bottom, settled: target.getBoundingClientRect().top };
-    });
-    expect(landed, 'the section is not under the header').toBeGreaterThanOrEqual(header - 1);
-    expect(Math.abs(landed - settled), 'the page opened where the section scrolls to').toBeLessThan(2);
-  });
-
   test('the tab underline keeps sliding while the new panel fills in', async ({ page }) => {
     await open(page, { path: '/docs/' });
     const group = page.locator('wa-tab-group:has(> .tab-bar)').first();
@@ -1175,6 +1158,33 @@ test.describe('site pages', () => {
     await expect(code, 'an unknown size falls back to matching the text').not.toContainText('--tell-size');
     await expect(code, 'markup in linked words shows as text').toContainText('&lt;img src=x onerror=alert(1)&gt;');
     expect(await page.locator('#b-preview img').count(), 'markup in linked words never renders').toBe(0);
+  });
+});
+
+// Firefox's scroll anchoring once kept a #section link from landing, so links run in every engine.
+test.describe('docs links', () => {
+  test.beforeEach(offline);
+  test.afterEach(noProblems);
+
+  test('a docs link to a section lands where the section scrolls to, below the sticky header', async ({ page }) => {
+    await open(page, { path: '/docs/#testing' });
+    await revealed(page);
+    const { landed, header, settled } = await page.evaluate(() => {
+      const target = document.getElementById('testing');
+      const landed = target.getBoundingClientRect().top;
+      const header = document
+        .querySelector('wa-page')
+        .shadowRoot.querySelector('[part~="header"]')
+        .getBoundingClientRect()
+        .toJSON();
+      target.scrollIntoView({ behavior: 'instant' });
+      return { landed, header, settled: target.getBoundingClientRect().top };
+    });
+    expect(landed, 'the section is not under the header').toBeGreaterThanOrEqual(header.bottom - 1);
+    expect(landed - header.bottom, 'the gap under the header doesn’t count the header twice').toBeLessThan(
+      header.height
+    );
+    expect(Math.abs(landed - settled), 'the page opened where the section scrolls to').toBeLessThan(2);
   });
 });
 
