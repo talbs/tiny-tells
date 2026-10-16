@@ -145,6 +145,7 @@
     --control-on: var(--bg);
     --control-edge: color-mix(in oklab, var(--fg) 30%, var(--bg));
     --control-hover: var(--field);
+    --control-hover-sheer: light-dark(color-mix(in oklab, var(--fg) 5%, transparent), rgb(0 0 0 / 0.55));
     --control-quiet: var(--muted);
     --control-h: 40px;
     --control-h-s: 32px;
