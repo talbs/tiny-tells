@@ -33,7 +33,7 @@ To skip the build step, use the CDN script tag from the [install guide](https://
 Then add a tell, with words beside it that say what's happening:
 
 ```html
-<p><tiny-tell skin="dekatron" state="working" label=""></tiny-tell> <span role="status">Syncing 3 files…</span></p>
+<p><tiny-tell tell="dekatron" state="working" label=""></tiny-tell> <span role="status">Syncing 3 files…</span></p>
 ```
 
 Change the state and the tell springs into the new one:

@@ -1,14 +1,14 @@
 /* ---- <tiny-tell>: one shared clock, per-element scheme and color, and the canvas contract. ---- */
 import { LABEL, PERIOD, STATES, clamp, lerp, rgbToOklch, withScene } from './core.js';
 import { TellAfterDanceEvent, TellDanceEvent } from './events.js';
-import { SKINS } from './registry.js';
+import { TELLS } from './registry.js';
 import { playerFor } from './players.js';
 import { BOX } from './box.js';
 
 const VERSION = __TINY_TELLS_VERSION__;
 const STILL = { working: 0.9, done: 1.2, error: 1.4, warning: 1, idle: 2 };
 const SCHEMES = ['auto', 'light', 'dark', 'invert'];
-const PROPS = ['skin', 'state', 'color', 'scheme', 'label', 'paused'];
+const PROPS = ['tell', 'state', 'color', 'scheme', 'label', 'paused'];
 /* Not Object.keys(STATE_COLOR): the play bundle defines the element, and upgrades tells, before dance.js adds its tone. */
 const TONES = [...STATES, 'dance'];
 const clock = { t: 0, last: 0, scale: 1, raf: 0, live: new Set() };
@@ -192,12 +192,12 @@ class TinyTell extends (typeof HTMLElement === 'undefined' ? class {} : HTMLElem
     else this.#canvas.setAttribute('role', 'img');
   }
 
-  get skin() {
-    const s = this.getAttribute('skin');
-    return Object.hasOwn(SKINS, s) ? s : 'drones';
+  get tell() {
+    const s = this.getAttribute('tell');
+    return Object.hasOwn(TELLS, s) ? s : 'drones';
   }
-  set skin(v) {
-    put(this, 'skin', v);
+  set tell(v) {
+    put(this, 'tell', v);
   }
   get state() {
     const s = this.getAttribute('state');
@@ -247,7 +247,7 @@ class TinyTell extends (typeof HTMLElement === 'undefined' ? class {} : HTMLElem
     all.add(this);
     seen.observe(this);
     sized.observe(this);
-    if (this.#player && this.#built === this.skin) {
+    if (this.#player && this.#built === this.tell) {
       this.#settle();
     } else this.#build();
     fresh.add(this);
@@ -269,7 +269,7 @@ class TinyTell extends (typeof HTMLElement === 'undefined' ? class {} : HTMLElem
 
   attributeChangedCallback(name, before, after) {
     if (before === after || !all.has(this)) return;
-    if (name === 'skin') {
+    if (name === 'tell') {
       this.#endPlay();
       this.#build();
     }
@@ -279,7 +279,7 @@ class TinyTell extends (typeof HTMLElement === 'undefined' ? class {} : HTMLElem
     }
     if (name === 'paused' && this.#mood) {
       this.#mood = null;
-      this.#player = playerFor(this.skin, this.state, clock.t);
+      this.#player = playerFor(this.tell, this.state, clock.t);
     }
     this[TICK](name === 'color' || name === 'scheme');
   }
@@ -340,15 +340,15 @@ class TinyTell extends (typeof HTMLElement === 'undefined' ? class {} : HTMLElem
   }
 
   #build() {
-    const skin = this.getAttribute('skin');
-    if (skin && !Object.hasOwn(SKINS, skin))
+    const tell = this.getAttribute('tell');
+    if (tell && !Object.hasOwn(TELLS, tell))
       console.warn(
-        `<${this.localName}>: unknown skin "${skin}". Known: ${Object.keys(SKINS).join(', ')}. Showing "drones". ${DOCS}tells`
+        `<${this.localName}>: unknown tell "${tell}". Known: ${Object.keys(TELLS).join(', ')}. Showing "drones". ${DOCS}tells`
       );
     this.#validate();
     this.#canvas._blot = null;
-    this.#player = playerFor(this.skin, this.state, clock.t);
-    this.#built = this.skin;
+    this.#player = playerFor(this.tell, this.state, clock.t);
+    this.#built = this.tell;
   }
 
   #look() {
@@ -455,11 +455,11 @@ class TinyTell extends (typeof HTMLElement === 'undefined' ? class {} : HTMLElem
     const still = env.reduce.matches;
     if (still) {
       this.#mood = null;
-      this.#player = playerFor(this.skin, this.state);
+      this.#player = playerFor(this.tell, this.state);
     }
     try {
       this.#within(() =>
-        this.#player.draw(cv, still ? (SKINS[this.skin].still?.[this.state] ?? STILL[this.state]) : clock.t)
+        this.#player.draw(cv, still ? (TELLS[this.tell].still?.[this.state] ?? STILL[this.state]) : clock.t)
       );
     } catch (err) {
       clock.live.delete(this);

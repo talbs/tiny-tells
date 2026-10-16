@@ -4,7 +4,7 @@
   "description": "A tiny animated status character. Six tells, five states, one 0.8s beat.",
   "attributes": [
     {
-      "name": "skin",
+      "name": "tell",
       "default": "drones",
       "description": "Which tell to draw.",
       "values": {
@@ -90,7 +90,7 @@
       "class": "TellAfterDanceEvent",
       "bundle": "play",
       "cancelable": false,
-      "description": "Fires when a dance ends, or when a state change, skin change, or removing the tell cuts it short. A removed tell is off the page, so only listeners on the tell itself hear that one."
+      "description": "Fires when a dance ends, or when a state change, tell change, or removing the tell cuts it short. A removed tell is off the page, so only listeners on the tell itself hear that one."
     }
   ],
   "statics": [

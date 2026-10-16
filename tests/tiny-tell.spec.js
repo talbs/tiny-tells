@@ -5,7 +5,7 @@ import { LABEL } from '../src/core.js';
 
 const API = JSON.parse(readFileSync(new URL('../src/api.json', import.meta.url)));
 const valuesOf = name => Object.keys(API.attributes.find(a => a.name === name).values);
-const SKINS = valuesOf('skin');
+const TELLS = valuesOf('tell');
 const STATES = valuesOf('state');
 
 const pixels = (page, selector) =>
@@ -147,19 +147,19 @@ test.describe('in motion', () => {
   test.afterEach(noProblems);
 
   test('an unpaused tell moves', async ({ page }) => {
-    const a = await frame(page, '[data-skin="drones"]');
+    const a = await frame(page, '[data-tell="drones"]');
     await expect
-      .poll(() => frame(page, '[data-skin="drones"]'), { message: 'a running tell draws a new frame' })
+      .poll(() => frame(page, '[data-tell="drones"]'), { message: 'a running tell draws a new frame' })
       .not.toBe(a);
   });
 
   test('paused freezes the frame', async ({ page }) => {
-    await page.$eval('[data-skin="drones"]', el => {
+    await page.$eval('[data-tell="drones"]', el => {
       el.paused = true;
     });
-    const a = await frame(page, '[data-skin="drones"]');
+    const a = await frame(page, '[data-tell="drones"]');
     await twoFrames(page);
-    expect(await frame(page, '[data-skin="drones"]'), 'a paused tell draws the same frame twice').toBe(a);
+    expect(await frame(page, '[data-tell="drones"]'), 'a paused tell draws the same frame twice').toBe(a);
   });
 
   test('a property set before the element was defined still takes effect', async ({ page }) => {
@@ -171,21 +171,21 @@ test.describe('in motion', () => {
       .toBe(true);
   });
 
-  test('unknown skins and states warn and fall back to drones and working', async ({ page }) => {
+  test('unknown tells and states warn and fall back to drones and working', async ({ page }) => {
     const warnings = [];
     page.on('console', msg => {
       if (msg.type() === 'warning') warnings.push(msg.text());
     });
     await page.evaluate(() =>
-      document.body.insertAdjacentHTML('beforeend', '<tiny-tell id="typo" skin="nope"></tiny-tell>')
+      document.body.insertAdjacentHTML('beforeend', '<tiny-tell id="typo" tell="nope"></tiny-tell>')
     );
-    await page.$eval('[data-skin="eyes"]', el => {
+    await page.$eval('[data-tell="eyes"]', el => {
       el.state = 'nope';
     });
-    await expect.poll(() => warnings.join('\n'), 'an unknown skin warns').toContain('unknown skin "nope"');
+    await expect.poll(() => warnings.join('\n'), 'an unknown tell warns').toContain('unknown tell "nope"');
     expect(warnings.join('\n'), 'an unknown state warns').toContain('unknown state "nope"');
     await drawn(page);
-    expect((await pixels(page, '#typo')).alpha, 'an unknown skin still draws the fallback').toBeGreaterThan(0);
+    expect((await pixels(page, '#typo')).alpha, 'an unknown tell still draws the fallback').toBeGreaterThan(0);
   });
 
   test('moving a tell keeps its animation going instead of restarting it', async ({ page }) => {
@@ -194,9 +194,9 @@ test.describe('in motion', () => {
     await page.evaluate(() => {
       customElements.get('tiny-tell').timeScale = 0;
     });
-    const before = await settled(page, '[data-skin="eyes"]');
-    await page.$eval('[data-skin="eyes"]', el => el.parentElement.append(el));
-    expect(await settled(page, '[data-skin="eyes"]'), 'a moved tell draws the same pose it had').toBe(before);
+    const before = await settled(page, '[data-tell="eyes"]');
+    await page.$eval('[data-tell="eyes"]', el => el.parentElement.append(el));
+    expect(await settled(page, '[data-tell="eyes"]'), 'a moved tell draws the same pose it had').toBe(before);
   });
 
   test('the core bundle ignores the pointer and taps', async ({ page }) => {
@@ -215,9 +215,9 @@ test.describe('still frames', () => {
   test.beforeEach(({ page }) => open(page, { still: true }));
   test.afterEach(noProblems);
 
-  test('every skin draws in every state', async ({ page }) => {
-    for (const skin of SKINS) {
-      const selector = `[data-skin="${skin}"]`;
+  test('every tell draws in every state', async ({ page }) => {
+    for (const tell of TELLS) {
+      const selector = `[data-tell="${tell}"]`;
       let last = null;
       for (const state of STATES) {
         await page.$eval(
@@ -228,17 +228,17 @@ test.describe('still frames', () => {
           state
         );
         const next = await frame(page, selector);
-        expect((await pixels(page, selector)).alpha, `${skin} draws in ${state}`).toBeGreaterThan(0);
-        if (last) expect(next, `${skin} redraws for ${state}`).not.toBe(last);
+        expect((await pixels(page, selector)).alpha, `${tell} draws in ${state}`).toBeGreaterThan(0);
+        if (last) expect(next, `${tell} redraws for ${state}`).not.toBe(last);
         last = next;
       }
     }
   });
 
   test('reduced motion holds a still pose', async ({ page }) => {
-    const a = await frame(page, '[data-skin="drones"]');
+    const a = await frame(page, '[data-tell="drones"]');
     await twoFrames(page);
-    expect(await frame(page, '[data-skin="drones"]'), 'reduced motion draws the same frame twice').toBe(a);
+    expect(await frame(page, '[data-tell="drones"]'), 'reduced motion draws the same frame twice').toBe(a);
   });
 
   test('default size follows clamp(20px, 1.43em, 48px)', async ({ page }) => {
@@ -255,7 +255,7 @@ test.describe('still frames', () => {
     await page.evaluate(() =>
       document
         .querySelector('.light')
-        .insertAdjacentHTML('beforeend', '<tiny-tell id="forced-dark" skin="drones" scheme="dark"></tiny-tell>')
+        .insertAdjacentHTML('beforeend', '<tiny-tell id="forced-dark" tell="drones" scheme="dark"></tiny-tell>')
     );
     await drawn(page);
     for (const [selector, claim] of [
@@ -299,17 +299,17 @@ test.describe('still frames', () => {
 
   test('the tag is the image instead of its canvas, and :state() follows the state', async ({ page }) => {
     expect(
-      await page.$eval('[data-skin="drones"]', el => {
+      await page.$eval('[data-tell="drones"]', el => {
         const canvas = el.shadowRoot.querySelector('[part="tell"]');
         return [canvas.getAttribute('role'), canvas.getAttribute('aria-hidden')];
       }),
       'the canvas part is hidden and has no role, so the tag carries the name in this engine'
     ).toEqual([null, 'true']);
-    await page.$eval('[data-skin="drones"]', el => {
+    await page.$eval('[data-tell="drones"]', el => {
       el.state = 'error';
     });
     expect(
-      await page.$eval('[data-skin="drones"]', el => el.matches(':state(error)')),
+      await page.$eval('[data-tell="drones"]', el => el.matches(':state(error)')),
       'the state is exposed to :state()'
     ).toBe(true);
   });
@@ -325,19 +325,19 @@ test.describe('still frames', () => {
   });
 
   test('a state set while a tell is detached applies when it comes back', async ({ page }) => {
-    const before = await frame(page, '[data-skin="lens"]');
-    await page.$eval('[data-skin="lens"]', el => {
+    const before = await frame(page, '[data-tell="lens"]');
+    await page.$eval('[data-tell="lens"]', el => {
       el.remove();
       el.state = 'error';
       document.body.append(el);
     });
     await expect
-      .poll(() => page.$eval('[data-skin="lens"]', el => el.matches(':state(error)')), {
+      .poll(() => page.$eval('[data-tell="lens"]', el => el.matches(':state(error)')), {
         message: 'a state set while detached applies on re-add',
       })
       .toBe(true);
     await expect
-      .poll(() => frame(page, '[data-skin="lens"]'), { message: 'and the re-added tell draws the new state' })
+      .poll(() => frame(page, '[data-tell="lens"]'), { message: 'and the re-added tell draws the new state' })
       .not.toBe(before);
   });
 });
@@ -350,7 +350,7 @@ test.describe('high density', () => {
   test('the canvas is square and matches its box at device pixel ratio, even in a table cell (Safari drew it twice as tall)', async ({
     page,
   }) => {
-    for (const selector of ['#sized', '[data-skin="eyes"]', '#inline tiny-tell', '#in-cell tiny-tell']) {
+    for (const selector of ['#sized', '[data-tell="eyes"]', '#inline tiny-tell', '#in-cell tiny-tell']) {
       const { w, h, css, dpr } = await pixels(page, selector);
       expect(dpr, 'the page runs at 2× density').toBe(2);
       expect(w, `${selector} has a square canvas`).toBe(h);
@@ -374,7 +374,7 @@ test.describe('large sizes', () => {
     await page.evaluate(() =>
       document.body.insertAdjacentHTML(
         'beforeend',
-        '<tiny-tell id="big-blot" skin="blot" state="done" label="" style="--tell-size: 164px"></tiny-tell>'
+        '<tiny-tell id="big-blot" tell="blot" state="done" label="" style="--tell-size: 164px"></tiny-tell>'
       )
     );
     await drawn(page);
@@ -401,10 +401,10 @@ test.describe('forced colors', () => {
   test.afterEach(noProblems);
 
   test('forced colors draw in the system text color, not the state color', async ({ page }) => {
-    await page.$eval('[data-skin="drones"]', el => {
+    await page.$eval('[data-tell="drones"]', el => {
       el.state = 'done';
     });
-    const { r, g, b, alpha } = await pixels(page, '[data-skin="drones"]');
+    const { r, g, b, alpha } = await pixels(page, '[data-tell="drones"]');
     expect(alpha, 'the tell still draws').toBeGreaterThan(0);
     expect(Math.max(r, g, b) - Math.min(r, g, b), 'the ink is gray, not the done color').toBeLessThan(20);
   });
@@ -432,7 +432,7 @@ test.describe('Chromium only', () => {
     await page.evaluate(() =>
       document.body.insertAdjacentHTML(
         'beforeend',
-        `<table>${'<tr><td><tiny-tell skin="lens"></tiny-tell> Job</td></tr>'.repeat(300)}</table>`
+        `<table>${'<tr><td><tiny-tell tell="lens"></tiny-tell> Job</td></tr>'.repeat(300)}</table>`
       )
     );
     await drawn(page);
@@ -497,10 +497,10 @@ test.describe('Chromium only', () => {
         .filter(n => !n.ignored && n.role?.value === 'image')
         .map(n => n.name?.value);
     const before = await images();
-    await page.$eval('[data-skin="drones"]', el => {
+    await page.$eval('[data-tell="drones"]', el => {
       el.state = 'error';
     });
-    await page.$eval('[data-skin="lens"]', el => el.setAttribute('aria-label', 'Uploading'));
+    await page.$eval('[data-tell="lens"]', el => el.setAttribute('aria-label', 'Uploading'));
     await twoFrames(page);
     const after = await images();
     const errors = names => names.filter(n => n === 'Error').length;
@@ -512,9 +512,9 @@ test.describe('Chromium only', () => {
     ).toHaveLength(1);
     expect(after, 'an aria-label replaces the name instead of adding a second img').toHaveLength(before.length);
     await page.evaluate(() => {
-      document.querySelector('[data-skin="lens"]').removeAttribute('aria-label');
+      document.querySelector('[data-tell="lens"]').removeAttribute('aria-label');
       document.body.insertAdjacentHTML('beforeend', '<span id="sync-words">Syncing</span>');
-      document.querySelector('[data-skin="dekatron"]').setAttribute('aria-labelledby', 'sync-words');
+      document.querySelector('[data-tell="dekatron"]').setAttribute('aria-labelledby', 'sync-words');
     });
     await twoFrames(page);
     const relabeled = await images();
@@ -552,7 +552,7 @@ test.describe('Chromium only', () => {
       .waitForFunction(() => window.engineChecks, null, { timeout: 110000 })
       .then(h => h.jsonValue());
     expect(flashes, 'every tell × state × scheme was checked for flashing').toHaveLength(
-      SKINS.length * (STATES.length + 1 + 3) * 2 // dance, plus doze's nod, doze, and wake
+      TELLS.length * (STATES.length + 1 + 3) * 2 // dance, plus doze's nod, doze, and wake
     );
     expect(failures, 'no live-area, seam, flash, or ink failures').toEqual([]);
   });
@@ -751,7 +751,7 @@ test.describe('play bundle', () => {
     expect(await page.evaluate(() => window.ended), 'a dance that never started never ends').toBe(false);
   });
 
-  test('dance events: a state or skin change mid-dance ends it with tell-after-dance', async ({ page }) => {
+  test('dance events: a state or tell change mid-dance ends it with tell-after-dance', async ({ page }) => {
     await page.evaluate(() => {
       customElements.get('tiny-tell').timeScale = 0.25;
       window.ended = 0;
@@ -767,8 +767,8 @@ test.describe('play bundle', () => {
     await expect
       .poll(() => hue(page, '#eyes'), { message: 'the second dance starts', timeout: 8000 })
       .toBeGreaterThan(40);
-    await page.$eval('#eyes', el => (el.skin = 'drones'));
-    expect(await page.evaluate(() => window.ended), 'so does a skin change').toBe(2);
+    await page.$eval('#eyes', el => (el.tell = 'drones'));
+    expect(await page.evaluate(() => window.ended), 'so does a tell change').toBe(2);
   });
 
   test('dance events: removing a tell mid-dance ends it with tell-after-dance on the tell', async ({ page }) => {
@@ -915,7 +915,7 @@ test.describe('site pages', () => {
     await expect(tip, 'the first hover opens it, though it was built under the pointer').toHaveJSProperty('open', true);
   });
 
-  test('docs in Core mode keep every example tell out of play, even after a skin change', async ({ page }) => {
+  test('docs in Core mode keep every example tell out of play, even after a tell change', async ({ page }) => {
     await open(page, { path: '/docs/' });
     const playing = () =>
       page.$$eval(
@@ -928,7 +928,7 @@ test.describe('site pages', () => {
       select.value = 'blot';
       select.dispatchEvent(new Event('change', { bubbles: true }));
     });
-    await expect.poll(playing, { message: 'tells rebuilt for the new skin get noplay too' }).toBe(0);
+    await expect.poll(playing, { message: 'tells rebuilt for the new tell get noplay too' }).toBe(0);
     await page.evaluate(() => {
       const picker = document.getElementById('examples-play');
       picker.value = 'play';
@@ -1058,13 +1058,13 @@ test.describe('site pages', () => {
   });
 
   test('docs tells follow the visitor’s chosen tell', async ({ page }) => {
-    await page.addInitScript(() => localStorage.setItem('tells-site-skin', 'eyes'));
+    await page.addInitScript(() => localStorage.setItem('tells-site-tell', 'eyes'));
     await open(page, { path: '/docs/' });
     expect(
       await page.evaluate(() => [
         ...new Set(
           [...document.querySelectorAll('#state-rows tiny-tell, #label-cases tiny-tell, #schemes tiny-tell')].map(
-            tell => tell.skin
+            tell => tell.tell
           )
         ),
       ]),
@@ -1140,7 +1140,7 @@ test.describe('site pages', () => {
     const linkParams = async () => Object.fromEntries(new URL(await link()).searchParams);
 
     await open(page, { path: '/?tell=lens&state=done&size=24&words=Backed%20up%2012%20photos.#drop-one-in' });
-    await expect(code, 'the linked tell').toContainText('skin="lens"');
+    await expect(code, 'the linked tell').toContainText('tell="lens"');
     await expect(code, 'the linked state').toContainText('state="done"');
     await expect(code, 'the linked size').toContainText('--tell-size: 1.5rem');
     await expect(code, 'the linked words').toContainText('Backed up 12 photos.');
@@ -1160,7 +1160,7 @@ test.describe('site pages', () => {
     await open(page, {
       path: '/?tell=nope&state=nope&size=999&words=%3Cimg%20src%3Dx%20onerror%3Dalert(1)%3E#drop-one-in',
     });
-    await expect(code, 'an unknown tell falls back to the default').toContainText('skin="drones"');
+    await expect(code, 'an unknown tell falls back to the default').toContainText('tell="drones"');
     await expect(code, 'an unknown state falls back to working').toContainText('state="working"');
     await expect(code, 'an unknown size falls back to matching the text').not.toContainText('--tell-size');
     await expect(code, 'markup in linked words shows as text').toContainText('&lt;img src=x onerror=alert(1)&gt;');
@@ -1264,7 +1264,7 @@ test.describe('docs without JavaScript', () => {
     );
     await expect(rows('css-part-rows'), 'one row per CSS part in api.json').toHaveCount(API.cssParts.length);
     await expect(rows('custom-state-rows'), 'one custom state per state').toHaveCount(STATES.length);
-    await expect(rows('tell-rows'), 'one row per tell').toHaveCount(SKINS.length);
+    await expect(rows('tell-rows'), 'one row per tell').toHaveCount(TELLS.length);
     await expect(rows('state-rows'), 'one row per state').toHaveCount(STATES.length);
     await expect(page.locator('#label-cases td:last-child'), 'what screen readers hear, per label case').toHaveText([
       `“${LABEL.working}”, an image`,

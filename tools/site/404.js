@@ -19,9 +19,9 @@ const isLit = (col, row) => {
 const wall = $('wall');
 let ripple = [];
 
-/* A skin that differs from the cells to its left and above, so no stripes form. */
-const pick = (skins, i, cols) => {
-  const options = V1.filter(s => s !== skins[i - 1] && s !== skins[i - cols]);
+/* A tell that differs from the cells to its left and above, so no stripes form. */
+const pick = (tells, i, cols) => {
+  const options = V1.filter(s => s !== tells[i - 1] && s !== tells[i - cols]);
   return options[Math.floor(Math.random() * options.length)];
 };
 
@@ -35,11 +35,11 @@ const build = () => {
     top = Math.floor((rows - TALL) / 2);
   wall.parentElement.style.setProperty('--cols', cols);
   wall.parentElement.style.setProperty('--pitch', `${pitch}px`);
-  const skins = [];
+  const tells = [];
   wall.innerHTML = Array.from({ length: cols * rows }, (_, i) => {
-    skins[i] = pick(skins, i, cols);
+    tells[i] = pick(tells, i, cols);
     const lit = isLit((i % cols) - left, Math.floor(i / cols) - top) ? ' data-lit' : '';
-    return `<span class="cell"${lit}>${tag(skins[i], `state="idle" label="" paused${lit ? '' : ' color="current"'}`)}</span>`;
+    return `<span class="cell"${lit}>${tag(tells[i], `state="idle" label="" paused${lit ? '' : ' color="current"'}`)}</span>`;
   }).join('');
   ripple.forEach(clearTimeout);
   ripple = [...wall.querySelectorAll('[data-lit] tiny-tell')].map((el, i) =>

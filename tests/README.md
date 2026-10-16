@@ -54,7 +54,7 @@ Don't repeat a layer's job in another layer.
 - **Freeze time when reading pixels.** Use reduced motion (`still: true` in the spec) so every frame is deterministic.
 - **Assert big differences, not exact values.** "Red beats green by 60," not "pixel 12 is #dc0000." No screenshot comparisons until the visuals stop changing.
 - **Test what motion does, not its curve.** The motion is the product here, so the engine checks do test it: stays in the live area, no seam at the loop, no flashing over 3 a second. They never pin a spring constant or a keyframe value. Those change every time a tell gets tuned.
-- **Fixtures are shared and small.** Add a tag to `tests/fixture.html` before writing a new page. Look tells up by id or `data-skin`, never by position.
+- **Fixtures are shared and small.** Add a tag to `tests/fixture.html` before writing a new page. Look tells up by id or `data-tell`, never by position.
 - **The public-surface test is a tripwire.** If adding API breaks it, update it on purpose.
 - **Run the harder condition once instead of both.** For example, canvas sizing runs at 2× density only, because 1× is the easy case.
 

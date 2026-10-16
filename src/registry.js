@@ -5,4 +5,4 @@ import { BLOT } from './tells/blot.js';
 import { DEKATRON } from './tells/dekatron.js';
 import { LENS } from './tells/lens.js';
 
-export const SKINS = { drones: DRONES, flipdot: FLIPDOT, eyes: EYES, blot: BLOT, dekatron: DEKATRON, lens: LENS };
+export const TELLS = { drones: DRONES, flipdot: FLIPDOT, eyes: EYES, blot: BLOT, dekatron: DEKATRON, lens: LENS };
