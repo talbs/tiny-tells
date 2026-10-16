@@ -437,16 +437,15 @@
       max-inline-size: calc(13 * var(--grid));
     }
   }
-  @media (width >= 1200px) {
+  @media (width >= 1000px) {
     .hero {
-      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+      grid-template-columns: minmax(min-content, 5fr) minmax(0, 7fr);
     }
     .hero-lede {
       max-inline-size: 26ch;
     }
     .hero-facts {
       flex-wrap: nowrap;
-      white-space: nowrap;
     }
   }
   .hero-field {
