@@ -9,6 +9,8 @@ const VERSION = __TINY_TELLS_VERSION__;
 const STILL = { working: 0.9, done: 1.2, error: 1.4, warning: 1, idle: 2 };
 const SCHEMES = ['auto', 'light', 'dark', 'invert'];
 const PROPS = ['skin', 'state', 'color', 'scheme', 'label', 'paused'];
+/* Not Object.keys(STATE_COLOR): the play bundle defines the element, and upgrades tells, before dance.js adds its tone. */
+const TONES = [...STATES, 'dance'];
 const clock = { t: 0, last: 0, scale: 1, raf: 0, live: new Set() };
 const all = new Set();
 const TICK = Symbol('tick');
@@ -61,7 +63,7 @@ const setup = () => {
     return (env = { isInert: true });
   const rootLook = () => {
     const css = getComputedStyle(document.documentElement);
-    return [css.colorScheme, css.color, ...STATES.map(s => css.getPropertyValue(`--tell-color-${s}`))].join();
+    return [css.colorScheme, css.color, ...TONES.map(s => css.getPropertyValue(`--tell-color-${s}`))].join();
   };
   let rootSeen = '',
     isStyleOnly = true;
@@ -107,7 +109,7 @@ const setup = () => {
       .probe { color: ${hasLightDark ? 'light-dark(rgb(0 0 0), rgb(255 255 255))' : 'inherit'}; }
       .palette.is-light { color-scheme: light; }
       .palette.is-dark { color-scheme: dark; }
-      ${STATES.map((s, i) => `.palette span:nth-child(${i + 1}) { color: var(--tell-color-${s}, transparent); }`).join('\n      ')}
+      ${TONES.map((s, i) => `.palette span:nth-child(${i + 1}) { color: var(--tell-color-${s}, transparent); }`).join('\n      ')}
     `);
   env = {
     sheet,
@@ -174,7 +176,7 @@ class TinyTell extends (typeof HTMLElement === 'undefined' ? class {} : HTMLElem
     super();
     const root = this.attachShadow({ mode: 'open' });
     this.#probe.className = 'probe';
-    this.#palettes.forEach(p => p.append(...STATES.map(() => document.createElement('span'))));
+    this.#palettes.forEach(p => p.append(...TONES.map(() => document.createElement('span'))));
     this.#canvas.setAttribute('part', 'tell');
     root.append(this.#probe, ...this.#palettes, this.#canvas);
     try {
@@ -358,7 +360,7 @@ class TinyTell extends (typeof HTMLElement === 'undefined' ? class {} : HTMLElem
       ? getComputedStyle(this.#probe).color === 'rgb(255, 255, 255)'
       : env.dark.matches;
     this.#isDark = scheme === 'dark' || (scheme === 'auto' && isDarkAround) || (scheme === 'invert' && !isDarkAround);
-    const colors = STATES.map((s, i) => [
+    const colors = TONES.map((s, i) => [
       s,
       env.toColor(getComputedStyle(this.#palettes[+this.#isDark].children[i]).color),
     ]).filter(([, c]) => c);
@@ -467,7 +469,9 @@ class TinyTell extends (typeof HTMLElement === 'undefined' ? class {} : HTMLElem
 
   /* The engine reads one shared scheme and palette, so every player call runs inside this tell's own. */
   #within(fn) {
-    withScene({ isDark: this.#isDark, palette: this.#colors, gaze: this.#gaze, ink: this.#ink }, fn);
+    /* A set --tell-color-dance beats color="current" for the dance, but never forced colors. */
+    const ink = this.#danceUntil && this.#colors?.dance && !env.forced.matches ? null : this.#ink;
+    withScene({ isDark: this.#isDark, palette: this.#colors, gaze: this.#gaze, ink }, fn);
   }
 }
 

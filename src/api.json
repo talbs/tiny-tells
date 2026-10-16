@@ -111,7 +111,12 @@
     { "name": "--tell-color-done", "description": "Done color. Any CSS color, including light-dark()." },
     { "name": "--tell-color-error", "description": "Error color. Any CSS color, including light-dark()." },
     { "name": "--tell-color-warning", "description": "Warning color. Any CSS color, including light-dark()." },
-    { "name": "--tell-color-idle", "description": "Idle color. Any CSS color, including light-dark()." }
+    { "name": "--tell-color-idle", "description": "Idle color. Any CSS color, including light-dark()." },
+    {
+      "name": "--tell-color-dance",
+      "bundle": "play",
+      "description": "Dance color. Any CSS color, including light-dark(). Unlike the state colors, it applies even when color is current."
+    }
   ],
   "cssParts": [{ "name": "tell", "description": "The canvas." }]
 }

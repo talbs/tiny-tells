@@ -126,7 +126,7 @@ const manifest = () => {
       })),
     ],
     events: API.events.map(e => ({ name: e.name, type: { text: e.class }, description: note(e) })),
-    cssProperties: API.cssProperties,
+    cssProperties: API.cssProperties.map(p => ({ name: p.name, default: p.default, description: note(p) })),
     cssParts: API.cssParts,
     cssStates: Object.entries(stateValues).map(([name, description]) => ({ name, description })),
   };
@@ -229,7 +229,7 @@ ${list(API.methods, m => `- \`${m.name}()\`${only(m)}: ${m.description}`)}
 
 ## CSS
 
-${list(API.cssProperties, p => `- \`${p.name}\`${p.default != null ? ` (default \`${p.default}\`)` : ''}: ${p.description}`)}
+${list(API.cssProperties, p => `- \`${p.name}\`${only(p)}${p.default != null ? ` (default \`${p.default}\`)` : ''}: ${p.description}`)}
 ${list(API.cssParts, p => `- \`::part(${p.name})\`: ${p.description}`)}
 
 ## Statics
@@ -433,7 +433,7 @@ const docsTables = () => {
     'css-property-rows': API.cssProperties
       .map(
         c =>
-          `<tr><th scope="row"><code>${c.name}</code></th><td>${codeOrDash(c.default)}</td><td>${codeify(c.description)}</td></tr>`
+          `<tr>${nameCell(c.name, bundleTag(c))}<td>${codeOrDash(c.default)}</td><td>${codeify(c.description)}</td></tr>`
       )
       .join(''),
     'css-part-rows': API.cssParts
