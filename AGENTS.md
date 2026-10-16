@@ -2,7 +2,7 @@
 
 - Source of truth is `src/`. `dist/` and `site/` are built by `npm run build` (`tools/build.mjs`) and aren't committed; never edit them by hand.
 - Tests follow `tests/README.md`: necessary, non-brittle, public surface only, no sleeps. Read it before adding or changing a test.
-- Custom properties use the `--tell-` prefix. Palette tokens are `--tell-color-{state}`.
+- Custom properties use the `--tell-` prefix. Palette tokens are `--tell-color-{state}`, plus the play bundle's `--tell-color-dance`.
 - Web Awesome is only for page chrome (proofing, demos). Tiny Tells itself has no dependencies.
 - The site loads Web Awesome as one bundle that `tools/build.mjs` generates from the `wa-*` tags the pages use, so a new tag needs no registration. Build `<wa-*>` markup from literal tags (`<wa-button`, `createElement('wa-button')`) so the scan sees it.
 - Site CSS lives in `tools/site/css/`, one cascade layer per file. `tokens.css` declares the order: Web Awesome's layers, then `tokens`, `base`, `shell`, `components`, and `page` (shared by `landing.css`, `docs.css`, and `404.css`). A later layer wins regardless of specificity; with `!important`, an earlier one wins. The one exception: `base.css` keeps the `h2`, `h3`, and `p` margins in Web Awesome's `wa-base` layer so its utilities still beat them.

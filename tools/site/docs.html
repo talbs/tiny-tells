@@ -733,7 +733,8 @@ words.textContent = 'Synced 3 files.';</code></pre>
         <h2 id="color-title">Color</h2>
         <p>
           Five custom properties, one per state. Set them on <code>:root</code> or any container, with any CSS color,
-          <code>light-dark()</code> included. Skip one and it keeps the built-in color.
+          <code>light-dark()</code> included. Skip one and it keeps the built-in color. The
+          <a href="#play">play bundle</a> adds a sixth for its dance.
         </p>
         <p>
           The rule: 3:1 against the surface behind the tell. The built-in palette clears it in light and dark. Pick a
@@ -1020,6 +1021,11 @@ words.textContent = 'Synced 3 files.';</code></pre>
           Some tells shouldn’t play. A dense table, for one. Give those <code>noplay</code>. They still animate their
           state, but they won’t follow the pointer, dance to taps, or doze. To dance one on cue, call
           <code>tell.dance()</code>. It works on <code>noplay</code> tells too.
+        </p>
+        <p>
+          The dance draws in sky blue. Set <code>--tell-color-dance</code> to change it, with any CSS color,
+          <code>light-dark()</code> included. It also wins over <code>color="current"</code>, so a tell that matches its
+          text can still dance in color.
         </p>
         <figure class="example wa-not-prose">
           <div class="example-preview studio wa-grid wa-gap-l compare">

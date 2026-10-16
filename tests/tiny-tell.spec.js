@@ -64,15 +64,21 @@ const open = async (page, { still = false, forced = false, path = '/tests/fixtur
   await drawn(page);
 };
 
-const hue = (page, selector) =>
-  page.$eval(selector, el => {
-    const cv = el.shadowRoot.querySelector('[part="tell"]'),
-      d = cv.getContext('2d').getImageData(0, 0, cv.width, cv.height).data;
-    let most = -255;
-    for (let i = 0; i < d.length; i += 4)
-      if (d[i + 3] > 200) most = Math.max(most, d[i + 2] - Math.max(d[i], d[i + 1]));
-    return most;
-  });
+const RED = 0,
+  BLUE = 2;
+const hue = (page, selector, ch = BLUE) =>
+  page.$eval(
+    selector,
+    (el, ch) => {
+      const cv = el.shadowRoot.querySelector('[part="tell"]'),
+        d = cv.getContext('2d').getImageData(0, 0, cv.width, cv.height).data;
+      let most = -255;
+      for (let i = 0; i < d.length; i += 4)
+        if (d[i + 3] > 200) most = Math.max(most, d[i + ch] - Math.max(d[i + ((ch + 1) % 3)], d[i + ((ch + 2) % 3)]));
+      return most;
+    },
+    ch
+  );
 const center = async (page, selector) => {
   const box = await page.locator(selector).boundingBox();
   return [box.x + box.width / 2, box.y + box.height / 2];
@@ -646,6 +652,17 @@ test.describe('play bundle', () => {
       { type: 'tell-dance', bubbles: true, composed: true, cancelable: true, id: 'eyes' },
       { type: 'tell-after-dance', bubbles: true, composed: true, cancelable: false, id: 'eyes' },
     ]);
+  });
+
+  test('--tell-color-dance recolors the dance in both color modes', async ({ page }) => {
+    await page.evaluate(() => (customElements.get('tiny-tell').timeScale = 4));
+    for (const id of ['#dance-state', '#dance-current']) {
+      expect(await hue(page, id, RED), `${id} starts without red`).toBeLessThan(20);
+      expect(await page.$eval(id, el => el.dance()), `${id} dances`).toBe(true);
+      await expect
+        .poll(() => hue(page, id, RED), { message: `${id} dances in --tell-color-dance`, timeout: 3000 })
+        .toBeGreaterThan(60);
+    }
   });
 
   test('doze: an idle tell left alone nods off, wakes when the pointer comes back, and never covers a real state', async ({
