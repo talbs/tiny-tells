@@ -84,7 +84,7 @@ $('pause').addEventListener('click', () => {
   holdAll(document);
   const [pause, play] = $('pause').querySelectorAll('wa-icon');
   pause.label = page.isPaused ? '' : 'Pause All Motion';
-  play.label = page.isPaused ? 'Play All Motion' : '';
+  play.label = page.isPaused ? 'Resume All Motion' : '';
   document.documentElement.classList.toggle('is-paused', page.isPaused);
   emit('pause');
 });

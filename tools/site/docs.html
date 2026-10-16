@@ -158,7 +158,7 @@
       <a href="#project">Project</a>
     </div>
     <div class="wa-stack wa-gap-0">
-      <p class="label">Extras</p>
+      <p class="label">Just for Fun</p>
       <a href="#funsies">Funsies</a>
     </div>
   </nav>
@@ -482,7 +482,7 @@ words.textContent = 'Synced 3 files.';</code></pre>
         </ul>
         <h3 id="labels">Labels</h3>
         <p>
-          Screen readers announce a tell as an image named after its state, like “Working”. Set <code>label</code> to be
+          Screen readers read a tell as an image named after its state, like “Working”. Set <code>label</code> to be
           more specific. Set <code>label=""</code> to hide the tell when the words beside it already say the state.
         </p>
         <wa-callout
@@ -624,7 +624,7 @@ words.textContent = 'Synced 3 files.';</code></pre>
   let isPaused = false;
   document.getElementById('pause-tells').addEventListener('click', event =&gt; {
     isPaused = !isPaused;
-    event.currentTarget.textContent = isPaused ? 'Play animations' : 'Pause animations';
+    event.currentTarget.textContent = isPaused ? 'Resume animations' : 'Pause animations';
     document.querySelectorAll('tiny-tell').forEach(tell =&gt; (tell.paused = isPaused));
   });
 &lt;/script&gt;</code></pre>
@@ -843,7 +843,7 @@ words.textContent = 'Synced 3 files.';</code></pre>
                   data-follow
                 ></tiny-tell
               ></span>
-              <p class="wa-caption-s"><code>color="current"</code>: follows the text</p>
+              <p class="wa-caption-s"><code>color="current"</code>: matches the text</p>
             </div>
           </div>
           <pre data-copy><code class="language-html">&lt;tiny-tell&gt;&lt;/tiny-tell&gt;
@@ -1020,7 +1020,7 @@ words.textContent = 'Synced 3 files.';</code></pre>
         </p>
         <p>
           Some tells shouldn’t play. A dense table, for one. Give those <code>noplay</code>. They still animate their
-          state, but they won’t follow the pointer, dance to taps, or doze. To dance one on cue, call
+          state, but they won’t glance at the pointer, dance to taps, or doze. To dance one on cue, call
           <code>tell.dance()</code>. It works on <code>noplay</code> tells too.
         </p>
         <p>
@@ -1133,8 +1133,8 @@ words.textContent = 'Synced 3 files.';</code></pre>
           <li>
             <strong><a href="https://custom-elements-manifest.open-wc.org/">Custom Elements Manifest</a>:</strong>
             <code>dist/custom-elements.json</code> describes the element to anything that reads the format: Storybook,
-            docs generators, coding agents. The package’s <code>customElements</code> field points to it, so most tools
-            find it on their own.
+            docs generators, coding assistants. The package’s <code>customElements</code> field points to it, so most
+            tools find it on their own.
           </li>
           <li>
             <strong>VS Code:</strong> add the custom data file to <code>html.customData</code> for attribute
@@ -1778,7 +1778,7 @@ tell.addEventListener('tell-after-dance', () => {
             variant="regular"
             name="thumbtack"
           ></wa-icon>
-          <strong>Two extras need newer browsers.</strong>
+          <strong>Two features need newer browsers.</strong>
           <span
             ><code>:state()</code> selectors need Chrome 125, Firefox 126, or Safari 17.4. Before that, match the
             <code>state</code> attribute instead. <code>scheme="auto"</code> follows a container’s

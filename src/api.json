@@ -19,7 +19,7 @@
     {
       "name": "state",
       "default": "working",
-      "description": "What the tell is reporting. Changing it plays a handoff into the new state.",
+      "description": "What the tell is reporting. Changing it hands off into the new state.",
       "values": {
         "working": "Busy and making progress.",
         "done": "Finished, and it worked.",
@@ -66,7 +66,7 @@
       "default": false,
       "bundle": "play",
       "property": false,
-      "description": "Turns play off for this tell. It won’t follow the pointer, dance to five taps, or doze, but it still animates its state. Set it in markup or with toggleAttribute('noplay')."
+      "description": "Turns play off for this tell. It won’t glance at the pointer, dance to five taps, or doze, but it still animates its state. Set it in markup or with toggleAttribute('noplay')."
     }
   ],
   "methods": [
@@ -90,7 +90,7 @@
       "class": "TellAfterDanceEvent",
       "bundle": "play",
       "cancelable": false,
-      "description": "Fires when a dance ends, or when a state change, tell change, or removing the tell cuts it short. A removed tell is off the page, so only listeners on the tell itself hear that one."
+      "description": "Fires when a dance ends, or when a state change, a switch to another tell, or removing it cuts it short. A removed tell is off the page, so only listeners on the tell itself hear that one."
     }
   ],
   "statics": [
@@ -115,7 +115,7 @@
     {
       "name": "--tell-color-dance",
       "bundle": "play",
-      "description": "Dance color. Any CSS color, including light-dark(). Unlike the state colors, it applies even when color is current."
+      "description": "Dance color. Any CSS color, including light-dark(). Unlike the state colors, it applies even with color=\"current\"."
     }
   ],
   "cssParts": [{ "name": "tell", "description": "The canvas." }]

@@ -18,7 +18,7 @@ const syncMotion = () => {
   $('funsies-still').hidden = !isOff;
   $('funsies-still-why').textContent = reducedMotion.matches
     ? 'Your system asks for reduced motion, so these stay still.'
-    : 'Press play in the header to try these.';
+    : 'Use Resume All Motion in the header to try these.';
   buttons.forEach(button => (button.disabled = isOff));
 };
 syncMotion();
