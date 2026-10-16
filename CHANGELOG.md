@@ -2,6 +2,12 @@
 
 Each release groups its changes under Added, Changed, Deprecated, Removed, Fixed, and Security. A breaking change is marked **Breaking** and listed first.
 
+## 0.4.0 · 2026-10-15
+
+### Added
+
+- `--tell-color-dance`, in the play bundle. Sets the color the dance draws in, with any CSS color, `light-dark()` included. Unlike the state colors, it also applies with `color="current"`. Leave it unset and the dance stays sky blue.
+
 ## 0.3.0 · 2026-10-14
 
 ### Added
