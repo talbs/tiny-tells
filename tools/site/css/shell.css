@@ -89,6 +89,11 @@
     -webkit-backdrop-filter: blur(12px) saturate(1.4);
     backdrop-filter: blur(12px) saturate(1.4);
   }
+  /* The header turns see-through once scrolled, so its buttons hover with a tint instead of a solid --field chip. */
+  [slot='header'],
+  .nav-toggle {
+    --control-hover: var(--control-hover-sheer);
+  }
   wa-page::part(footer) {
     border-block-start: var(--wa-border-width-s) solid var(--line);
   }
