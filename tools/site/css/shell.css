@@ -1,4 +1,8 @@
 @layer shell {
+  /* The html scroll padding already clears the header, so wa-page's scroll margin drops its own copy of the header height. */
+  wa-page {
+    --scroll-margin-top: 0.5em;
+  }
   wa-page > main {
     padding: 0;
   }

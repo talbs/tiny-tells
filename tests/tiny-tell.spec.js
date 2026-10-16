@@ -1175,11 +1175,15 @@ test.describe('docs links', () => {
       const header = document
         .querySelector('wa-page')
         .shadowRoot.querySelector('[part~="header"]')
-        .getBoundingClientRect();
+        .getBoundingClientRect()
+        .toJSON();
       target.scrollIntoView({ behavior: 'instant' });
-      return { landed, header: header.bottom, settled: target.getBoundingClientRect().top };
+      return { landed, header, settled: target.getBoundingClientRect().top };
     });
-    expect(landed, 'the section is not under the header').toBeGreaterThanOrEqual(header - 1);
+    expect(landed, 'the section is not under the header').toBeGreaterThanOrEqual(header.bottom - 1);
+    expect(landed - header.bottom, 'the gap under the header doesn’t count the header twice').toBeLessThan(
+      header.height
+    );
     expect(Math.abs(landed - settled), 'the page opened where the section scrolls to').toBeLessThan(2);
   });
 });
