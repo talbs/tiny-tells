@@ -477,6 +477,7 @@ const tipText = el =>
 const addTooltip = el => {
   const tip = document.createElement('wa-tooltip');
   tip.setAttribute('for', el.id);
+  if (el.dataset.tipPlacement) tip.placement = el.dataset.tipPlacement;
   const sync = () => (tip.textContent = tipText(el) ?? '');
   sync();
   new MutationObserver(sync).observe(el, { subtree: true, attributes: true });
