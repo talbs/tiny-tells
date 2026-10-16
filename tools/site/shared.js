@@ -549,14 +549,20 @@ const frame = () => new Promise(resolve => requestAnimationFrame(() => requestAn
 /* Components that load later can shift a #hash target, so it's scrolled to again then, unless the reader has scrolled away. */
 const reveal = async () => {
   const target = location.hash ? document.getElementById(location.hash.slice(1)) : null;
+  /* Firefox's scroll anchoring moves scrollY as components resize, so only the reader's own input counts as scrolling away. */
+  let hasReaderScrolled = false;
+  const input = new AbortController();
+  ['wheel', 'touchmove', 'pointerdown', 'keydown'].forEach(type =>
+    addEventListener(type, () => (hasReaderScrolled = true), { passive: true, signal: input.signal })
+  );
   await frame();
   target?.scrollIntoView({ behavior: 'instant' });
-  const top = scrollY;
   /* Every element, not just wa-*, or a late undefined one would cloak the page again. Like Web Awesome's own loader, it gives up after 2 s. */
   const defined = import(waBundle).then(wa => wa.allDefined({ match: () => true }));
   await Promise.race([defined, new Promise(resolve => setTimeout(resolve, 2000))]).catch(() => {});
   await frame();
-  if (scrollY === top) target?.scrollIntoView({ behavior: 'instant' });
+  input.abort();
+  if (!hasReaderScrolled) target?.scrollIntoView({ behavior: 'instant' });
   delete document.documentElement.dataset.upgrading;
   document.body.classList.remove('wa-cloak');
 };
