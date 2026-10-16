@@ -2,6 +2,12 @@
 
 Each release groups its changes under Added, Changed, Deprecated, Removed, Fixed, and Security. A breaking change is marked **Breaking** and listed first.
 
+## 0.5.0 · 2026-10-16
+
+### Changed
+
+- **Breaking:** The attribute that picks a character is `tell`, not `skin`: `<tiny-tell tell="eyes">`. The `.skin` property is `.tell`, the console warning says "unknown tell", and the TypeScript type `TellSkin` is `TellName`. There’s no alias, so a leftover `skin="…"` draws Drones with no warning. Everything else already called it a tell.
+
 ## 0.4.0 · 2026-10-15
 
 ### Added
