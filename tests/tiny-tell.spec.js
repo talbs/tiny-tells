@@ -932,6 +932,16 @@ test.describe('site pages', () => {
     }
   });
 
+  test('?stats=off opts the browser out of Umami, and ?stats=on puts it back', async ({ page }) => {
+    const flag = () => page.evaluate(() => localStorage.getItem('umami.disabled'));
+    await open(page, { path: '/docs/?stats=off#stats' });
+    await page.waitForURL(/\/docs\/#stats$/);
+    expect(await flag(), 'off sets the key Umami checks before every send, and drops the param').toBe('1');
+    await open(page, { path: '/?stats=on' });
+    await page.waitForURL(url => url.search === '');
+    expect(await flag(), 'on clears it again').toBeNull();
+  });
+
   test('the wordmark reports the load in the state color on light, and keeps its dot in ink on dark', async ({
     page,
   }) => {
