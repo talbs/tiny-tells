@@ -466,18 +466,25 @@ test.describe('Chromium only', () => {
 
   test('a script writing to <html> every frame doesn’t make every tell re-read its colors', async ({ page }) => {
     await open(page);
-    const reads = await page.evaluate(async () => {
+    const { reads, frames } = await page.evaluate(async () => {
+      /* Every tell re-reads its colors a second after its last look. Start all of them fresh, then stay well inside that second: a slow runner's 60 frames can take longer. */
+      document.documentElement.setAttribute('data-fresh', '');
+      await new Promise(r => requestAnimationFrame(r));
+      await new Promise(r => requestAnimationFrame(r));
       const read = window.getComputedStyle;
-      let count = 0;
+      let count = 0,
+        frames = 0;
       window.getComputedStyle = (...args) => (count++, read(...args));
-      for (let i = 0; i < 60; i++) {
-        document.documentElement.style.setProperty('--scroll', String(i));
+      const t0 = performance.now();
+      while (frames < 60 && performance.now() - t0 < 600) {
+        document.documentElement.style.setProperty('--scroll', String(frames++));
         await new Promise(r => requestAnimationFrame(r));
       }
       window.getComputedStyle = read;
-      return count;
+      return { reads: count, frames };
     });
-    expect(reads, '60 frames of <html> writes cost a few reads a frame, not a pass over every tell').toBeLessThan(300);
+    expect(frames, 'enough frames ran to measure').toBeGreaterThan(9);
+    expect(reads, '<html> writes cost a few reads a frame, not a pass over every tell').toBeLessThan(5 * frames);
   });
 
   test('the tell is one img named by its state, its label, or an aria-label on the tag; an empty label hides it', async ({
