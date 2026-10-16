@@ -1,21 +1,21 @@
-/* A player per skin. On a handoff it springs from current position and velocity into the next state, with anticipation, staggered starts, and an arc. */
+/* A player per tell. On a handoff it springs from current position and velocity into the next state, with anticipation, staggered starts, and an arc. */
 import { BEAT, E, PERIOD, PHYS, bell, ink, labMix, mod, seg, springOff, tone } from './core.js';
-import { SKINS } from './registry.js';
+import { TELLS } from './registry.js';
 
 /* A wrapped key (dekatron's k) crosses its wrap point as a small step, not a jump back around the ring. */
 const unwrap = (sk, k, d) => (sk.wrap?.[k] ? mod(d + sk.wrap[k] / 2, sk.wrap[k]) - sk.wrap[k] / 2 : d);
 
 export class EPlayer {
-  constructor(skin, id = 'working') {
-    Object.assign(this, { skin, id, t0: 0, off: null, from: null });
+  constructor(tell, id = 'working') {
+    Object.assign(this, { tell, id, t0: 0, off: null, from: null });
   }
   base(id, tau) {
-    return SKINS[this.skin].states[id](mod(tau, PERIOD[id]));
+    return TELLS[this.tell].states[id](mod(tau, PERIOD[id]));
   }
   now(T) {
     const tau = T - this.t0,
       st = this.base(this.id, tau),
-      sk = SKINS[this.skin];
+      sk = TELLS[this.tell];
     const from = this.from,
       k = from ? E.inOut(seg(tau, 0, BEAT)) : 1,
       color = from ? labMix(from.color, tone(this.id), k) : tone(this.id);
@@ -51,7 +51,7 @@ export class EPlayer {
   set(id, T) {
     if (id === this.id) return;
     const dt = 0.016,
-      sk = SKINS[this.skin],
+      sk = TELLS[this.tell],
       a = this.now(T),
       b = this.now(T - dt),
       tg0 = this.base(id, 0).ents,
@@ -70,7 +70,7 @@ export class EPlayer {
     this.t0 = T;
   }
   draw(cv, T) {
-    const sk = SKINS[this.skin],
+    const sk = TELLS[this.tell],
       s = this.now(T),
       s2 = sk.hasVel && this.now(T + 0.012),
       vel =
@@ -79,4 +79,4 @@ export class EPlayer {
     sk.render(cv, s, ink || s.color, vel);
   }
 }
-export const playerFor = (skin, id, t0 = 0) => Object.assign(SKINS[skin].player?.(id) || new EPlayer(skin, id), { t0 });
+export const playerFor = (tell, id, t0 = 0) => Object.assign(TELLS[tell].player?.(id) || new EPlayer(tell, id), { t0 });

@@ -115,9 +115,9 @@
     </div>
     <p class="wa-body-l">
       Tiny Tells is one custom element, <code>&lt;tiny-tell&gt;</code>. It shows what your app is doing with a small
-      animated character instead of a spinner. Pick one of <a href="#tells">six tells</a> with <code>skin</code> and one
-      of <a href="#states">five states</a> with <code>state</code>. Change the state and the tell
-      <a href="#handoffs">springs into the new one</a>.
+      animated character instead of a spinner. Pick one of <a href="#tells">six tells</a> with the
+      <code>tell</code> attribute and one of <a href="#states">five states</a> with <code>state</code>. Change the state
+      and the tell <a href="#handoffs">springs into the new one</a>.
     </p>
   </section>
   <nav
@@ -262,7 +262,7 @@
           <div class="example-preview studio wa-cluster">
             <p>
               <tiny-tell
-                skin="dekatron"
+                tell="dekatron"
                 data-follow
                 state="working"
                 label=""
@@ -272,9 +272,9 @@
           </div>
           <pre data-copy><code
             class="language-html"
-            data-skin-code
+            data-tell-code
           >&lt;p&gt;
-  &lt;tiny-tell skin="dekatron" state="working" label=""&gt;&lt;/tiny-tell&gt;
+  &lt;tiny-tell tell="dekatron" state="working" label=""&gt;&lt;/tiny-tell&gt;
   &lt;span role="status"&gt;Syncing 3 files…&lt;/span&gt;
 &lt;/p&gt;</code></pre>
         </figure>
@@ -285,7 +285,7 @@
             <p>
               <tiny-tell
                 id="start-tell"
-                skin="dekatron"
+                tell="dekatron"
                 data-follow
                 state="working"
                 label=""
@@ -352,7 +352,7 @@ words.textContent = 'Synced 3 files.';</code></pre>
       >
         <h2 id="tells-title">Tells</h2>
         <p>
-          Pick one with <code>skin</code>. They all say the same five things. What differs is the personality, so pick
+          Pick one with <code>tell</code>. They all say the same five things. What differs is the personality, so pick
           the one that fits your product. A typo logs a warning and gets you Drones.
         </p>
         <wa-scroller orientation="horizontal"
@@ -360,7 +360,7 @@ words.textContent = 'Synced 3 files.';</code></pre>
             <thead>
               <tr>
                 <th scope="col"><span class="wa-visually-hidden">Tell</span></th>
-                <th scope="col"><code>skin</code></th>
+                <th scope="col"><code>tell</code></th>
                 <th scope="col">Who It Is</th>
               </tr>
             </thead>
@@ -517,7 +517,7 @@ words.textContent = 'Synced 3 files.';</code></pre>
                 <tr>
                   <td>
                     <tiny-tell
-                      skin="drones"
+                      tell="drones"
                       data-follow
                     ></tiny-tell>
                   </td>
@@ -527,7 +527,7 @@ words.textContent = 'Synced 3 files.';</code></pre>
                 <tr>
                   <td>
                     <tiny-tell
-                      skin="drones"
+                      tell="drones"
                       data-follow
                       label="Uploading photos"
                     ></tiny-tell>
@@ -538,7 +538,7 @@ words.textContent = 'Synced 3 files.';</code></pre>
                 <tr>
                   <td>
                     <tiny-tell
-                      skin="drones"
+                      tell="drones"
                       data-follow
                       label=""
                     ></tiny-tell>
@@ -559,7 +559,7 @@ words.textContent = 'Synced 3 files.';</code></pre>
           <div class="example-preview studio wa-stack wa-gap-l is-centered">
             <tiny-tell
               id="paused-tell"
-              skin="blot"
+              tell="blot"
               data-follow
             ></tiny-tell>
             <wa-switch
@@ -828,7 +828,7 @@ words.textContent = 'Synced 3 files.';</code></pre>
               <span class="ink-demo wa-font-weight-semibold"
                 >Syncing
                 <tiny-tell
-                  skin="drones"
+                  tell="drones"
                   data-follow
                 ></tiny-tell
               ></span>
@@ -838,7 +838,7 @@ words.textContent = 'Synced 3 files.';</code></pre>
               <span class="ink-demo is-tinted wa-font-weight-semibold"
                 >Syncing
                 <tiny-tell
-                  skin="drones"
+                  tell="drones"
                   color="current"
                   data-follow
                 ></tiny-tell
@@ -867,7 +867,7 @@ words.textContent = 'Synced 3 files.';</code></pre>
               <div class="wa-cluster wa-gap-m">
                 <figure class="wa-stack wa-gap-2xs wa-align-items-center">
                   <tiny-tell
-                    skin="drones"
+                    tell="drones"
                     scheme="auto"
                     data-follow
                   ></tiny-tell>
@@ -875,7 +875,7 @@ words.textContent = 'Synced 3 files.';</code></pre>
                 </figure>
                 <figure class="wa-stack wa-gap-2xs wa-align-items-center">
                   <tiny-tell
-                    skin="drones"
+                    tell="drones"
                     scheme="light"
                     data-follow
                   ></tiny-tell>
@@ -883,7 +883,7 @@ words.textContent = 'Synced 3 files.';</code></pre>
                 </figure>
                 <figure class="wa-stack wa-gap-2xs wa-align-items-center">
                   <tiny-tell
-                    skin="drones"
+                    tell="drones"
                     scheme="dark"
                     data-follow
                   ></tiny-tell>
@@ -891,7 +891,7 @@ words.textContent = 'Synced 3 files.';</code></pre>
                 </figure>
                 <figure class="wa-stack wa-gap-2xs wa-align-items-center">
                   <tiny-tell
-                    skin="drones"
+                    tell="drones"
                     scheme="invert"
                     data-follow
                   ></tiny-tell>
@@ -904,7 +904,7 @@ words.textContent = 'Synced 3 files.';</code></pre>
               <div class="wa-cluster wa-gap-m">
                 <figure class="wa-stack wa-gap-2xs wa-align-items-center">
                   <tiny-tell
-                    skin="drones"
+                    tell="drones"
                     scheme="auto"
                     data-follow
                   ></tiny-tell>
@@ -912,7 +912,7 @@ words.textContent = 'Synced 3 files.';</code></pre>
                 </figure>
                 <figure class="wa-stack wa-gap-2xs wa-align-items-center">
                   <tiny-tell
-                    skin="drones"
+                    tell="drones"
                     scheme="light"
                     data-follow
                   ></tiny-tell>
@@ -920,7 +920,7 @@ words.textContent = 'Synced 3 files.';</code></pre>
                 </figure>
                 <figure class="wa-stack wa-gap-2xs wa-align-items-center">
                   <tiny-tell
-                    skin="drones"
+                    tell="drones"
                     scheme="dark"
                     data-follow
                   ></tiny-tell>
@@ -928,7 +928,7 @@ words.textContent = 'Synced 3 files.';</code></pre>
                 </figure>
                 <figure class="wa-stack wa-gap-2xs wa-align-items-center">
                   <tiny-tell
-                    skin="drones"
+                    tell="drones"
                     scheme="invert"
                     data-follow
                   ></tiny-tell>
@@ -1033,7 +1033,7 @@ words.textContent = 'Synced 3 files.';</code></pre>
             <div class="wa-stack wa-gap-s wa-align-items-center">
               <tiny-tell
                 class="is-core"
-                skin="eyes"
+                tell="eyes"
                 data-follow
               ></tiny-tell>
               <p class="wa-caption-s">Core: keeps to itself</p>
@@ -1041,7 +1041,7 @@ words.textContent = 'Synced 3 files.';</code></pre>
             <div class="wa-stack wa-gap-s wa-align-items-center">
               <tiny-tell
                 id="play-tell"
-                skin="eyes"
+                tell="eyes"
                 data-follow
               ></tiny-tell>
               <p class="wa-caption-s">Play: looks your way</p>
@@ -1125,7 +1125,7 @@ words.textContent = 'Synced 3 files.';</code></pre>
         <ul>
           <li>
             <strong>TypeScript:</strong> <code>dist/tiny-tells.d.ts</code> types the element and exports
-            <code>TinyTell</code>, <code>TinyTellAttributes</code>, <code>TellSkin</code>, <code>TellState</code>,
+            <code>TinyTell</code>, <code>TinyTellAttributes</code>, <code>TellName</code>, <code>TellState</code>,
             <code>TellColor</code>, and <code>TellScheme</code>. The play bundle’s types add
             <code>TellDanceEvent</code>, <code>TellAfterDanceEvent</code>, and the <a href="#events">dance events</a> on
             <code>addEventListener</code>.
@@ -1211,7 +1211,7 @@ declare module 'react' {
               <tiny-tell
                 slot="start"
                 id="wa-save-tell"
-                skin="eyes"
+                tell="eyes"
                 data-follow
                 state="idle"
                 color="current"
@@ -1220,8 +1220,8 @@ declare module 'react' {
               <span id="wa-save-label">Save</span>
             </wa-button>
           </div>
-          <pre data-copy><code class="language-html" data-skin-code>&lt;wa-button variant="brand"&gt;
-  &lt;tiny-tell slot="start" skin="eyes" state="idle" color="current" label=""&gt;&lt;/tiny-tell&gt;
+          <pre data-copy><code class="language-html" data-tell-code>&lt;wa-button variant="brand"&gt;
+  &lt;tiny-tell slot="start" tell="eyes" state="idle" color="current" label=""&gt;&lt;/tiny-tell&gt;
   Save
 &lt;/wa-button&gt;</code></pre>
         </figure>
@@ -1239,7 +1239,7 @@ button.addEventListener('click', async () => {
             <wa-callout variant="warning">
               <tiny-tell
                 slot="icon"
-                skin="eyes"
+                tell="eyes"
                 data-follow
                 state="warning"
                 color="current"
@@ -1248,8 +1248,8 @@ button.addEventListener('click', async () => {
               Two copies of this file changed. Pick the one to keep.
             </wa-callout>
           </div>
-          <pre data-copy><code class="language-html" data-skin-code>&lt;wa-callout variant="warning"&gt;
-  &lt;tiny-tell slot="icon" skin="eyes" state="warning" color="current" label=""&gt;&lt;/tiny-tell&gt;
+          <pre data-copy><code class="language-html" data-tell-code>&lt;wa-callout variant="warning"&gt;
+  &lt;tiny-tell slot="icon" tell="eyes" state="warning" color="current" label=""&gt;&lt;/tiny-tell&gt;
   Two copies of this file changed. Pick the one to keep.
 &lt;/wa-callout&gt;</code></pre>
         </figure>
@@ -1258,7 +1258,7 @@ button.addEventListener('click', async () => {
           <div class="example-preview studio wa-cluster wa-gap-m">
             <wa-tag>
               <tiny-tell
-                skin="eyes"
+                tell="eyes"
                 data-follow
                 state="idle"
                 color="current"
@@ -1267,8 +1267,8 @@ button.addEventListener('click', async () => {
               Queued
             </wa-tag>
           </div>
-          <pre data-copy><code class="language-html" data-skin-code>&lt;wa-tag&gt;
-  &lt;tiny-tell skin="eyes" state="idle" color="current" label=""&gt;&lt;/tiny-tell&gt;
+          <pre data-copy><code class="language-html" data-tell-code>&lt;wa-tag&gt;
+  &lt;tiny-tell tell="eyes" state="idle" color="current" label=""&gt;&lt;/tiny-tell&gt;
   Queued
 &lt;/wa-tag&gt;</code></pre>
         </figure>
@@ -1574,7 +1574,7 @@ tiny-tell:not(:defined)[state="warning"]::before { content: "!"; }</code></pre>
         <h3 id="attributes">Attributes and Properties</h3>
         <p>
           Every attribute except <code>noplay</code> is also a property (<code>tell.state = 'error'</code>). Unknown
-          values fall back to the default. An unknown skin or state logs a warning too.
+          values fall back to the default. An unknown tell or state logs a warning too.
         </p>
         <wa-scroller orientation="horizontal"
           ><table>
@@ -1671,7 +1671,7 @@ tiny-tell:not(:defined)[state="warning"]::before { content: "!"; }</code></pre>
           <div class="example-preview studio wa-stack wa-gap-s wa-align-items-center is-centered">
             <tiny-tell
               id="events-tell"
-              skin="eyes"
+              tell="eyes"
               data-follow
             ></tiny-tell>
             <p

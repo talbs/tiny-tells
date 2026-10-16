@@ -56,9 +56,9 @@ describe('the public surface matches custom-elements.json', () => {
         assert.equal(el[name], value, `${name}="${value}" reads back from the property`);
         assert.equal(el.getAttribute(name), value, `${name}="${value}" reflects to the attribute`);
       }
-    for (const value of valuesOf('skin')) {
-      el.skin = value;
-      assert.equal(el.getAttribute('skin'), value, `skin="${value}" reflects to the attribute`);
+    for (const value of valuesOf('tell')) {
+      el.tell = value;
+      assert.equal(el.getAttribute('tell'), value, `tell="${value}" reflects to the attribute`);
     }
     el.label = 'Uploading photos';
     assert.equal(el.getAttribute('label'), 'Uploading photos', 'label reflects to the attribute');
@@ -70,7 +70,7 @@ describe('the public surface matches custom-elements.json', () => {
 
   test('unknown, null, and undefined values read back as the default', () => {
     const el = document.createElement('tiny-tell');
-    for (const name of ['skin', 'state', 'color', 'scheme']) {
+    for (const name of ['tell', 'state', 'color', 'scheme']) {
       const fallback = JSON.parse(ATTR[name].default);
       el[name] = 'nope';
       assert.equal(el[name], fallback, `an unknown ${name} reads back as "${fallback}"`);

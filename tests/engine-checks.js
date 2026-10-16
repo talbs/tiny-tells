@@ -1,7 +1,7 @@
 import '../src/dance.js';
 import { DOZE_CLIPS, LEN } from '../src/doze.js';
 import { playerFor } from '../src/players.js';
-import { SKINS } from '../src/registry.js';
+import { TELLS } from '../src/registry.js';
 import { PERIOD, PI, STATES, linear, withScene } from '../src/core.js';
 
 const INSET = 0.08,
@@ -13,9 +13,9 @@ const INSET = 0.08,
   LENS_INK = [0.2, 0.02, 260],
   INK_ALPHA = 25,
   INK_LIFT = 30;
-const draw = (cv, skin, id, t, scene) =>
+const draw = (cv, tell, id, t, scene) =>
   withScene(scene, () => {
-    playerFor(skin, id).draw(cv, t);
+    playerFor(tell, id).draw(cv, t);
     return cv.getContext('2d').getImageData(0, 0, cv.width, cv.height).data;
   });
 const LIN = Float64Array.from({ length: 256 }, (_, c) => linear(c));
@@ -51,7 +51,7 @@ export const runEngineChecks = () => {
   if (fade > 1) failures.push(`flash detector: a 0.5 Hz fade counts as ${fade} flashes a second`);
   for (const dark of [false, true]) {
     const still = { isDark: dark, palette: null, gaze: null };
-    for (const skin of Object.keys(SKINS))
+    for (const tell of Object.keys(TELLS))
       for (const id of [...STATES, ...(PERIOD.dance ? ['dance'] : []), ...DOZE_CLIPS]) {
         for (const px of [20, 48]) {
           const cv = document.createElement('canvas'),
@@ -63,7 +63,7 @@ export const runEngineChecks = () => {
             right = 0;
           for (let t = 0.05, n = 0; t < PERIOD[id]; t += 0.1, n++) {
             const gaze = n % 2 ? { x: Math.cos((n * PI) / 4), y: Math.sin((n * PI) / 4) } : null;
-            const d = draw(cv, skin, id, t, { ...still, gaze });
+            const d = draw(cv, tell, id, t, { ...still, gaze });
             for (let y = 0; y < W; y++)
               for (let x = 0; x < W; x++)
                 if (d[(y * W + x) * 4 + 3] > 13) {
@@ -76,7 +76,7 @@ export const runEngineChecks = () => {
           const slack = 1 / W;
           if (top < INSET - slack || left < INSET - slack || bottom > 1 - INSET + slack || right > 1 - INSET + slack)
             failures.push(
-              `live area: ${skin} ${id} ${px}px ${dark ? 'dark' : 'light'} spans ${top.toFixed(2)}–${bottom.toFixed(2)} × ${left.toFixed(2)}–${right.toFixed(2)}`
+              `live area: ${tell} ${id} ${px}px ${dark ? 'dark' : 'light'} spans ${top.toFixed(2)}–${bottom.toFixed(2)} × ${left.toFixed(2)}–${right.toFixed(2)}`
             );
         }
         if (!(id in LEN)) {
@@ -96,22 +96,22 @@ export const runEngineChecks = () => {
                   4;
               return d;
             };
-          const near = [-2, -1, 0, 1].map(k => draw(sc, skin, id, P + k / 60 + 0.0001, still));
+          const near = [-2, -1, 0, 1].map(k => draw(sc, tell, id, P + k / 60 + 0.0001, still));
           const seam = step(near[1], near[2]),
             around = Math.max(step(near[0], near[1]), step(near[2], near[3]));
           if (seam > SEAM_MIN && seam > SEAM_RATIO * around)
             failures.push(
-              `loop seam: ${skin} ${id} ${dark ? 'dark' : 'light'} jumps ${seam.toFixed(1)} at the restart vs ${around.toFixed(1)} around it`
+              `loop seam: ${tell} ${id} ${dark ? 'dark' : 'light'} jumps ${seam.toFixed(1)} at the restart vs ${around.toFixed(1)} around it`
             );
         }
         const cv = document.createElement('canvas');
         cv.width = cv.height = 96;
         cv._css = 48;
         const bg = dark ? 0.01 : 0.87,
-          worst = flashesPerSecond(frames(PERIOD[id], t => luminance(draw(cv, skin, id, t, still), bg)));
-        rows.push(`${skin},${id},${dark ? 'dark' : 'light'},${worst}`);
+          worst = flashesPerSecond(frames(PERIOD[id], t => luminance(draw(cv, tell, id, t, still), bg)));
+        rows.push(`${tell},${id},${dark ? 'dark' : 'light'},${worst}`);
         if (worst > FLASH_LIMIT)
-          failures.push(`flashing: ${skin} ${id} ${dark ? 'dark' : 'light'} has ${worst} flashes in one second`);
+          failures.push(`flashing: ${tell} ${id} ${dark ? 'dark' : 'light'} has ${worst} flashes in one second`);
       }
   }
   // Other tells tint color="current" on purpose. Lens draws only the ink, so anything lighter reads as a second tone.

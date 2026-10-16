@@ -21,7 +21,7 @@ import {
   palette,
   radios,
   renderSwatchSheet,
-  setSkin,
+  setTell,
   spy,
   start,
   store,
@@ -30,7 +30,7 @@ import {
 } from './shared.js';
 
 const renderSheet = () => renderSwatchSheet($('palette'), $('palette-css'));
-const SKIN_BLURB = API.attributes.find(a => a.name === 'skin').values;
+const TELL_BLURB = API.attributes.find(a => a.name === 'tell').values;
 const HERO_SAY = {
   working: 'Checking with Monk’s Café…',
   done: 'Booked. Monk’s Café, Friday at 7:30, the usual booth.',
@@ -40,19 +40,19 @@ const HERO_SAY = {
 };
 const UPLOAD_PCT = { working: 40, done: 100, error: 40, warning: 100, idle: 0 };
 const CI_SAY = { working: 'Running', done: 'Passed', error: 'Failed', warning: 'Needs approval', idle: 'Queued' };
-const ciChecks = (skin, t, c, say = '') =>
-  `<p class="cel-ci-title">Checks</p><ul class="ci-list wa-list-plain"><li>${tag(skin, 'state="done" label=""')}<span>Lint</span><em>Passed</em></li><li>${t}<span>Unit tests</span><em${say}>${c}</em></li><li>${tag(skin, 'state="idle" label=""')}<span>Deploy preview</span><em>Queued</em></li></ul>`;
+const ciChecks = (tell, t, c, say = '') =>
+  `<p class="cel-ci-title">Checks</p><ul class="ci-list wa-list-plain"><li>${tag(tell, 'state="done" label=""')}<span>Lint</span><em>Passed</em></li><li>${t}<span>Unit tests</span><em${say}>${c}</em></li><li>${tag(tell, 'state="idle" label=""')}<span>Deploy preview</span><em>Queued</em></li></ul>`;
 const CELS = [
   {
     name: 'chat',
-    skin: 'eyes',
+    tell: 'eyes',
     say: HERO_SAY,
     html: (t, c) =>
       `<p class="cel-ask">Can you book a table for four on Friday?</p><div class="cel-reply wa-cluster wa-flex-nowrap">${t}<p data-say>${c}</p></div>`,
   },
   {
     name: 'files',
-    skin: 'blot',
+    tell: 'blot',
     say: {
       working: 'Uploading, 40%',
       done: 'Uploaded.',
@@ -65,7 +65,7 @@ const CELS = [
   },
   {
     name: 'terminal',
-    skin: 'flipdot',
+    tell: 'flipdot',
     say: {
       working: 'Running 59 tests…',
       done: '59 passed.',
@@ -78,7 +78,7 @@ const CELS = [
   },
   {
     name: 'ci',
-    skin: 'drones',
+    tell: 'drones',
     say: CI_SAY,
     html: (t, c) => ciChecks('drones', t, c, ' data-say'),
   },
@@ -88,7 +88,7 @@ $('hero-cast').innerHTML = heroCels
   .map(cel => {
     const s = STATES[cel.at],
       scheme = cel.name === 'terminal' ? ' scheme="dark"' : '';
-    return `<figure class="cel cel-${cel.name}${cel.name === 'terminal' ? ' studio force-dark wa-dark' : ''}">${cel.html(tag(cel.skin, `state="${s}" label="" data-cycle${scheme}`), cel.say[s], s)}</figure>`;
+    return `<figure class="cel cel-${cel.name}${cel.name === 'terminal' ? ' studio force-dark wa-dark' : ''}">${cel.html(tag(cel.tell, `state="${s}" label="" data-cycle${scheme}`), cel.say[s], s)}</figure>`;
   })
   .join('');
 const stepCel = (cel, el) => {
@@ -191,7 +191,7 @@ new ResizeObserver(placeNotes).observe(stage);
 
 let castState = 'working',
   anySize = 36;
-const live = (skin, attrs = '') => tag(skin, `state="${castState}" data-live ${attrs}`);
+const live = (tell, attrs = '') => tag(tell, `state="${castState}" data-live ${attrs}`);
 const setCastState = s => {
   castState = s;
   document.querySelectorAll('tiny-tell[data-live]').forEach(t => (t.state = s));
@@ -210,24 +210,24 @@ $('cast-pick').innerHTML = V1.map(
   s =>
     `<wa-radio appearance="button" value="${s}"><span class="wa-stack wa-gap-s"><span class="cast-name">${NAMES[s]}</span><span class="cast-field">${tag(s, 'label=""')}</span></span></wa-radio>`
 ).join('');
-$('cast-pick').addEventListener('change', e => setSkin(e.target.value));
+$('cast-pick').addEventListener('change', e => setTell(e.target.value));
 const renderCast = () => {
-  const skin = page.skin,
-    m = MODEL[skin];
-  $('cast-pick').value = skin;
-  $('cast-name').textContent = NAMES[skin];
-  $('cast-who').textContent = SKIN_BLURB[skin];
-  $('play-tell').skin = skin;
-  $('stage').innerHTML = live(skin);
+  const tell = page.tell,
+    m = MODEL[tell];
+  $('cast-pick').value = tell;
+  $('cast-name').textContent = NAMES[tell];
+  $('cast-who').textContent = TELL_BLURB[tell];
+  $('play-tell').tell = tell;
+  $('stage').innerHTML = live(tell);
   $('stage-ship').innerHTML = [48, 32, 24, 20]
-    .map(z => `<figure>${live(skin, `style="--tell-size: ${z}px" label=""`)}<figcaption>${z}</figcaption></figure>`)
+    .map(z => `<figure>${live(tell, `style="--tell-size: ${z}px" label=""`)}<figcaption>${z}</figcaption></figure>`)
     .join('');
-  $('any-size-tell').innerHTML = live(skin, `style="--tell-size: ${anySize}px" label=""`);
+  $('any-size-tell').innerHTML = live(tell, `style="--tell-size: ${anySize}px" label=""`);
   $('cast-goes').innerHTML =
-    `<span class="wa-visually-hidden">Best for: </span><span class="wa-cluster wa-gap-s">${GOES[skin].map((use, i) => `<wa-tag appearance="outlined" size="xs">${i ? '<span class="wa-visually-hidden">, </span>' : ''}${use}</wa-tag>`).join('')}</span>`;
+    `<span class="wa-visually-hidden">Best for: </span><span class="wa-cluster wa-gap-s">${GOES[tell].map((use, i) => `<wa-tag appearance="outlined" size="xs">${i ? '<span class="wa-visually-hidden">, </span>' : ''}${use}</wa-tag>`).join('')}</span>`;
   $('notes').innerHTML = STATES.map(
     s =>
-      `<wa-radio appearance="button" value="${s}"><span class="notes-row">${tag(skin, `state="${s}" label=""`)}<span class="notes-key">${LABEL[s]}</span><span>${NOTES[skin][s]}</span></span></wa-radio>`
+      `<wa-radio appearance="button" value="${s}"><span class="notes-row">${tag(tell, `state="${s}" label=""`)}<span class="notes-key">${LABEL[s]}</span><span>${NOTES[tell][s]}</span></span></wa-radio>`
   ).join('');
   $('notes').value = castState;
   $('cast-build').innerHTML = [
@@ -294,7 +294,7 @@ bindPalettePickers($('palette'));
 const WILD = [
   {
     name: 'Assistant Reply',
-    skin: 'eyes',
+    tell: 'eyes',
     copy: {
       working: 'Reading your notes…',
       done: 'Done. Three things need you.',
@@ -307,13 +307,13 @@ const WILD = [
   },
   {
     name: 'CI Checks',
-    skin: 'flipdot',
+    tell: 'flipdot',
     copy: CI_SAY,
     html: (t, c, sk) => `<div class="wild-ci">${ciChecks(sk, t, c)}</div>`,
   },
   {
     name: 'File Upload',
-    skin: 'blot',
+    tell: 'blot',
     copy: {
       working: 'Uploading, 62%',
       done: 'Uploaded',
@@ -326,7 +326,7 @@ const WILD = [
   },
   {
     name: 'Status Bar',
-    skin: 'lens',
+    tell: 'lens',
     copy: {
       working: 'Saving…',
       done: 'Saved',
@@ -339,7 +339,7 @@ const WILD = [
   },
   {
     name: 'Button',
-    skin: 'drones',
+    tell: 'drones',
     copy: {
       working: 'Downloading 12 songs…',
       done: 'Ready to play offline',
@@ -352,7 +352,7 @@ const WILD = [
   },
   {
     name: 'Inline in Text',
-    skin: 'dekatron',
+    tell: 'dekatron',
     copy: {
       working: 'On its way. About 20 minutes.',
       done: 'Delivered. Enjoy!',
@@ -364,7 +364,7 @@ const WILD = [
       `<div class="wild-order"><p class="wild-order-head wa-split"><span>Order #4821</span><span>2 items</span></p><p class="wild-order-say">${t} <span>${c}</span></p></div>`,
   },
 ];
-const wildBody = (ex, s) => ex.html(tag(ex.skin, `state="${s}" label=""`), ex.copy[s], ex.skin, s);
+const wildBody = (ex, s) => ex.html(tag(ex.tell, `state="${s}" label=""`), ex.copy[s], ex.tell, s);
 const wildHTML = () =>
   WILD.map(
     ex =>
@@ -379,7 +379,7 @@ const SIZES = ['text', '20', '24', '32', '48'];
 const shared = new URLSearchParams(location.search);
 const fromLink = (key, allowed, fallback) => (allowed.includes(shared.get(key)) ? shared.get(key) : fallback);
 const builder = {
-  tell: fromLink('tell', V1, page.skin),
+  tell: fromLink('tell', V1, page.tell),
   state: fromLink('state', STATES, 'working'),
   size: fromLink('size', SIZES, 'text'),
   words: shared.has('words') ? [...shared.get('words')].slice(0, 120).join('') : 'Syncing 3 files…',
@@ -395,7 +395,7 @@ const esc = t => t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&
 const builderHTML = () => {
   const { tell, state, size } = builder,
     words = builder.words.trim(),
-    attrs = [`skin="${tell}"`, `state="${state}"`];
+    attrs = [`tell="${tell}"`, `state="${state}"`];
   if (size !== 'text') attrs.push(`style="--tell-size: ${size / 16}rem"`);
   if (words) attrs.push('label=""');
   const el = pad => `<tiny-tell\n${attrs.map(x => `${pad}  ${x}`).join('\n')}\n${pad}></tiny-tell>`;
@@ -498,13 +498,13 @@ $('b-method').addEventListener('change', e => {
   setMethod(e.target.value);
 });
 
-on('skin', () => {
-  builder.tell = page.skin;
-  $('b-tell').value = page.skin;
+on('tell', () => {
+  builder.tell = page.tell;
+  $('b-tell').value = page.tell;
   renderBuilder();
 });
-on('skin', renderCast);
-on('skin', renderSheet);
+on('tell', renderCast);
+on('tell', renderSheet);
 on('palette', renderSheet);
 on('theme', renderSheet);
 spy([...document.querySelectorAll('.sections a[href*="#"]')], ['tells', 'color', 'wild', 'install'].map($));

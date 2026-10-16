@@ -36,7 +36,7 @@ export const perFrame = fn => {
     });
   };
 };
-export const tag = (skin, attrs = '') => `<tiny-tell skin="${skin}" ${attrs}></tiny-tell>`;
+export const tag = (tell, attrs = '') => `<tiny-tell tell="${tell}" ${attrs}></tiny-tell>`;
 
 const tellsIn = root => (root.localName === 'tiny-tell' ? [root] : root.querySelectorAll('tiny-tell'));
 export const keepCore = isCore => {
@@ -50,13 +50,13 @@ export const keepCore = isCore => {
 };
 const isDarkPage = () => document.documentElement.classList.contains('wa-dark');
 
-const listeners = { skin: [], theme: [], pause: [], palette: [] };
+const listeners = { tell: [], theme: [], pause: [], palette: [] };
 export const on = (event, fn) => listeners[event].push(fn);
 const emit = event => listeners[event].forEach(fn => fn());
 
 export const page = {
   isPaused: false,
-  skin: V1.includes(store.get('tells-site-skin')) ? store.get('tells-site-skin') : 'drones',
+  tell: V1.includes(store.get('tells-site-tell')) ? store.get('tells-site-tell') : 'drones',
 };
 export const holdAll = root => tellsIn(root).forEach(t => (t.paused = page.isPaused));
 
@@ -93,14 +93,14 @@ $('page-tell')?.insertAdjacentHTML(
   'beforeend',
   V1.map(s => `<wa-option value="${s}">${NAMES[s]}</wa-option>`).join('')
 );
-export const setSkin = next => {
-  if (next !== page.skin) track('pick-tell', { tell: next });
-  page.skin = next;
-  store.set('tells-site-skin', next === 'drones' ? null : next);
+export const setTell = next => {
+  if (next !== page.tell) track('pick-tell', { tell: next });
+  page.tell = next;
+  store.set('tells-site-tell', next === 'drones' ? null : next);
   if ($('page-tell')) $('page-tell').value = next;
-  emit('skin');
+  emit('tell');
 };
-$('page-tell')?.addEventListener('change', e => setSkin(e.target.value));
+$('page-tell')?.addEventListener('change', e => setTell(e.target.value));
 
 const swatch = Object.assign(document.createElement('canvas'), { width: 1, height: 1 }).getContext('2d', {
   willReadFrequently: true,
@@ -304,7 +304,7 @@ export const renderSwatchSheet = (sheet, code) => {
     well = (s, isDark) => {
       const ratio = contrast(pals[+isDark][s].rgb, pals[+isDark].surface),
         isLow = ratio < 3;
-      return `<span class="sw-cell wa-cluster wa-gap-s wa-flex-nowrap" role="cell"><span class="sw-well ${isDark ? 'wa-dark' : 'wa-light'}">${tag(page.skin, `state="${s}" scheme="${isDark ? 'dark' : 'light'}" label=""`)}</span><span class="sw-ratio${isLow ? ' is-low' : ''}">${ratio.toFixed(1)}:1${isLow ? ' low' : ''}</span></span>`;
+      return `<span class="sw-cell wa-cluster wa-gap-s wa-flex-nowrap" role="cell"><span class="sw-well ${isDark ? 'wa-dark' : 'wa-light'}">${tag(page.tell, `state="${s}" scheme="${isDark ? 'dark' : 'light'}" label=""`)}</span><span class="sw-ratio${isLow ? ' is-low' : ''}">${ratio.toFixed(1)}:1${isLow ? ' low' : ''}</span></span>`;
     },
     value = s => tokens[s] || `light-dark(${hex(pals[0][s].rgb)}, ${hex(pals[1][s].rgb)})`;
   sheet.innerHTML =
@@ -501,7 +501,7 @@ export const start = async () => {
   reportLoad();
   await customElements.whenDefined('wa-page');
   fitScrollPadding();
-  if ($('page-tell')) $('page-tell').value = page.skin;
+  if ($('page-tell')) $('page-tell').value = page.tell;
   /* Reading the page doesn't need the rest, so it waits until the page shows. */
   await reveal();
   addCopyButtons();
@@ -700,7 +700,7 @@ customElements
     document.querySelectorAll('wa-tab-group').forEach(group => follow(group, ':scope > wa-tab', 'active', placeTabBar))
   );
 
-const TELL_ATTRS = ['skin', 'label', 'color', 'scheme', 'style'];
+const TELL_ATTRS = ['tell', 'label', 'color', 'scheme', 'style'];
 const syncAttrs = (from, to, names = [...new Set([...from.getAttributeNames(), ...to.getAttributeNames()])]) =>
   names.forEach(name => {
     const value = to.getAttribute(name);

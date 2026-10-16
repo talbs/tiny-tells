@@ -33,8 +33,8 @@ const isPlay = item => item.bundle === 'play';
 const note = item => `${isPlay(item) ? 'Play bundle only. ' : ''}${item.description}`;
 const hasField = a => a.property !== false;
 const cap = text => text[0].toUpperCase() + text.slice(1);
-if (V1.join() !== Object.keys(ATTR.skin.values).join())
-  throw new Error('V1 in tools/shared/copy.js must list the skins in src/api.json');
+if (V1.join() !== Object.keys(ATTR.tell.values).join())
+  throw new Error('V1 in tools/shared/copy.js must list the tells in src/api.json');
 const peeks = readdirSync(join(ROOT, 'tools', 'site'))
   .filter(file => file.endsWith('.js'))
   .filter(file => /src\/element\.js|\b(HOOKS|MOOD|DANCE)\b/.test(read('tools', 'site', file)));
@@ -159,7 +159,7 @@ const manifest = () => {
 /* A plain-text brief for coding assistants (llmstxt.org). The reference sections come from api.json; the rules are written by hand and mirror the docs' Your Part list. */
 const llmsTxt = sizeKb => {
   const docs = `${HOMEPAGE}docs/`;
-  const skins = Object.keys(ATTR.skin.values).length;
+  const tells = Object.keys(ATTR.tell.values).length;
   const list = (items, line) => items.map(line).join('\n');
   const only = x => (x.bundle ? `, ${x.bundle} bundle only` : '');
   const attr = a =>
@@ -167,7 +167,7 @@ const llmsTxt = sizeKb => {
     (a.values ? '\n' + list(Object.entries(a.values), ([v, d]) => `  - \`${v}\`: ${d}`) : '');
   return `# Tiny Tells
 
-> \`<tiny-tell>\` is one custom element for app status: working, done, error, warning, or idle. Pick from ${skins} small animated characters. No dependencies, ${sizeKb} KB min+gzip. ${Object.entries(
+> \`<tiny-tell>\` is one custom element for app status: working, done, error, warning, or idle. Pick from ${tells} small animated characters. No dependencies, ${sizeKb} KB min+gzip. ${Object.entries(
     SUPPORT
   )
     .map(([browser, v]) => `${browser} ${v}+`)
@@ -198,7 +198,7 @@ The play bundle adds a glance at a nearby pointer and a five-tap dance. Leave an
 ## Use
 
 \`\`\`html
-<p><tiny-tell skin="dekatron" state="working" label=""></tiny-tell> <span role="status">Syncing 3 files…</span></p>
+<p><tiny-tell tell="dekatron" state="working" label=""></tiny-tell> <span role="status">Syncing 3 files…</span></p>
 \`\`\`
 
 \`\`\`js
@@ -280,7 +280,7 @@ const vscodeData = () => ({
 });
 
 const dts = () => {
-  const alias = a => (a.values ? `Tell${cap(a.name)}` : null);
+  const alias = a => (a.values ? `Tell${a.name === 'tell' ? 'Name' : cap(a.name)}` : null);
   const coreAttrs = API.attributes.filter(a => !isPlay(a));
   const types = coreAttrs
     .filter(alias)
@@ -385,7 +385,7 @@ const docsTables = () => {
     idle: 'For anything ready, queued, or up to date, when nobody is waiting on it.',
   };
   const GUIDE = {
-    skin: '#tells',
+    tell: '#tells',
     state: '#states',
     color: '#match-text',
     scheme: '#match-scheme',
@@ -400,7 +400,7 @@ const docsTables = () => {
   const nameCell = (code, tag = '') =>
     `<th scope="row"><span class="wa-cluster wa-gap-xs wa-flex-nowrap"><code>${code}</code>${tag}</span></th>`;
   const kindOf = a =>
-    a.name === 'skin'
+    a.name === 'tell'
       ? 'One of the six <a href="#tells">tells</a>'
       : a.name === 'state'
         ? 'One of the five <a href="#states">states</a>'
@@ -412,16 +412,16 @@ const docsTables = () => {
             ? 'boolean'
             : 'text';
   return {
-    'tell-rows': Object.entries(ATTR.skin.values)
+    'tell-rows': Object.entries(ATTR.tell.values)
       .map(
         ([s, about]) =>
-          `<tr><td class="tell-cell"><tiny-tell skin="${s}" label=""></tiny-tell></td><th scope="row"><code>${s}</code></th><td>${about}</td></tr>`
+          `<tr><td class="tell-cell"><tiny-tell tell="${s}" label=""></tiny-tell></td><th scope="row"><code>${s}</code></th><td>${about}</td></tr>`
       )
       .join(''),
     'state-rows': Object.entries(ATTR.state.values)
       .map(
         ([s, about]) =>
-          `<tr><td class="tell-cell"><tiny-tell skin="drones" state="${s}" label=""></tiny-tell></td><th scope="row"><code>${s}</code></th><td>${about}</td><td>${USE_IT[s]}</td></tr>`
+          `<tr><td class="tell-cell"><tiny-tell tell="drones" state="${s}" label=""></tiny-tell></td><th scope="row"><code>${s}</code></th><td>${about}</td><td>${USE_IT[s]}</td></tr>`
       )
       .join(''),
     'attr-rows': API.attributes

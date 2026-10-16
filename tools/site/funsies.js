@@ -6,8 +6,8 @@ const BEAT_MS = BEAT * 1000;
 const section = $('funsies');
 const buttons = [...section.querySelectorAll('wa-button')];
 const toys = [];
-const fill = (host, count, skinAt) => {
-  host.innerHTML = Array.from({ length: count }, (_, i) => tag(skinAt(i), 'state="idle" label=""')).join('');
+const fill = (host, count, tellAt) => {
+  host.innerHTML = Array.from({ length: count }, (_, i) => tag(tellAt(i), 'state="idle" label=""')).join('');
   return [...host.children];
 };
 // The element re-sets its state right after this event fires, which would cancel a dance started inside it.

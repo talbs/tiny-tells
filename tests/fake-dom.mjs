@@ -29,7 +29,7 @@ const nextFrame = () => new Promise(r => window.requestAnimationFrame(r));
 
 await import('../dist/tiny-tells.js');
 const el = document.createElement('tiny-tell');
-el.setAttribute('skin', 'eyes');
+el.setAttribute('tell', 'eyes');
 document.body.append(el);
 await nextFrame();
 el.state = 'done';

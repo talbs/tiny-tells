@@ -32,7 +32,7 @@ const anySize = () => Number($('any-size').value) || Number($('any-size').getAtt
 const anySizeRem = () => `${+(anySize() / 16).toFixed(3)}rem`;
 const renderAnySize = () => {
   $('any-size-stage').innerHTML =
-    `${tag(page.skin, `style="--tell-size: ${anySize()}px"`)}<span>${anySize()}px · ${anySizeRem()}</span>`;
+    `${tag(page.tell, `style="--tell-size: ${anySize()}px"`)}<span>${anySize()}px · ${anySizeRem()}</span>`;
   holdAll($('any-size-stage'));
 };
 let anySizeFrame = 0;
@@ -86,10 +86,10 @@ reducedMotion.addEventListener('change', restingNote);
 restingNote();
 
 const renderStateTells = () => {
-  document.querySelectorAll('#state-rows tiny-tell, tiny-tell[data-follow]').forEach(t => (t.skin = page.skin));
+  document.querySelectorAll('#state-rows tiny-tell, tiny-tell[data-follow]').forEach(t => (t.tell = page.tell));
   document
-    .querySelectorAll('[data-skin-code]')
-    .forEach(code => fillCode(code, code.textContent.replace(/skin="[a-z]+"/g, `skin="${page.skin}"`)));
+    .querySelectorAll('[data-tell-code]')
+    .forEach(code => fillCode(code, code.textContent.replace(/tell="[a-z]+"/g, `tell="${page.tell}"`)));
 };
 const measureTextSizes = () =>
   document.querySelectorAll('.text-sizes p').forEach(p => {
@@ -98,7 +98,7 @@ const measureTextSizes = () =>
     p.querySelector('[data-measure]').textContent = `${text}px text, ${tell}px tell`;
   });
 
-on('skin', () => {
+on('tell', () => {
   renderStateTells();
   renderAnySize();
   renderPalette();
@@ -214,7 +214,7 @@ on('pause', () => page.isPaused || restartBeat());
 onMotionChange(runBeat);
 
 $('handoff-state').innerHTML = radios(STATES);
-const cut = state => ($('cut-slot').innerHTML = tag(page.skin, `state="${state}" data-follow label=""`));
+const cut = state => ($('cut-slot').innerHTML = tag(page.tell, `state="${state}" data-follow label=""`));
 $('handoff-state').addEventListener('change', e => {
   cut(e.target.value);
   holdAll($('cut-slot'));
@@ -328,7 +328,7 @@ document.querySelectorAll('.system-well').forEach(well => {
       return `--color-${name}: var(--wa-color-${wa}-fill-loud); --tell-color-${s}: var(--color-${name});`;
     }).join(' ')
   );
-  well.innerHTML = STATES.map(s => tag(page.skin, `state="${s}" data-follow label="${LABEL[s]}"`)).join('');
+  well.innerHTML = STATES.map(s => tag(page.tell, `state="${s}" data-follow label="${LABEL[s]}"`)).join('');
 });
 
 let isDemoPaused = false;
