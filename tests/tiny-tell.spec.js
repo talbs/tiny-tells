@@ -1183,30 +1183,46 @@ test.describe('docs drawer', () => {
   test.beforeEach(offline);
   test.afterEach(noProblems);
 
-  test('the mobile docs drawer opens without moving the page, and a far link lands as it closes', async ({ page }) => {
+  test('the mobile docs drawer opens without moving the page, and a far link glides into place once it closes', async ({
+    page,
+  }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await open(page, { path: '/docs/#states' });
     await revealed(page);
+    // Scrolling there again sets the baseline, whatever the load landed on.
+    await page.evaluate(() => document.getElementById('states').scrollIntoView({ behavior: 'instant' }));
     const statesTop = () => page.evaluate(() => document.getElementById('states').getBoundingClientRect().top);
     const before = await statesTop();
+    await page.evaluate(() => {
+      window.order = [];
+      addEventListener('hashchange', () => window.order.push('hash'));
+      document.querySelector('wa-page').addEventListener('wa-after-hide', () => window.order.push('hidden'));
+    });
     // A locator click scrolls the sticky toggle into view first, which moves the page on its own.
     await page.locator('.nav-toggle').dispatchEvent('click');
     const link = page.getByRole('navigation', { name: 'Docs' }).getByRole('link', { name: 'API' });
     await expect(link, 'the drawer opens').toBeVisible();
     expect(Math.abs((await statesTop()) - before), 'the page behind the open drawer stays put').toBeLessThan(2);
     await link.click();
-    const drift = () =>
-      page.evaluate(() => {
-        const target = document.getElementById('api'),
-          landed = target.getBoundingClientRect().top;
-        target.scrollIntoView({ behavior: 'instant' });
-        return Math.abs(landed - target.getBoundingClientRect().top);
-      });
-    await twoFrames(page);
-    expect(await drift(), 'the section is in place two frames after the tap').toBeLessThan(2);
-    await expect(page, 'the link still updates the address').toHaveURL(/#api$/);
     await expect(link, 'the drawer closes').toBeHidden();
-    expect(await drift(), 'the section stays in place once the drawer is gone').toBeLessThan(2);
+    const apiTop = () => page.evaluate(() => document.getElementById('api').getBoundingClientRect().top);
+    await expect
+      .poll(async () => Math.abs((await apiTop()) - before), {
+        message: 'the page glides the section into place once the drawer is gone',
+      })
+      .toBeLessThan(2);
+    expect(await page.evaluate(() => window.order), 'the address changes only after the drawer is gone').toEqual([
+      'hidden',
+      'hash',
+    ]);
+    await expect(page, 'the link still updates the address').toHaveURL(/#api$/);
+    const drift = await page.evaluate(() => {
+      const target = document.getElementById('api'),
+        landed = target.getBoundingClientRect().top;
+      target.scrollIntoView({ behavior: 'instant' });
+      return Math.abs(landed - target.getBoundingClientRect().top);
+    });
+    expect(drift, 'the section lands where it scrolls to').toBeLessThan(2);
     await expect(page.locator('#funsies-title'), 'sections set aside behind the drawer come back').toBeVisible();
   });
 });

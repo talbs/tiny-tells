@@ -128,19 +128,32 @@ shell.addEventListener('wa-show', e => {
     section.dataset.offstage = '';
   });
 });
+let pendingHash = '';
 // WebKit's scroll anchoring can jump thousands of pixels as the sections come back, so the one on screen is held in place.
 shell.addEventListener('wa-after-hide', e => {
   if (e.target !== shell) return;
   const anchor = sections.find(section => section.getBoundingClientRect().bottom > 0);
   const top = anchor?.getBoundingClientRect().top;
   sections.forEach(restore);
-  if (anchor) scrollBy(0, anchor.getBoundingClientRect().top - top);
+  if (anchor) scrollBy({ top: anchor.getBoundingClientRect().top - top, behavior: 'instant' });
+  if (!pendingHash) return;
+  const hash = pendingHash;
+  pendingHash = '';
+  // Web Awesome hands focus back to the toggle on a timer after this event, and that focus scrolls the page in Chromium and WebKit, so the glide queues behind it.
+  setTimeout(() => {
+    if (location.hash === hash) $(hash.slice(1))?.scrollIntoView();
+    else location.hash = hash;
+  });
 });
+// A drawer link waits for the drawer to close, so the glide starts once every section is back and the page is settled.
 shell.addEventListener('click', e => {
   const link = e.target.closest('[slot^="navigation"] a[href^="#"]');
   if (!link) return;
-  const target = $(link.hash.slice(1))?.closest('section');
-  if (target) restore(target);
+  const isPlain = !(e.metaKey || e.ctrlKey || e.shiftKey || e.altKey);
+  if (isPlain && (shell.navOpen || pendingHash)) {
+    e.preventDefault();
+    pendingHash = link.hash;
+  }
   shell.hideNavigation();
 });
 syncInstallTabs([$('docs-install'), $('play-install'), $('reserve-install')]);
