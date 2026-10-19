@@ -543,7 +543,7 @@ test.describe('Chromium only', () => {
     ).toContain('aria-hidden-focus');
   });
 
-  test('every tell stays in its live area, loops without a seam, and never flashes more than 3 times a second, and Lens’s halo keeps to its color="current" ink (#98)', async ({
+  test('every tell stays in its live area, loops without a seam, and never flashes more than 3 times a second, and Lens’s halo, glass, metal, and iris keep to its color="current" ink (#98)', async ({
     page,
   }) => {
     test.setTimeout(120000);
