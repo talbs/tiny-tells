@@ -95,19 +95,26 @@ export const LENS = {
     ctx.save();
     ctx.translate(sh[0] * unit, sh[1] * unit);
     /* One ink keeps the layers apart by how much ink each takes, so glass reads darkest, then metal, then the iris. Ink can't glow on a light page, so there the iris, glint, and ripple are holes the page shines through. */
+    const bz = ctx.createLinearGradient(0, o - Rb, 0, o + Rb);
+    bz.addColorStop(0, ink ? css(ink, isDark ? 0.62 : 0.34) : css(metal, 1, 0.05));
+    bz.addColorStop(1, ink ? css(ink, isDark ? 0.36 : 0.58) : css(metal, 1, -0.07));
+    ctx.fillStyle = bz;
+    ctx.beginPath();
+    ctx.arc(o, o, Rb, 0, TAU);
+    if (ink) ctx.arc(o, o, Rg, 0, TAU, true);
+    ctx.fill();
+    if (ink) ctx.fillStyle = css(ink, isDark ? 0.1 : 0.88);
+    else if (isDark) ctx.fillStyle = css([0.13, 0.008, 277]);
+    else {
+      const sm = ctx.createLinearGradient(0, o - Rg, 0, o + Rg);
+      sm.addColorStop(0, css([0.22, 0.012, 277]));
+      sm.addColorStop(1, css([0.34, 0.01, 277]));
+      ctx.fillStyle = sm;
+    }
+    ctx.beginPath();
+    ctx.arc(o, o, Rg, 0, TAU);
+    ctx.fill();
     if (ink) {
-      const bz = ctx.createLinearGradient(0, o - Rb, 0, o + Rb);
-      bz.addColorStop(0, css(ink, isDark ? 0.62 : 0.34));
-      bz.addColorStop(1, css(ink, isDark ? 0.36 : 0.58));
-      ctx.fillStyle = bz;
-      ctx.beginPath();
-      ctx.arc(o, o, Rb, 0, TAU);
-      ctx.arc(o, o, Rg, 0, TAU, true);
-      ctx.fill();
-      ctx.fillStyle = css(ink, isDark ? 0.1 : 0.88);
-      ctx.beginPath();
-      ctx.arc(o, o, Rg, 0, TAU);
-      ctx.fill();
       if (!isDark) ctx.globalCompositeOperation = 'destination-out';
       ctx.strokeStyle = css(ink, isDark ? 0.4 : 0.55);
       ctx.lineWidth = 0.07 * unit;
@@ -115,24 +122,6 @@ export const LENS = {
       ctx.beginPath();
       ctx.arc(o, o, Rg * 0.76, PI * 1.15, PI * 1.35);
       ctx.stroke();
-    } else {
-      const bz = ctx.createLinearGradient(0, o - Rb, 0, o + Rb);
-      bz.addColorStop(0, css(metal, 1, 0.05));
-      bz.addColorStop(1, css(metal, 1, -0.07));
-      ctx.fillStyle = bz;
-      ctx.beginPath();
-      ctx.arc(o, o, Rb, 0, TAU);
-      ctx.fill();
-      if (isDark) ctx.fillStyle = css([0.13, 0.008, 277]);
-      else {
-        const sm = ctx.createLinearGradient(0, o - Rg, 0, o + Rg);
-        sm.addColorStop(0, css([0.22, 0.012, 277]));
-        sm.addColorStop(1, css([0.34, 0.01, 277]));
-        ctx.fillStyle = sm;
-      }
-      ctx.beginPath();
-      ctx.arc(o, o, Rg, 0, TAU);
-      ctx.fill();
     }
     const glow = clamp(e.glow, 0, 1.6),
       ap = clamp(e.ap, 0.12, 0.96) * Rg,

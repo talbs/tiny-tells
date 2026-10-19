@@ -2,7 +2,7 @@ import '../src/dance.js';
 import { DOZE_CLIPS, LEN } from '../src/doze.js';
 import { playerFor } from '../src/players.js';
 import { TELLS } from '../src/registry.js';
-import { PERIOD, PI, STATES, linear, withScene } from '../src/core.js';
+import { PERIOD, PI, STATES, css, linear, withScene } from '../src/core.js';
 
 const INSET = 0.08,
   FLASH_STEP = 0.1,
@@ -13,7 +13,6 @@ const INSET = 0.08,
   LENS_INK = [0.2, 0.02, 260],
   LENS_INK_DARK = [0.95, 0.01, 260],
   INK_ALPHA = 25,
-  INK_SOLID = 200,
   INK_LIFT = 30,
   LAYER_GAP = 30;
 const draw = (cv, tell, id, t, scene) =>
@@ -121,20 +120,23 @@ export const runEngineChecks = () => {
   const lens = document.createElement('canvas');
   lens.width = lens.height = 96;
   lens._css = 48;
+  const swatch = document.createElement('canvas').getContext('2d');
+  swatch.fillStyle = css(LENS_INK);
+  swatch.fillRect(0, 0, 1, 1);
+  const [ir, ig, ib] = swatch.getImageData(0, 0, 1, 1).data,
+    inkLum = (ir + ig + ib) / 3;
   for (const id of STATES) {
-    let darkest = 255,
-      lightest = 0;
+    let lightest = 0;
     for (let t = 0.05; t < PERIOD[id]; t += 0.1) {
       const d = draw(lens, 'lens', id, t, { isDark: false, palette: null, gaze: null, ink: LENS_INK });
       for (let i = 0; i < d.length; i += 4) {
         const lum = (d[i] + d[i + 1] + d[i + 2]) / 3;
-        if (d[i + 3] > INK_SOLID) darkest = Math.min(darkest, lum);
         if (d[i + 3] > INK_ALPHA) lightest = Math.max(lightest, lum);
       }
     }
-    if (lightest - darkest > INK_LIFT)
+    if (lightest - inkLum > INK_LIFT)
       failures.push(
-        `ink: lens ${id} light draws ${Math.round(lightest - darkest)} lighter than its color="current" ink`
+        `ink: lens ${id} light draws ${Math.round(lightest - inkLum)} lighter than its color="current" ink`
       );
   }
   // In one ink, Lens tells its glass, metal, and iris apart by how much ink each takes, darkest to brightest.
