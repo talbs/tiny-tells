@@ -40,15 +40,19 @@ const HERO_SAY = {
 };
 const UPLOAD_PCT = { working: 40, done: 100, error: 40, warning: 100, idle: 0 };
 const CI_SAY = { working: 'Running', done: 'Passed', error: 'Failed', warning: 'Needs approval', idle: 'Queued' };
-const ciChecks = (tell, t, c, say = '') =>
-  `<p class="cel-ci-title">Checks</p><ul class="ci-list wa-list-plain"><li>${tag(tell, 'state="done" label=""')}<span>Lint</span><em>Passed</em></li><li>${t}<span>Unit tests</span><em${say}>${c}</em></li><li>${tag(tell, 'state="idle" label=""')}<span>Deploy preview</span><em>Queued</em></li></ul>`;
+const hold = (lines, line) =>
+  `<span class="say-hold"><span data-say>${line}</span>${Object.values(lines)
+    .map(l => `<span>${l}</span>`)
+    .join('')}</span>`;
+const ciChecks = (tell, t, c) =>
+  `<p class="cel-ci-title">Checks</p><ul class="ci-list wa-list-plain"><li>${tag(tell, 'state="done" label=""')}<span>Lint</span><em>Passed</em></li><li>${t}<span>Unit tests</span><em>${c}</em></li><li>${tag(tell, 'state="idle" label=""')}<span>Deploy preview</span><em>Queued</em></li></ul>`;
 const CELS = [
   {
     name: 'chat',
     tell: 'eyes',
     say: HERO_SAY,
     html: (t, c) =>
-      `<p class="cel-ask">Can you book a table for four on Friday?</p><div class="cel-reply wa-cluster wa-flex-nowrap">${t}<p data-say>${c}</p></div>`,
+      `<p class="cel-ask">Can you book a table for four on Friday?</p><div class="cel-reply wa-cluster wa-flex-nowrap">${t}${c}</div>`,
   },
   {
     name: 'files',
@@ -61,7 +65,7 @@ const CELS = [
       idle: 'Drop a file to upload.',
     },
     html: (t, c, s) =>
-      `${t}<p class="cel-file">trip-photos.zip<span>48 MB</span></p><span class="cel-bar"><i style="inline-size: ${UPLOAD_PCT[s]}%"></i></span><p data-say>${c}</p>`,
+      `${t}<p class="cel-file">trip-photos.zip<span>48 MB</span></p><span class="cel-bar"><i style="inline-size: ${UPLOAD_PCT[s]}%"></i></span>${c}`,
   },
   {
     name: 'terminal',
@@ -74,13 +78,13 @@ const CELS = [
       idle: 'Watching for changes.',
     },
     html: (t, c) =>
-      `<p class="cel-cmd">${PROMPT}npm test</p><div class="cel-out wa-cluster wa-gap-s wa-flex-nowrap">${t}<p data-say>${c}</p></div>`,
+      `<p class="cel-cmd">${PROMPT}npm test</p><div class="cel-out wa-cluster wa-gap-s wa-flex-nowrap">${t}${c}</div>`,
   },
   {
     name: 'ci',
     tell: 'drones',
     say: CI_SAY,
-    html: (t, c) => ciChecks('drones', t, c, ' data-say'),
+    html: (t, c) => ciChecks('drones', t, c),
   },
 ];
 const heroCels = CELS.map((cel, i) => ({ ...cel, at: (i * 2) % STATES.length, timer: 0 }));
@@ -88,7 +92,7 @@ $('hero-cast').innerHTML = heroCels
   .map(cel => {
     const s = STATES[cel.at],
       scheme = cel.name === 'terminal' ? ' scheme="dark"' : '';
-    return `<figure class="cel cel-${cel.name}${cel.name === 'terminal' ? ' studio force-dark wa-dark' : ''}">${cel.html(tag(cel.tell, `state="${s}" label="" data-cycle${scheme}`), cel.say[s], s)}</figure>`;
+    return `<figure class="cel cel-${cel.name}${cel.name === 'terminal' ? ' studio force-dark wa-dark' : ''}">${cel.html(tag(cel.tell, `state="${s}" label="" data-cycle${scheme}`), hold(cel.say, cel.say[s]), s)}</figure>`;
   })
   .join('');
 const stepCel = (cel, el) => {
