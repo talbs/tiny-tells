@@ -1101,6 +1101,34 @@ test.describe('site pages', () => {
     await expect(status, 'a new round clears it, so the same tempo is announced again').toBeEmpty();
   });
 
+  test('the hero holds still while its demo cards cycle through their lines', async ({ page }) => {
+    await page.setViewportSize({ width: 1024, height: 768 });
+    await page.clock.install();
+    await open(page, { path: '/' });
+    const swapped = before =>
+      page.$$eval(
+        '#hero-cast [data-say]',
+        (els, was) => els.every((el, i) => !el.getAnimations().length && el.textContent !== was[i]),
+        before
+      );
+    const lines = () => page.$$eval('#hero-cast [data-say]', els => els.map(el => el.textContent));
+    const where = () =>
+      page.evaluate(() => ({
+        copy: document.querySelector('.hero-copy').getBoundingClientRect().top,
+        cast: document.getElementById('hero-cast').offsetHeight,
+      }));
+    const start = await where();
+    const stepAll = async ms => {
+      const before = await lines();
+      await page.clock.fastForward(ms);
+      await expect.poll(() => swapped(before), { message: 'every card swaps to its next line' }).toBe(true);
+      expect(await where(), 'a new line moves neither the cards nor the copy beside them').toEqual(start);
+    };
+    /* The cards take their first step staggered, the last at 3190ms, then every 3200ms. 4000 lands 800ms clear of both. */
+    await stepAll(4000);
+    for (let step = 0; step < 4; step++) await stepAll(3200);
+  });
+
   test('the docs Labels table says what screen readers hear for each label', async ({ page }) => {
     await open(page, { path: '/docs/' });
     await expect(page.locator('#label-cases td:last-child'), 'one answer per label case').toHaveText([
