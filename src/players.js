@@ -79,4 +79,6 @@ export class EPlayer {
     sk.render(cv, s, ink || s.color, vel);
   }
 }
+const STILL = { working: 0.9, done: 1.2, error: 1.4, warning: 1, idle: 2 };
+export const stillAt = (tell, id) => TELLS[tell].still?.[id] ?? STILL[id];
 export const playerFor = (tell, id, t0 = 0) => Object.assign(TELLS[tell].player?.(id) || new EPlayer(tell, id), { t0 });

@@ -2,11 +2,10 @@
 import { LABEL, PERIOD, STATES, clamp, lerp, rgbToOklch, withScene } from './core.js';
 import { TellAfterDanceEvent, TellDanceEvent } from './events.js';
 import { TELLS } from './registry.js';
-import { playerFor } from './players.js';
+import { playerFor, stillAt } from './players.js';
 import { BOX } from './box.js';
 
 const VERSION = __TINY_TELLS_VERSION__;
-const STILL = { working: 0.9, done: 1.2, error: 1.4, warning: 1, idle: 2 };
 const SCHEMES = ['auto', 'light', 'dark', 'invert'];
 const PROPS = ['tell', 'state', 'color', 'scheme', 'label', 'paused'];
 /* Not Object.keys(STATE_COLOR): the play bundle defines the element, and upgrades tells, before dance.js adds its tone. */
@@ -458,9 +457,7 @@ class TinyTell extends (typeof HTMLElement === 'undefined' ? class {} : HTMLElem
       this.#player = playerFor(this.tell, this.state);
     }
     try {
-      this.#within(() =>
-        this.#player.draw(cv, still ? (TELLS[this.tell].still?.[this.state] ?? STILL[this.state]) : clock.t)
-      );
+      this.#within(() => this.#player.draw(cv, still ? stillAt(this.tell, this.state) : clock.t));
     } catch (err) {
       clock.live.delete(this);
       console.error(`<${this.localName}> failed to draw`, err);
