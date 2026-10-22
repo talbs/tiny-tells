@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs';
 import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 import { LABEL } from '../src/core.js';
+import { DOZE_CLIPS } from '../src/doze.js';
 
 const API = JSON.parse(readFileSync(new URL('../src/api.json', import.meta.url)));
 const valuesOf = name => Object.keys(API.attributes.find(a => a.name === name).values);
@@ -184,20 +185,21 @@ test.describe('in motion', () => {
   test.beforeEach(({ page }) => open(page));
   test.afterEach(noProblems);
 
-  test('an unpaused tell moves', async ({ page }) => {
-    const a = await frame(page, '[data-tell="drones"]');
-    await expect
-      .poll(() => frame(page, '[data-tell="drones"]'), { message: 'a running tell draws a new frame' })
-      .not.toBe(a);
-  });
-
-  test('paused freezes the frame', async ({ page }) => {
-    await page.$eval('[data-tell="drones"]', el => {
-      el.paused = true;
-    });
-    const a = await frame(page, '[data-tell="drones"]');
-    await twoFrames(page);
-    expect(await frame(page, '[data-tell="drones"]'), 'a paused tell draws the same frame twice').toBe(a);
+  test('a tell moves unless it is paused or reduced motion is on', async ({ page }) => {
+    const selector = '[data-tell="drones"]';
+    const holds = async () => {
+      await twoFrames(page);
+      const a = await frame(page, selector);
+      await twoFrames(page);
+      return (await frame(page, selector)) === a;
+    };
+    const a = await frame(page, selector);
+    await expect.poll(() => frame(page, selector), { message: 'a running tell draws a new frame' }).not.toBe(a);
+    await page.$eval(selector, el => (el.paused = true));
+    expect(await holds(), 'a paused tell draws the same frame twice').toBe(true);
+    await page.$eval(selector, el => (el.paused = false));
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    expect(await holds(), 'reduced motion holds a still pose').toBe(true);
   });
 
   test('a property set before the element was defined still takes effect', async ({ page }) => {
@@ -273,12 +275,6 @@ test.describe('still frames', () => {
     }
   });
 
-  test('reduced motion holds a still pose', async ({ page }) => {
-    const a = await frame(page, '[data-tell="drones"]');
-    await twoFrames(page);
-    expect(await frame(page, '[data-tell="drones"]'), 'reduced motion draws the same frame twice').toBe(a);
-  });
-
   test('default size follows clamp(20px, 1.43em, 48px)', async ({ page }) => {
     expect(
       await page.$eval('#inline tiny-tell', el => el.getBoundingClientRect().width),
@@ -335,23 +331,6 @@ test.describe('still frames', () => {
       .toBeGreaterThan(60);
   });
 
-  test('the tag is the image instead of its canvas, and :state() follows the state', async ({ page }) => {
-    expect(
-      await page.$eval('[data-tell="drones"]', el => {
-        const canvas = el.shadowRoot.querySelector('[part="tell"]');
-        return [canvas.getAttribute('role'), canvas.getAttribute('aria-hidden')];
-      }),
-      'the canvas part is hidden and has no role, so the tag carries the name in this engine'
-    ).toEqual([null, 'true']);
-    await page.$eval('[data-tell="drones"]', el => {
-      el.state = 'error';
-    });
-    expect(
-      await page.$eval('[data-tell="drones"]', el => el.matches(':state(error)')),
-      'the state is exposed to :state()'
-    ).toBe(true);
-  });
-
   test('a hidden tell draws once it is shown', async ({ page }) => {
     await page.$eval('#hidden', el => {
       el.hidden = false;
@@ -401,35 +380,6 @@ test.describe('high density', () => {
       expect(shown, `${selector} canvas is drawn at the size of its box`).toEqual([0, 0]);
     }
     expect((await pixels(page, '#sized')).css, '--tell-size sets the box').toBe(48);
-  });
-});
-
-test.describe('large sizes', () => {
-  test.beforeEach(({ page }) => open(page, { still: true }));
-  test.afterEach(noProblems);
-
-  test('blot keeps a crisp edge when it is drawn large', async ({ page }) => {
-    await page.evaluate(() =>
-      document.body.insertAdjacentHTML(
-        'beforeend',
-        '<tiny-tell id="big-blot" tell="blot" state="done" label="" style="--tell-size: 164px"></tiny-tell>'
-      )
-    );
-    await drawn(page);
-    const edge = await page.$eval('#big-blot', el => {
-      const cv = el.shadowRoot.querySelector('[part="tell"]'),
-        W = cv.width,
-        d = cv.getContext('2d').getImageData(0, 0, W, W).data;
-      let narrowest = Infinity;
-      for (let y = Math.round(W * 0.3); y < W * 0.6; y++) {
-        const alpha = x => d[(y * W + x) * 4 + 3],
-          start = [...Array(W >> 1).keys()].find(x => alpha(x) > 25),
-          end = [...Array(W >> 1).keys()].find(x => alpha(x) > 230);
-        if (start !== undefined && end !== undefined) narrowest = Math.min(narrowest, end - start);
-      }
-      return narrowest;
-    });
-    expect(edge, 'at 164px the edge goes from 10% to 90% within 3 device pixels').toBeLessThanOrEqual(3);
   });
 });
 
@@ -590,7 +540,7 @@ test.describe('Chromium only', () => {
     ).toContain('aria-hidden-focus');
   });
 
-  test('every tell stays in its live area, loops without a seam, and never flashes more than 3 times a second, and Lens’s halo, glass, metal, and iris keep to its color="current" ink (#98)', async ({
+  test('every tell stays in its live area, loops without a seam, and never flashes more than 3 times a second, Lens keeps to its color="current" ink (#98), and Blot keeps a crisp edge drawn large (#92)', async ({
     page,
   }) => {
     test.setTimeout(120000);
@@ -599,9 +549,9 @@ test.describe('Chromium only', () => {
       .waitForFunction(() => window.engineChecks, null, { timeout: 110000 })
       .then(h => h.jsonValue());
     expect(flashes, 'every tell × state × scheme was checked for flashing').toHaveLength(
-      TELLS.length * (STATES.length + 1 + 3) * 2 // dance, plus doze's nod, doze, and wake
+      TELLS.length * (STATES.length + 1 + DOZE_CLIPS.length) * 2 // the 1 is dance
     );
-    expect(failures, 'no live-area, seam, flash, or ink failures').toEqual([]);
+    expect(failures, 'no live-area, seam, flash, ink, or edge failures').toEqual([]);
   });
 });
 
@@ -740,23 +690,6 @@ test.describe('play bundle', () => {
     await expect
       .poll(() => peakOpen(page, '#eyes'), { message: 'the pointer coming back wakes it' })
       .toBeGreaterThan(awake * 0.8);
-    await page.mouse.move(cx + 2000, cy + 2000);
-    await expect
-      .poll(() => peakOpen(page, '#eyes'), { message: 'it dozes off again', timeout: 5000 })
-      .toBeLessThan(awake * 0.5);
-    await page.$eval('#eyes', el => (el.state = 'working'));
-    await expect
-      .poll(() => peakOpen(page, '#eyes'), { message: 'a state change lands on the new state' })
-      .toBeGreaterThan(busy * 0.7);
-    await page.$eval('#eyes', el => (el.state = 'idle'));
-    await expect
-      .poll(() => peakOpen(page, '#eyes'), { message: 'back on idle, it dozes off once more', timeout: 5000 })
-      .toBeLessThan(awake * 0.5);
-    await page.$eval('#eyes', el => (el.paused = true));
-    await expect
-      .poll(() => peakOpen(page, '#eyes'), { message: 'pausing a sleeping tell hands it back to idle' })
-      .toBeGreaterThan(awake * 0.5);
-    await page.$eval('#eyes', el => (el.paused = false));
   });
 
   test('a subclass under its own tag dances and names its own tag in warnings', async ({ page }) => {
@@ -777,25 +710,6 @@ test.describe('play bundle', () => {
     await expect
       .poll(() => warnings.join('\n'), { message: 'the warning names the subclass tag' })
       .toContain('<sub-tell>: unknown state "nope"');
-  });
-
-  test('dance events: canceling tell-dance keeps the tell from dancing', async ({ page }) => {
-    await page.evaluate(() => {
-      customElements.get('tiny-tell').timeScale = 4;
-      window.canceled = false;
-      window.ended = false;
-      document.addEventListener('tell-dance', e => {
-        e.preventDefault();
-        window.canceled = true;
-      });
-      document.addEventListener('tell-after-dance', () => (window.ended = true));
-    });
-    await tap5(page, '#eyes');
-    await expect.poll(() => page.evaluate(() => window.canceled), { message: 'five taps asked to dance' }).toBe(true);
-    // Nothing signals a dance that didn't happen, so give one at 4× speed time to show its color first.
-    for (let i = 0; i < 30; i++) await twoFrames(page);
-    expect(await hue(page, '#eyes'), 'no dance color after a canceled dance').toBeLessThan(20);
-    expect(await page.evaluate(() => window.ended), 'a dance that never started never ends').toBe(false);
   });
 
   test('dance events: a state or tell change mid-dance ends it with tell-after-dance', async ({ page }) => {
@@ -837,7 +751,9 @@ test.describe('play bundle', () => {
     const result = await page.evaluate(() => {
       const el = document.getElementById('eyes'),
         fired = [];
+      let ended = 0;
       el.addEventListener('tell-dance', e => fired.push(e.type));
+      el.addEventListener('tell-after-dance', () => ended++);
       const first = el.dance(),
         again = el.dance();
       el.state = 'done';
@@ -849,7 +765,7 @@ test.describe('play bundle', () => {
       const gone = document.createElement('tiny-tell');
       document.body.append(gone);
       gone.remove();
-      return { first, again, paused, canceled, removed: gone.dance(), fired: fired.length };
+      return { first, again, paused, canceled, removed: gone.dance(), fired: fired.length, ended };
     });
     expect(result.first, 'a free tell starts dancing').toBe(true);
     expect(result.again, 'a dancing tell refuses a second dance').toBe(false);
@@ -857,6 +773,7 @@ test.describe('play bundle', () => {
     expect(result.canceled, 'a canceled tell-dance refuses').toBe(false);
     expect(result.removed, 'a tell off the page refuses').toBe(false);
     expect(result.fired, 'tell-dance fired for the first dance and the canceled one only').toBe(2);
+    expect(result.ended, 'only the dance that started reports an end').toBe(1);
   });
 
   test('noplay: a tell ignores the pointer and five taps, still dances on dance(), and plays again without it', async ({
@@ -951,17 +868,6 @@ test.describe('site pages', () => {
   test.beforeEach(offline);
   test.afterEach(noProblems);
 
-  test('icon-only links and buttons show a named tooltip on hover, even after jumping far down the page', async ({
-    page,
-  }) => {
-    await open(page, { path: '/docs/' });
-    const anchor = page.locator('#funsies .heading-anchor');
-    await anchor.hover();
-    const tip = page.locator(`wa-tooltip[for="${await anchor.getAttribute('id')}"]`);
-    await expect(tip, 'the Funsies anchor gets a named tooltip').toHaveText(/\S/);
-    await expect(tip, 'the first hover opens it, though it was built under the pointer').toHaveJSProperty('open', true);
-  });
-
   test('docs in Core mode keep every example tell out of play, even after a tell change', async ({ page }) => {
     await open(page, { path: '/docs/' });
     const playing = () =>
@@ -1011,29 +917,6 @@ test.describe('site pages', () => {
     await open(page, { path: '/?stats=on' });
     await page.waitForURL(url => url.search === '');
     expect(await flag(), 'on clears it again').toBeNull();
-  });
-
-  test('the wordmark reports the load in the state color on light, and keeps its dot in ink on dark', async ({
-    page,
-  }) => {
-    await page.addInitScript(() => {
-      window.markSeen = new Set();
-      new MutationObserver(() => {
-        const tell = document.querySelector('h1 tiny-tell');
-        if (tell) window.markSeen.add(`${tell.getAttribute('state')} ${tell.getAttribute('color')}`);
-      }).observe(document, { subtree: true, childList: true, attributes: true });
-    });
-    for (const scheme of ['light', 'dark']) {
-      await page.emulateMedia({ colorScheme: scheme });
-      await open(page, { path: '/' });
-      const tell = page.locator('h1 tiny-tell');
-      await expect(tell, `${scheme}: the bead settles to idle`).toHaveAttribute('state', 'idle', { timeout: 15_000 });
-      const tint = scheme === 'light' ? 'state' : 'current';
-      expect(
-        (await page.evaluate(() => [...window.markSeen])).filter(seen => !seen.endsWith(' null')),
-        `${scheme}: the bead plays working and done in ${tint}, then idles in ink`
-      ).toEqual([`working ${tint}`, `done ${tint}`, 'idle current']);
-    }
   });
 
   test('pages load Web Awesome as one file, define every wa-* element, and keep the kit’s system icons', async ({
@@ -1104,35 +987,6 @@ test.describe('site pages', () => {
     ).toEqual([]);
   });
 
-  test('docs tells follow the visitor’s chosen tell', async ({ page }) => {
-    await page.addInitScript(() => localStorage.setItem('tells-site-tell', 'eyes'));
-    await open(page, { path: '/docs/' });
-    expect(
-      await page.evaluate(() => [
-        ...new Set(
-          [...document.querySelectorAll('#state-rows tiny-tell, #label-cases tiny-tell, #schemes tiny-tell')].map(
-            tell => tell.tell
-          )
-        ),
-      ]),
-      'the states, labels, and scheme tells all draw the chosen tell'
-    ).toEqual(['eyes']);
-  });
-
-  test('the tab underline keeps sliding while the new panel fills in', async ({ page }) => {
-    await open(page, { path: '/docs/' });
-    const group = page.locator('wa-tab-group:has(> .tab-bar)').first();
-    await page.addStyleTag({ content: ':root, .wa-light, .wa-dark { --wa-transition-slow: 5s !important }' });
-    await group.scrollIntoViewIfNeeded();
-    const isSliding = () => group.evaluate(g => g.querySelector(':scope > .tab-bar').getAnimations().length > 0);
-    await group.locator(':scope > wa-tab').nth(1).click();
-    await expect.poll(isSliding, { message: 'picking a tab slides the underline' }).toBe(true);
-    // Stands in for content that loads into the panel late, like a copy button.
-    await group.evaluate(g => g.querySelector(':scope > wa-tab-panel[active]').append(document.createElement('span')));
-    await twoFrames(page);
-    expect(await isSliding(), 'the panel filling in mid-slide does not cut the slide short').toBe(true);
-  });
-
   test('Tap Tempo hands the speed back once the tapping stops, and announces the tempo once', async ({ page }) => {
     await open(page, { path: '/docs/' });
     const tap = page.locator('#tap');
@@ -1148,51 +1002,10 @@ test.describe('site pages', () => {
     await expect(status, 'a new round clears it, so the same tempo is announced again').toBeEmpty();
   });
 
-  test('the hero holds still while its demo cards cycle through their lines', async ({ page }) => {
-    await page.setViewportSize({ width: 1024, height: 768 });
-    await page.clock.install();
-    await open(page, { path: '/' });
-    const swapped = before =>
-      page.$$eval(
-        '#hero-cast [data-say]',
-        (els, was) => els.every((el, i) => !el.getAnimations().length && el.textContent !== was[i]),
-        before
-      );
-    const lines = () => page.$$eval('#hero-cast [data-say]', els => els.map(el => el.textContent));
-    const where = () =>
-      page.evaluate(() => ({
-        copy: document.querySelector('.hero-copy').getBoundingClientRect().top,
-        cast: document.getElementById('hero-cast').offsetHeight,
-      }));
-    const start = await where();
-    const stepAll = async ms => {
-      const before = await lines();
-      await page.clock.fastForward(ms);
-      await expect.poll(() => swapped(before), { message: 'every card swaps to its next line' }).toBe(true);
-      expect(await where(), 'a new line moves neither the cards nor the copy beside them').toEqual(start);
-    };
-    /* The cards take their first step staggered, the last at 3190ms, then every 3200ms. 4000 lands 800ms clear of both. */
-    await stepAll(4000);
-    for (let step = 0; step < 4; step++) await stepAll(3200);
-  });
-
-  test('the docs Labels table says what screen readers hear for each label', async ({ page }) => {
-    await open(page, { path: '/docs/' });
-    await expect(page.locator('#label-cases td:last-child'), 'one answer per label case').toHaveText([
-      '“Working”, an image',
-      '“Uploading photos”, an image',
-      'Nothing. The tell is hidden.',
-    ]);
-  });
-
   test('the Prompt install method shows the paste-in prompt, and the docs fall back to npm', async ({ page }) => {
     await open(page, { path: '/#install' });
     await page.locator('#b-method wa-radio[value="prompt"]').click();
     await expect(page.locator('#b-install'), 'the prompt replaces the install command').toContainText('llms.txt');
-    await expect(page.locator('#b-install'), 'a paste-in prompt gets no code grammar').not.toHaveClass(/language-/);
-    await expect(page.locator('pre:has(> #b-install)'), 'a paste-in prompt wraps instead of scrolling').toHaveClass(
-      /is-paste-in/
-    );
     await expect(
       page.locator('.self-host'),
       'self-hosting is beside the point once an assistant installs it'
@@ -1322,9 +1135,7 @@ test.describe('docs drawer', () => {
 test.describe('docs without JavaScript', () => {
   test.skip(({ browserName }) => browserName !== 'chromium', 'the shipped HTML is the same in every engine');
 
-  test('the reference tables, label answers, accessibility list, and heading anchors are in the HTML', async ({
-    browser,
-  }) => {
+  test('the reference tables, label answers, and heading anchors are in the HTML', async ({ browser }) => {
     const context = await browser.newContext({ javaScriptEnabled: false });
     const page = await context.newPage();
     await page.route(/^https:\/\/(ka-p\.fontawesome\.com|cloud\.umami\.is)\//, route => route.abort());
@@ -1346,7 +1157,6 @@ test.describe('docs without JavaScript', () => {
       '“Uploading photos”, an image',
       'Nothing. The tell is hidden.',
     ]);
-    await expect(page.locator('#a11y > li'), 'the seven accessibility promises').toHaveCount(7);
     const anchors = await page.evaluate(() =>
       [...document.querySelectorAll('main section[id] > h2')].map(h => [
         h.parentElement.id,

@@ -11,6 +11,7 @@ Set the number before writing the first test for a feature. Judging each test on
 - **Count contract surfaces, not behaviors.** One test per thing someone outside `src/` depends on: an attribute, a token, the accessible name, the play gestures. Examples of the same thing go in a table inside one test.
 - **Compare against something shipped.** If a new attribute wants more tests than `scheme` has, stop and ask why.
 - **Over budget?** Make it table-driven first, then cut.
+- **The number goes in the PR.** The PR description names each test it adds and the contract that test protects. No count, no tests.
 - **Gate 1 beats the number.** If a real contract would go unprotected, the budget is wrong, not the test.
 
 For the current count, run `npx playwright test --list --project=chromium` (each browser test runs in up to three engines). `npm test` also runs the node scripts and test file in the table below.
@@ -31,16 +32,22 @@ If the answer doesn't depend on a real browser, it doesn't go in one. A browser 
 
 | Concern | Where |
 |---|---|
-| Canvas geometry (live area, centering), flashing, and loop seams (no jump when a state's loop restarts) | Playwright, `tests/engine.html` (Chromium, every tell × state × scheme, imports `src/` directly) |
+| Canvas geometry (live area, centering, crisp edges), flashing, and loop seams (no jump when a state's loop restarts) | Playwright, `tests/engine.html` (Chromium, every tell × state × scheme, imports `src/` directly) |
 | The public surface matches `custom-elements.json` (names, defaults, reflection) | `node --test tests/public-surface.test.mjs` (happy-dom) |
 | Element behavior that needs pixels, layout, or input | Playwright, `tests/tiny-tell.spec.js` (Chromium, Firefox, WebKit) |
 | Bundle size (min + gzip ≤ `budgetKb` in `tools/build.mjs`) | `node tools/build.mjs --check` |
 | A missing import or unused name | `eslint .` |
 | Importing on a server (both bundles) | `node tests/server-import.mjs` |
-| The landing, docs, and 404 load and switch theme without errors, the docs drawer and tabs behave, and Tap Tempo hands the speed back | Playwright, `tests/tiny-tell.spec.js` "site pages" (Chromium, Font Awesome's icons and the Umami script stubbed so it runs offline on any port) |
+| The landing, docs, and 404 load and switch theme without errors, the docs drawer behaves, and Tap Tempo hands the speed back | Playwright, `tests/tiny-tell.spec.js` "site pages" (Chromium, Font Awesome's icons and the Umami script stubbed so it runs offline on any port) |
 | Rendering in test DOMs (jsdom, happy-dom) without throwing or logging | `node tests/fake-dom.mjs jsdom` and `… happy-dom` |
 
 Don't repeat a layer's job in another layer.
+
+## Pixels: only the tell's own canvas
+
+The canvas behind `::part(tell)` is the product, so tests may read its pixels (alpha, luminance, hue). Nothing else gets that pass. On site pages and Web Awesome chrome, don't assert pixels, exact geometry, animations (`getAnimations()`, transition timing), or class names.
+
+Site tests protect public URLs (builder links, `?stats=`), privacy, accessibility, and pages loading without errors. A site behavior nobody outside the repo depends on gets its proof in the PR (a screenshot), not a test.
 
 ## How to write one
 
