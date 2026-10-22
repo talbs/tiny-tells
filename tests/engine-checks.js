@@ -1,6 +1,6 @@
 import '../src/dance.js';
 import { DOZE_CLIPS, LEN } from '../src/doze.js';
-import { playerFor } from '../src/players.js';
+import { playerFor, stillAt } from '../src/players.js';
 import { TELLS } from '../src/registry.js';
 import { PERIOD, PI, STATES, css, linear, withScene } from '../src/core.js';
 
@@ -10,11 +10,17 @@ const INSET = 0.08,
   FPS = 60,
   SEAM_MIN = 1,
   SEAM_RATIO = 2.5,
-  LENS_INK = [0.2, 0.02, 260],
+  CURRENT_INK = [0.2, 0.02, 260],
   INK_ALPHA = 25,
   INK_LIFT = 30,
   EDGE_SOLID = 230,
-  EDGE_PX = 3;
+  EDGE_PX = 3,
+  SOLID = 200 / 255,
+  REACH = 0.05,
+  SAME_SHAPE_LIMIT = 0.5;
+// Their error still draws the idle shape in one ink. Each waits on its own fix, and then comes off this list.
+const SAME_SHAPE = ['eyes', 'lens', 'dekatron'];
+const ONE_INK = { isDark: false, palette: null, gaze: null, ink: CURRENT_INK };
 const draw = (cv, tell, id, t, scene) =>
   withScene(scene, () => {
     playerFor(tell, id).draw(cv, t);
@@ -43,6 +49,25 @@ const flashesPerSecond = series => {
   });
   return Math.max(0, ...turns.map(t0 => turns.filter(t => t >= t0 && t < t0 + 1).length / 2));
 };
+// Solid is relative to the still's own darkest ink, so a dimmer copy of the same pose still counts as the same shape.
+const solidInk = d => {
+  let peak = 0;
+  for (let i = 3; i < d.length; i += 4) peak = Math.max(peak, d[i]);
+  return Uint8Array.from({ length: d.length / 4 }, (_, i) => d[i * 4 + 3] > peak * SOLID);
+};
+// Ink counts as shared within a small reach, so a camera change that moves the same pose a pixel or two still reads as the same shape.
+const spread = (ink, W) => {
+  const reach = Math.max(1, Math.round(W * REACH));
+  return ink.map((_, i) => {
+    const x = i % W,
+      y = Math.floor(i / W);
+    for (let dy = -reach; dy <= reach; dy++)
+      for (let dx = -reach; dx <= reach; dx++)
+        if (x + dx >= 0 && x + dx < W && y + dy >= 0 && y + dy < W && ink[(y + dy) * W + x + dx]) return 1;
+    return 0;
+  });
+};
+const shared = (mine, theirs) => mine.filter((on, i) => on && theirs[i]).length;
 const frames = (seconds, f) => Array.from({ length: Math.round(seconds * FPS) }, (_, i) => f(i / FPS));
 export const runEngineChecks = () => {
   const failures = [],
@@ -121,14 +146,14 @@ export const runEngineChecks = () => {
   lens.width = lens.height = 96;
   lens._css = 48;
   const swatch = document.createElement('canvas').getContext('2d');
-  swatch.fillStyle = css(LENS_INK);
+  swatch.fillStyle = css(CURRENT_INK);
   swatch.fillRect(0, 0, 1, 1);
   const [ir, ig, ib] = swatch.getImageData(0, 0, 1, 1).data,
     inkLum = (ir + ig + ib) / 3;
   for (const id of STATES) {
     let lightest = 0;
     for (let t = 0.05; t < PERIOD[id]; t += 0.1) {
-      const d = draw(lens, 'lens', id, t, { isDark: false, palette: null, gaze: null, ink: LENS_INK });
+      const d = draw(lens, 'lens', id, t, ONE_INK);
       for (let i = 0; i < d.length; i += 4) {
         const lum = (d[i] + d[i + 1] + d[i + 2]) / 3;
         if (d[i + 3] > INK_ALPHA) lightest = Math.max(lightest, lum);
@@ -154,5 +179,22 @@ export const runEngineChecks = () => {
   }
   if (!(narrowest <= EDGE_PX))
     failures.push(`edge: blot done at ${B}px goes from 10% to 90% over ${narrowest} pixels, not ${EDGE_PX} or fewer`);
+  // In forced colors every state draws in one ink, so error has to be a different shape from idle, not just a darker one (#124).
+  const shape = document.createElement('canvas');
+  shape.width = shape.height = 40;
+  shape._css = 20;
+  for (const tell of Object.keys(TELLS)) {
+    const [error, idle] = ['error', 'idle'].map(id => solidInk(draw(shape, tell, id, stillAt(tell, id), ONE_INK))),
+      ink = [error, idle].map(m => m.filter(Boolean).length),
+      overlap =
+        (shared(error, spread(idle, shape.width)) + shared(idle, spread(error, shape.width))) / (ink[0] + ink[1] || 1),
+      isSame = !ink[0] || !ink[1] || overlap >= SAME_SHAPE_LIMIT;
+    if (isSame !== SAME_SHAPE.includes(tell))
+      failures.push(
+        isSame
+          ? `shape: ${tell} error and idle share ${overlap.toFixed(2)} of their ink (${ink[0]} and ${ink[1]} px) in one ink`
+          : `shape: ${tell} error is now its own shape in one ink, so take it off SAME_SHAPE`
+      );
+  }
   return { failures, flashes: rows };
 };

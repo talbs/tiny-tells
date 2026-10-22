@@ -34,7 +34,7 @@ If the answer doesn't depend on a real browser, it doesn't go in one. A browser 
 
 | Concern | Where |
 |---|---|
-| Canvas geometry (live area, centering, crisp edges), flashing, and loop seams (no jump when a state's loop restarts) | Playwright, `tests/engine.html` (Chromium, every tell × state × scheme, imports `src/` directly) |
+| Canvas geometry (live area, centering, crisp edges), flashing, loop seams (no jump when a state's loop restarts), and error drawing a different shape from idle in one ink | Playwright, `tests/engine.html` (Chromium, every tell × state × scheme, imports `src/` directly) |
 | The public surface matches `custom-elements.json` (names, defaults, reflection) | `node --test tests/public-surface.test.mjs` (happy-dom) |
 | Element behavior that needs pixels, layout, or input | Playwright, `tests/element.spec.js` (Chromium, Firefox, WebKit) |
 | Bundle size (min + gzip ≤ `budgetKb` in `tools/build.mjs`) | `node tools/build.mjs --check` |
