@@ -12,7 +12,7 @@ export default [
     rules: { 'no-undef': 'error', 'no-unused-vars': 'error' },
   },
   {
-    files: ['tools/**/*.mjs', 'tests/**/*.mjs', '*.config.js', 'tests/tiny-tell.spec.js'],
+    files: ['tools/**/*.mjs', 'tests/**/*.mjs', '*.config.js', 'tests/*.spec.js', 'tests/helpers.js'],
     languageOptions: { ecmaVersion: 2024, sourceType: 'module', globals: { ...globals.node } },
     rules: { 'no-undef': 'error', 'no-unused-vars': 'error' },
   },

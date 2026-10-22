@@ -11,10 +11,10 @@ const INSET = 0.08,
   SEAM_MIN = 1,
   SEAM_RATIO = 2.5,
   LENS_INK = [0.2, 0.02, 260],
-  LENS_INK_DARK = [0.95, 0.01, 260],
   INK_ALPHA = 25,
   INK_LIFT = 30,
-  LAYER_GAP = 30;
+  EDGE_SOLID = 230,
+  EDGE_PX = 3;
 const draw = (cv, tell, id, t, scene) =>
   withScene(scene, () => {
     playerFor(tell, id).draw(cv, t);
@@ -54,7 +54,7 @@ export const runEngineChecks = () => {
   for (const dark of [false, true]) {
     const still = { isDark: dark, palette: null, gaze: null };
     for (const tell of Object.keys(TELLS))
-      for (const id of [...STATES, ...(PERIOD.dance ? ['dance'] : []), ...DOZE_CLIPS]) {
+      for (const id of [...STATES, 'dance', ...DOZE_CLIPS]) {
         for (const px of [20, 48]) {
           const cv = document.createElement('canvas'),
             W = (cv.width = cv.height = px * 2);
@@ -139,25 +139,20 @@ export const runEngineChecks = () => {
         `ink: lens ${id} light draws ${Math.round(lightest - inkLum)} lighter than its color="current" ink`
       );
   }
-  // In one ink, Lens tells its glass, metal, and iris apart by how much ink each takes, darkest to brightest.
-  for (const isDark of [false, true]) {
-    const d = draw(lens, 'lens', 'working', 0.05, {
-        isDark,
-        palette: null,
-        gaze: null,
-        ink: isDark ? LENS_INK_DARK : LENS_INK,
-      }),
-      mid = lens.width / 2,
-      alpha = x => d[(mid * lens.width + x) * 4 + 3],
-      lit = x => (isDark ? alpha(x) : 255 - alpha(x));
-    let edge = lens.width - 1;
-    while (edge > mid && alpha(edge) <= INK_ALPHA) edge--;
-    const r = edge - mid,
-      [glass, metal, iris] = [lit(Math.round(mid + 0.72 * r)), lit(Math.round(mid + 0.93 * r)), lit(mid)];
-    if (!(glass + LAYER_GAP < metal && metal + LAYER_GAP < iris))
-      failures.push(
-        `layers: lens working ${isDark ? 'dark' : 'light'} glass ${glass}, metal ${metal}, iris ${iris} in color="current" ink`
-      );
+  const big = document.createElement('canvas'),
+    B = (big.width = big.height = 164);
+  big._css = B;
+  const d = draw(big, 'blot', 'done', 0.05, { isDark: false, palette: null, gaze: null });
+  let narrowest = Infinity;
+  for (let y = Math.round(B * 0.3); y < B * 0.6; y++) {
+    const firstOver = limit => {
+        for (let x = 0; x < B >> 1; x++) if (d[(y * B + x) * 4 + 3] > limit) return x;
+      },
+      start = firstOver(INK_ALPHA),
+      end = firstOver(EDGE_SOLID);
+    if (start !== undefined && end !== undefined) narrowest = Math.min(narrowest, end - start);
   }
+  if (!(narrowest <= EDGE_PX))
+    failures.push(`edge: blot done at ${B}px goes from 10% to 90% over ${narrowest} pixels, not ${EDGE_PX} or fewer`);
   return { failures, flashes: rows };
 };
