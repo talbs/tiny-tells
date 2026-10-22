@@ -956,9 +956,8 @@ words.textContent = 'Synced 3 files.';</code></pre>
           <li><strong>The canvas:</strong> <code>::part(tell)</code>. Opacity, filters, transforms.</li>
           <li>
             <strong>The state:</strong> <code>:state(working)</code>, <code>:state(done)</code>, and so on. Style the
-            things around the tell by what it’s showing. These need <a href="#browser-support">newer browsers</a>. For
-            older ones, match the attribute (<code>tiny-tell[state="error"]</code>). A tell with no
-            <code>state</code> is <code>working</code>, so add <code>tiny-tell:not([state])</code> to that one.
+            things around the tell by what it’s showing. These need <a href="#browser-support">newer browsers</a>. The
+            second line below is the fallback for older ones.
           </li>
         </ul>
         <figure class="example wa-not-prose">
@@ -980,10 +979,13 @@ words.textContent = 'Synced 3 files.';</code></pre>
               <span class="message">Uploading…</span>
             </p>
           </div>
-          <pre
-            data-copy
-          ><code class="language-css">tiny-tell:state(error) + .message { color: var(--danger); }</code></pre>
+          <pre data-copy><code class="language-css">tiny-tell:state(error) + .message { color: var(--danger); }
+tiny-tell[state="error"] + .message { color: var(--danger); }</code></pre>
         </figure>
+        <p>
+          Matching <code>working</code> by attribute? Add <code>tiny-tell:not([state])</code> too. A tell with no
+          <code>state</code> is <code>working</code>.
+        </p>
         <figure class="example wa-not-prose">
           <div class="example-preview studio wa-grid wa-gap-l compare">
             <div class="wa-stack wa-gap-s wa-align-items-center">
@@ -1010,24 +1012,46 @@ words.textContent = 'Synced 3 files.';</code></pre>
       >
         <h2 id="play-title">Play Bundle</h2>
         <p>
-          The same element and API, with three extras for the person at the screen. A tell glances at a nearby mouse
-          pointer. Five quick taps make it dance. Leave an idle tell alone for 30 seconds and it dozes off until the
-          pointer comes back. Touch screens never doze. It costs under 2.5 KB more, gzipped.
-        </p>
-        <p>
+          The same element and API, with three extras for the person at the screen. It costs under 2.5 KB more, gzipped.
           The core bundle reports status and that’s it. Reach for play when the tell is part of the product’s
-          personality, not just a progress signal. Reduced motion and <code>paused</code> both switch it off.
+          personality, not just a progress signal.
         </p>
-        <p>
-          Some tells shouldn’t play. A dense table, for one. Give those <code>noplay</code>. They still animate their
-          state, but they won’t glance at the pointer, dance to taps, or doze. To dance one on cue, call
-          <code>tell.dance()</code>. It works on <code>noplay</code> tells too.
-        </p>
-        <p>
-          The dance draws in sky blue. Set <code>--tell-color-dance</code> to change it, with any CSS color,
-          <code>light-dark()</code> included. It also wins over <code>color="current"</code>, so a tell that matches its
-          text can still dance in color.
-        </p>
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">Extra</th>
+              <th scope="col">Happens When</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">Glance</th>
+              <td>a mouse pointer comes near</td>
+            </tr>
+            <tr>
+              <th scope="row">Dance</th>
+              <td>someone taps it five times quickly, or you call <code>tell.dance()</code></td>
+            </tr>
+            <tr>
+              <th scope="row">Doze</th>
+              <td>
+                an idle tell is left alone for 30 seconds. It wakes when the pointer comes back. Never on touch screens.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <ul>
+          <li>
+            <strong><code>noplay</code></strong> keeps a tell to its state animation, with no glance, tap dance, or
+            doze. Use it on busy spots, like a dense table. <code>tell.dance()</code> still works.
+          </li>
+          <li><strong>Reduced motion</strong> and <code>paused</code> both switch play off.</li>
+          <li>
+            <strong><code>--tell-color-dance</code></strong> sets the dance color (sky blue by default), with any CSS
+            color, <code>light-dark()</code> included. It wins over <code>color="current"</code>, so a tell that matches
+            its text can still dance in color.
+          </li>
+        </ul>
         <figure class="example wa-not-prose">
           <div class="example-preview studio wa-grid wa-gap-l compare">
             <div class="wa-stack wa-gap-s wa-align-items-center">
@@ -1658,12 +1682,17 @@ tiny-tell:not(:defined)[state="warning"]::before { content: "!"; }</code></pre>
             </tbody>
           </table></wa-scroller
         >
-        <p>
-          A dance lasts two loops, about 6.4 seconds. <code>tell-dance</code> doesn’t fire while a tell is paused, under
-          reduced motion, or mid-dance. Pausing freezes the frame but not the dance’s clock, so if the time’s up when
-          you unpause, <code>tell-after-dance</code> fires right then. A canceled dance never started, so it gets no
-          <code>tell-after-dance</code>.
-        </p>
+        <ul>
+          <li><strong>Length:</strong> a dance lasts two loops, about 6.4 seconds.</li>
+          <li>
+            <strong>No <code>tell-dance</code></strong> while a tell is paused, under reduced motion, or mid-dance.
+          </li>
+          <li>
+            <strong>Pausing</strong> freezes the frame but not the dance’s clock. If the time’s up when you unpause,
+            <code>tell-after-dance</code> fires right then.
+          </li>
+          <li><strong>A canceled dance</strong> never started, so it gets no <code>tell-after-dance</code>.</li>
+        </ul>
         <figure
           class="example wa-not-prose"
           id="events-demo"
@@ -1766,26 +1795,36 @@ tell.addEventListener('tell-after-dance', () => {
         <ul class="wa-cluster wa-gap-xs wa-list-plain">
           {{support-tags}}
         </ul>
-        <wa-callout
-          class="note"
-          variant="neutral"
-          appearance="outlined"
-          size="s"
+        <p>Two features need newer browsers:</p>
+        <wa-scroller orientation="horizontal"
+          ><table>
+            <thead>
+              <tr>
+                <th scope="col">Feature</th>
+                <th scope="col">Chrome</th>
+                <th scope="col">Firefox</th>
+                <th scope="col">Safari</th>
+                <th scope="col">In Older Browsers</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row"><code>:state()</code> selectors</th>
+                <td>125</td>
+                <td>126</td>
+                <td>17.4</td>
+                <td>Match the <code>state</code> attribute instead.</td>
+              </tr>
+              <tr>
+                <th scope="row"><code>scheme="auto"</code></th>
+                <td>123</td>
+                <td>120</td>
+                <td>17.5</td>
+                <td>Follows the system’s light or dark setting, not the container’s <code>color-scheme</code>.</td>
+              </tr>
+            </tbody>
+          </table></wa-scroller
         >
-          <wa-icon
-            slot="icon"
-            family="sharp"
-            variant="regular"
-            name="thumbtack"
-          ></wa-icon>
-          <strong>Two features need newer browsers.</strong>
-          <span
-            ><code>:state()</code> selectors need Chrome 125, Firefox 126, or Safari 17.4. Before that, match the
-            <code>state</code> attribute instead. <code>scheme="auto"</code> follows a container’s
-            <code>color-scheme</code> from Chrome 123, Firefox 120, and Safari 17.5. Before that, it follows the
-            system’s light or dark setting.</span
-          >
-        </wa-callout>
       </section>
       <section
         id="how-it-works"
