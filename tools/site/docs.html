@@ -432,8 +432,8 @@ words.textContent = 'Synced 3 files.';</code></pre>
         <h2 id="a11y-title">Accessibility</h2>
         <p>
           A tell is a hint, never the message. The words carry the status. The tell is what you notice at a glance. Tiny
-          Tells handles everything it can (motion, contrast, forced colors, flashing). The one thing it can’t know is
-          what’s actually happening, so that part is yours.
+          Tells handles motion, contrast, forced colors, and flashing. The one thing it can’t know is what’s actually
+          happening, so that part is yours.
         </p>
         <h3 id="your-part">Your Part</h3>
         <ol>
@@ -999,7 +999,7 @@ tiny-tell[state="error"] + .message { color: var(--danger); }</code></pre>
         <p>
           The same element and API, with three extras for the person at the screen. It costs under 2.5 KB more, gzipped.
           The core bundle reports status and that’s it. Reach for play when the tell is part of the product’s
-          personality, not just a progress signal.
+          personality.
         </p>
         <table>
           <thead>
@@ -1289,7 +1289,7 @@ button.addEventListener('click', async () => {
       >
         <h2 id="agent-status-title">Agent Status</h2>
         <p>
-          An agent run is always doing one of five things, and those are the five states. A spinner covers
+          An agent run fits the five states. A spinner covers
           <code>working</code>. What it can’t show is <code>warning</code>: the run stopped and it’s waiting on a
           person. That’s the state that costs time when nobody notices it.
         </p>
@@ -1655,9 +1655,9 @@ tiny-tell:not(:defined)[state="warning"]::before { content: "!"; }</code></pre>
         >
         <h3 id="events">Events</h3>
         <p>
-          The core fires no events. It only shows the state you set, so you already know it. The play bundle fires two
-          around a dance (dozing fires none, since the state stays idle). Both bubble and cross shadow roots, so listen
-          on the tell or anywhere above it.
+          The core fires no events. It only shows the state you set, so there’s nothing new to report. The play bundle
+          fires two around a dance (dozing fires none, since the state stays idle). Both bubble and cross shadow roots,
+          so listen on the tell or anywhere above it.
         </p>
         <wa-scroller orientation="horizontal"
           ><table>
@@ -1781,7 +1781,7 @@ tell.addEventListener('tell-after-dance', () => {
         <h2 id="browser-title">Browser Support</h2>
         <p>
           These versions and later. That covers every browser in <a href="https://web.dev/baseline">Baseline</a>’s
-          Widely available set, with room to spare.
+          Widely available set.
         </p>
         <ul class="wa-cluster wa-gap-xs wa-list-plain">
           {{support-tags}}
@@ -1861,8 +1861,7 @@ tell.addEventListener('tell-after-dance', () => {
         <h3 id="handoffs">Handoffs</h3>
         <p>
           Change the state and the tell doesn’t cut to the new loop. It springs from wherever it is, keeping its
-          momentum, so even a switch halfway through a move looks intended. This is the part a sprite sheet or a GIF
-          can’t do.
+          momentum, so even a switch halfway through a move looks intended. A sprite sheet or a GIF would have to cut.
         </p>
         <figure class="example wa-not-prose">
           <div class="example-preview studio wa-grid wa-gap-l compare handoff-compare">
@@ -1908,7 +1907,7 @@ tell.addEventListener('tell-after-dance', () => {
         <h3 id="drawing">Drawing</h3>
         <p>
           Each tell is one canvas at your screen’s full resolution, and off-screen tells stop drawing. On a recent
-          laptop, 100 on screen run well past 60 fps. On a CPU four times slower, they still hold about 40. Try yours:
+          laptop, 100 on screen run above 60 fps. On a CPU four times slower, they run at about 40. Try yours:
         </p>
         <figure class="example wa-not-prose">
           <div
