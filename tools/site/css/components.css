@@ -67,20 +67,20 @@
     --secondary-opacity: 1;
   }
   .made-with wa-icon[name^='face-'] {
-    --primary-color: var(--wa-color-yellow-10);
+    --primary-color: light-dark(var(--wa-color-yellow-10), var(--wa-color-yellow-40));
     --secondary-color: var(--wa-color-yellow-80);
   }
   .made-with wa-icon[name='rectangle-terminal'] {
-    --primary-color: var(--wa-color-cyan-80);
-    --secondary-color: var(--wa-color-gray-10);
+    --primary-color: light-dark(var(--wa-color-cyan-80), var(--wa-color-cyan-20));
+    --secondary-color: light-dark(var(--wa-color-gray-10), var(--wa-color-gray-80));
   }
   .made-with wa-icon[name='pencil'] {
-    --primary-color: var(--wa-color-yellow-80);
-    --secondary-color: var(--wa-color-pink-70);
+    --primary-color: light-dark(var(--wa-color-yellow-50), var(--wa-color-yellow-80));
+    --secondary-color: light-dark(var(--wa-color-pink-50), var(--wa-color-pink-70));
   }
   .made-with wa-icon[name='heart'] {
-    --primary-color: var(--wa-color-red-30);
-    --secondary-color: var(--wa-color-red-60);
+    --primary-color: light-dark(var(--wa-color-red-20), var(--wa-color-red-30));
+    --secondary-color: light-dark(var(--wa-color-red-50), var(--wa-color-red-60));
   }
   .made-with .is-fa {
     color: var(--brand-font-awesome);
