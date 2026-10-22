@@ -41,6 +41,16 @@ const CHECK_SHORT = Math.hypot(CHECK[1][0] - CHECK[0][0], CHECK[1][1] - CHECK[0]
 const CHECK_SLOTS = [0, CHECK_SHORT, CHECK_SHORT + CHECK_LONG / 2, CHECK_SHORT + CHECK_LONG].map(d =>
   along(CHECK, d).map(v => v * 0.85)
 );
+// Each drone's crash, in CORNERS order: rush start; where it lands (x, z) and the bend its throw curves through (x, z);
+// throw time; skid (0 stops dead on landing, 1 slides to a stop); fall delay; pop up; regroup start, time, lift, and sideways bow.
+const SCATTER = [
+  [0.16, -0.6, -0.46, -0.48, -0.12, 0.42, 0.6, 0.04, 0, 1.12, 0.5, 0.13, 0.14],
+  [0.2, 0.14, -0.62, 0.13, -0.32, 0.7, 0.3, 0.28, 0.18, 1.3, 0.45, 0.11, 0.1],
+  [0.13, 0.62, 0.52, 0.48, 0.4, 0.5, 1, 0, 0.02, 1.2, 0.55, 0.15, -0.12],
+  [0.18, -0.34, 0.2, -0.24, 0.16, 0.34, 0, 0.1, 0.05, 1.22, 0.42, 0.08, 0.1],
+];
+const BAR = [-0.72, 0.24, 0.72, -0.24];
+const curve = (a, b, c, u) => (1 - u) ** 2 * a + 2 * u * (1 - u) * b + u * u * c;
 const FORMS = [
   [
     [-0.42, -0.42],
@@ -69,6 +79,7 @@ const FORMS = [
 ];
 export const DRONES = {
   fit: px => (px <= 32 ? 0.92 : 1),
+  still: { error: 2.3 },
   keys: ['x', 'z', 'h', 'a'],
   hasVel: true,
   pos: ['x', 'z'],
@@ -125,26 +136,31 @@ export const DRONES = {
       }),
     }),
     error: t => {
-      const shake =
-        t > 0.5 && t < 1
-          ? [0.05 * Math.sin(t * 80) * (1 - seg(t, 0.5, 1)), 0.04 * Math.cos(t * 97) * (1 - seg(t, 0.5, 1))]
-          : [0, 0];
+      const up = E.inOut(seg(t, 2.85, 3.2)),
+        jolt = 1 - seg(t, 0.5, 0.95);
       return {
-        shake,
-        flash: bell(seg(t, 0.48, 0.8)),
-        ents: CORNERS.map(([cx, cz]) => {
-          const inn = E.in(seg(t, 0.2, 0.5)),
-            back = E.inOut(seg(t, 0.5, 1.05)),
-            r = 1 - 0.25 * inn + 0.35 * back - 0.1 * E.inOut(seg(t, 1.05, 1.6));
-          const dr = drop(0.25, t - 0.95),
-            up = seg(t, 2.85, 3.2),
-            h = t < 0.95 ? 0.27 : lerp(0.02 + dr.h, 0.27, E.inOut(up));
+        shake: t > 0.5 && t < 0.95 ? [0.05 * Math.sin(t * 80) * jolt, 0.04 * Math.cos(t * 97) * jolt] : [0, 0],
+        flash: bell(seg(t, 0.44, 0.7)),
+        ents: CORNERS.map(([cx, cz], i) => {
+          const [go, lx, lz, bx, bz, throwT, skid, fall, pop, g, regroupT, lift, bow] = SCATTER[i],
+            r = t < 0.5 ? 1 + 0.06 * bell(seg(t, 0, go)) - 0.7 * E.in(seg(t, go, 0.5)) : 0.3,
+            s = seg(t, 0.5, 0.5 + throwT),
+            u = lerp(s, E.out(s), skid),
+            end = g + regroupT,
+            q = seg(t, g, end),
+            back = E.inOut(q),
+            t1 = 0.52 + fall,
+            dr = drop(0.25, t - t1),
+            h = t < t1 ? 0.27 + pop * bell(seg(t, 0.5, t1)) ** 2 : lerp(0.02 + dr.h + lift * bell(E.in(q)), 0.27, up),
+            land = t > end ? 0.6 * (1 - seg(t, end, end + 0.14)) ** 2 : 0;
           return {
-            x: cx * r,
-            z: cz * r + 0.5 * (0.27 - h),
+            x: lerp(lerp(curve(cx * r, bx, lx, u), BAR[i], back) + bow * bell(q), cx, up),
+            z: lerp(lerp(curve(cz * r, bz, lz, u), 0, back), cz, up),
             h,
             a: 1,
-            hit: (t > 0.76 && t < 0.86 ? 1 : 0) + dr.hit * (1 - up),
+            hit:
+              (t > 0.5 ? (1 - seg(t, 0.5, 0.66)) ** 2 : 0) +
+              (dr.hit ** 2 + land + 0.5 * bell(seg(t, g - 0.14, g))) * (1 - up),
           };
         }),
       };

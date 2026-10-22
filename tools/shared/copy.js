@@ -71,7 +71,8 @@ export const NOTES = {
   drones: {
     working: 'Flies a new formation every beat: square, diamond, triangle, diagonal. Each landing overshoots a little.',
     done: 'The camera swings overhead. One by one they fly onto a check and drop into place.',
-    error: 'They rush the middle and collide. Thrown clear, they fall, bounce, and go dim.',
+    error:
+      'They rush the middle and crash, and the hit flings them apart. Dazed, they hop back into a row and stay put.',
     warning: 'One drone jumps to the middle while the others back off. It taps down twice.',
     idle: 'They sit parked, and each one lifts a little in turn.',
   },

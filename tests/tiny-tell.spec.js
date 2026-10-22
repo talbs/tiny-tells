@@ -42,6 +42,44 @@ const pixels = (page, selector) =>
 const frame = (page, selector) => page.$eval(selector, el => el.shadowRoot.querySelector('[part="tell"]').toDataURL());
 const revealed = page => page.waitForFunction(() => !('upgrading' in document.documentElement.dataset));
 const twoFrames = page => page.evaluate(() => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))));
+const inkMask = (page, selector) =>
+  page.$eval(selector, el => {
+    const cv = el.shadowRoot.querySelector('[part="tell"]'),
+      d = cv.getContext('2d').getImageData(0, 0, cv.width, cv.height).data,
+      ink = [];
+    for (let i = 3; i < d.length; i += 4) ink.push(d[i] > 200);
+    return { ink, w: cv.width, h: cv.height };
+  });
+// Ink counts as shared within a small reach, so a camera change that moves the same pose a pixel or two still reads as the same shape.
+const inkOverlap = async (page, selector, a, b) => {
+  const masks = [];
+  for (const state of [a, b]) {
+    await page.$eval(
+      selector,
+      (el, s) => {
+        el.state = s;
+      },
+      state
+    );
+    await twoFrames(page);
+    masks.push(await inkMask(page, selector));
+  }
+  const { w, h } = masks[0],
+    reach = Math.max(1, Math.round(w * 0.05)),
+    near = (ink, i) => {
+      const x = i % w,
+        y = Math.floor(i / w);
+      for (let dy = -reach; dy <= reach; dy++)
+        for (let dx = -reach; dx <= reach; dx++)
+          if (x + dx >= 0 && x + dx < w && y + dy >= 0 && y + dy < h && ink[(y + dy) * w + x + dx]) return true;
+      return false;
+    };
+  const [mineA, mineB] = masks.map(m => m.ink),
+    [nearA, nearB] = [mineA, mineB].map(m => m.map((_, i) => near(m, i))),
+    shared = (mine, theirs) => mine.filter((on, i) => on && theirs[i]).length,
+    ink = [mineA, mineB].map(m => m.filter(Boolean).length);
+  return { score: (shared(mineA, nearB) + shared(mineB, nearA)) / (ink[0] + ink[1] || 1), ink };
+};
 const drawn = page =>
   page.waitForFunction(() =>
     [...document.querySelectorAll('tiny-tell:not([hidden])')]
@@ -407,6 +445,15 @@ test.describe('forced colors', () => {
     const { r, g, b, alpha } = await pixels(page, '[data-tell="drones"]');
     expect(alpha, 'the tell still draws').toBeGreaterThan(0);
     expect(Math.max(r, g, b) - Math.min(r, g, b), 'the ink is gray, not the done color').toBeLessThan(20);
+  });
+
+  test('error and idle are different shapes in one ink (#124)', async ({ page }) => {
+    // Eyes and Lens still draw error as their idle shape, so they wait on their own fixes. Flipdot and Dekatron draw idle with no solid ink in forced colors, so this measure can't compare them.
+    for (const tell of ['drones', 'blot']) {
+      const { score, ink } = await inkOverlap(page, `[data-tell="${tell}"]`, 'error', 'idle');
+      expect(Math.min(...ink), `${tell}: error and idle both draw solid ink`).toBeGreaterThan(0);
+      expect(score, `${tell}: error and idle share less than half of their ink`).toBeLessThan(0.5);
+    }
   });
 });
 
