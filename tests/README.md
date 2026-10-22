@@ -30,18 +30,27 @@ Delete a test when its behavior is removed. If two tests would fail for the same
 
 If the answer doesn't depend on a real browser, it doesn't go in one. A browser test earns its cost for pixels, real layout, focus, and pointer input.
 
+### The element (`src/`, published to npm)
+
 | Concern | Where |
 |---|---|
 | Canvas geometry (live area, centering, crisp edges), flashing, and loop seams (no jump when a state's loop restarts) | Playwright, `tests/engine.html` (Chromium, every tell × state × scheme, imports `src/` directly) |
 | The public surface matches `custom-elements.json` (names, defaults, reflection) | `node --test tests/public-surface.test.mjs` (happy-dom) |
-| Element behavior that needs pixels, layout, or input | Playwright, `tests/tiny-tell.spec.js` (Chromium, Firefox, WebKit) |
+| Element behavior that needs pixels, layout, or input | Playwright, `tests/element.spec.js` (Chromium, Firefox, WebKit) |
 | Bundle size (min + gzip ≤ `budgetKb` in `tools/build.mjs`) | `node tools/build.mjs --check` |
-| A missing import or unused name | `eslint .` |
 | Importing on a server (both bundles) | `node tests/server-import.mjs` |
-| The landing, docs, and 404 load and switch theme without errors, the docs drawer behaves, and Tap Tempo hands the speed back | Playwright, `tests/tiny-tell.spec.js` "site pages" (Chromium, Font Awesome's icons and the Umami script stubbed so it runs offline on any port) |
 | Rendering in test DOMs (jsdom, happy-dom) without throwing or logging | `node tests/fake-dom.mjs jsdom` and `… happy-dom` |
 
-Don't repeat a layer's job in another layer.
+### The site (`tools/site/`, tinytells.dev)
+
+| Concern | Where |
+|---|---|
+| The landing, docs, and 404 load and switch theme without errors, builder links restore their tag, `?stats=` opts out, and Tap Tempo hands the speed back | Playwright, `tests/site.spec.js` (Chromium, Font Awesome's icons and the Umami script stubbed so it runs offline on any port) |
+| Docs `#links` land below the header, and the mobile drawer opens and closes without moving the page | Playwright, `tests/site.spec.js` (every engine, because Firefox and WebKit each broke one) |
+| The reference tables and heading anchors ship in the HTML | Playwright, `tests/site.spec.js` (JavaScript off) |
+| Inline CSS size (gzip ≤ `CSS_BUDGET_KB` in `tools/build.mjs`) | `node tools/build.mjs --check` |
+
+Both: `eslint .` catches a missing import or unused name. Don't repeat a layer's job in another layer.
 
 ## Pixels: only the tell's own canvas
 
@@ -61,7 +70,7 @@ Site tests protect public URLs (builder links, `?stats=`), privacy, accessibilit
 - **Freeze time when reading pixels.** Use reduced motion (`still: true` in the spec) so every frame is deterministic.
 - **Assert big differences, not exact values.** "Red beats green by 60," not "pixel 12 is #dc0000." No screenshot comparisons until the visuals stop changing.
 - **Test what motion does, not its curve.** The motion is the product here, so the engine checks do test it: stays in the live area, no seam at the loop, no flashing over 3 a second. They never pin a spring constant or a keyframe value. Those change every time a tell gets tuned.
-- **Fixtures are shared and small.** Add a tag to `tests/fixture.html` before writing a new page. Look tells up by id or `data-tell`, never by position.
+- **Fixtures are shared and small.** Add a tag to `tests/fixture.html` before writing a new page. Look tells up by id or `data-tell`, never by position. `tests/helpers.js` holds only what both spec files use (`open`, `noProblems`, the tells and states); a helper one file uses stays in that file.
 - **The public-surface test is a tripwire.** If adding API breaks it, update it on purpose.
 - **Run the harder condition once instead of both.** For example, canvas sizing runs at 2× density only, because 1× is the easy case.
 
