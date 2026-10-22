@@ -530,7 +530,7 @@
     .label-cases td:first-child {
       inline-size: auto;
     }
-    .label-cases [data-hears] {
+    .label-cases td:last-child {
       grid-column: 2;
       color: var(--muted);
     }
