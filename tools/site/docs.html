@@ -569,25 +569,12 @@ words.textContent = 'Synced 3 files.';</code></pre>
             >
           </div>
         </figure>
-        <wa-callout
-          class="note"
-          variant="neutral"
-          appearance="outlined"
-          size="s"
-        >
-          <wa-icon
-            slot="icon"
-            family="sharp"
-            variant="regular"
-            name="thumbtack"
-          ></wa-icon>
-          <strong>Moving for more than five seconds? Add a pause.</strong>
-          <span
-            ><a href="https://www.w3.org/WAI/WCAG22/Understanding/pause-stop-hide.html">WCAG 2.2.2</a> (Pause, Stop,
-            Hide) asks for a way to stop anything that moves that long.</span
-          >
-        </wa-callout>
-        <p>One button for every tell on the page:</p>
+        <p>
+          Anything that moves for more than five seconds needs a way to stop it (<a
+            href="https://www.w3.org/WAI/WCAG22/Understanding/pause-stop-hide.html"
+            >WCAG 2.2.2</a
+          >). One button covers every tell on the page:
+        </p>
         <figure class="example wa-not-prose">
           <div
             class="example-preview studio wa-stack wa-gap-l is-centered"
@@ -851,10 +838,8 @@ words.textContent = 'Synced 3 files.';</code></pre>
         </figure>
         <h3 id="match-scheme">Match Light or Dark</h3>
         <p>
-          Each tell has a light drawing and a dark one. <code>scheme</code> picks. <code>auto</code>, the default, reads
-          the <code>color-scheme</code> around it. <code>light</code> and <code>dark</code> force one.
-          <code>invert</code>
-          flips it, for a tell sitting on a filled badge or button.
+          Each tell has a light drawing and a dark one, and <code>scheme</code> picks. <code>auto</code> (the default)
+          reads the <code>color-scheme</code> around it. Use <code>invert</code> for a tell on a filled badge or button.
         </p>
         <figure class="example wa-not-prose">
           <div
@@ -1042,13 +1027,14 @@ tiny-tell[state="error"] + .message { color: var(--danger); }</code></pre>
         </table>
         <ul>
           <li>
-            <strong><code>noplay</code></strong> keeps a tell to its state animation, with no glance, tap dance, or
-            doze. Use it on busy spots, like a dense table. <code>tell.dance()</code> still works.
+            <strong>Skip it</strong> with <code>noplay</code>. The tell keeps its state animation, with no glance, tap
+            dance, or doze. Use it where many tells sit together, like a dense table. <code>tell.dance()</code> still
+            works.
           </li>
           <li><strong>Reduced motion</strong> and <code>paused</code> both switch play off.</li>
           <li>
-            <strong><code>--tell-color-dance</code></strong> sets the dance color (sky blue by default), with any CSS
-            color, <code>light-dark()</code> included. It wins over <code>color="current"</code>, so a tell that matches
+            <strong>Recolor the dance</strong> with <code>--tell-color-dance</code> (sky blue by default). Any CSS color
+            works, <code>light-dark()</code> included. It wins over <code>color="current"</code>, so a tell that matches
             its text can still dance in color.
           </li>
         </ul>
@@ -1397,11 +1383,16 @@ const show = state =&gt; {
           >
         </wa-callout>
         <h3 id="ai-sdk">AI SDK</h3>
-        <p>
-          <code>ready</code> is ambiguous. It means idle, but it’s also where <code>status</code> lands after a reply or
-          after <code>stop()</code>, so your app decides when ready means done. Here, done is ready with any reply on
-          the page. <code>sendAutomaticallyWhen</code> sends the approval back, so done means the tool really ran:
-        </p>
+        <ul>
+          <li>
+            <strong><code>ready</code> means two things:</strong> nothing started yet, or a reply (or
+            <code>stop()</code>) just finished. This example calls it done once there’s a reply on the page.
+          </li>
+          <li>
+            <strong>Approvals go back on their own</strong> with <code>sendAutomaticallyWhen</code>, so done means the
+            tool really ran.
+          </li>
+        </ul>
         <pre data-copy><code class="language-jsx">import { useChat } from '@ai-sdk/react';
 import { lastAssistantMessageIsCompleteWithApprovalResponses } from 'ai';
 
