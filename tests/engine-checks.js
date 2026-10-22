@@ -13,6 +13,7 @@ const INSET = 0.08,
   LENS_INK = [0.2, 0.02, 260],
   INK_ALPHA = 25,
   INK_LIFT = 30,
+  EDGE_SOLID = 230,
   EDGE_PX = 3;
 const draw = (cv, tell, id, t, scene) =>
   withScene(scene, () => {
@@ -53,7 +54,7 @@ export const runEngineChecks = () => {
   for (const dark of [false, true]) {
     const still = { isDark: dark, palette: null, gaze: null };
     for (const tell of Object.keys(TELLS))
-      for (const id of [...STATES, ...(PERIOD.dance ? ['dance'] : []), ...DOZE_CLIPS]) {
+      for (const id of [...STATES, 'dance', ...DOZE_CLIPS]) {
         for (const px of [20, 48]) {
           const cv = document.createElement('canvas'),
             W = (cv.width = cv.height = px * 2);
@@ -144,9 +145,11 @@ export const runEngineChecks = () => {
   const d = draw(big, 'blot', 'done', 0.05, { isDark: false, palette: null, gaze: null });
   let narrowest = Infinity;
   for (let y = Math.round(B * 0.3); y < B * 0.6; y++) {
-    const alpha = x => d[(y * B + x) * 4 + 3],
-      start = [...Array(B >> 1).keys()].find(x => alpha(x) > 25),
-      end = [...Array(B >> 1).keys()].find(x => alpha(x) > 230);
+    const firstOver = limit => {
+        for (let x = 0; x < B >> 1; x++) if (d[(y * B + x) * 4 + 3] > limit) return x;
+      },
+      start = firstOver(INK_ALPHA),
+      end = firstOver(EDGE_SOLID);
     if (start !== undefined && end !== undefined) narrowest = Math.min(narrowest, end - start);
   }
   if (!(narrowest <= EDGE_PX))

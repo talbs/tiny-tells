@@ -162,8 +162,8 @@ test.describe('in motion', () => {
       await twoFrames(page);
       return (await frame(page, selector)) === a;
     };
-    const a = await frame(page, selector);
-    await expect.poll(() => frame(page, selector), { message: 'a running tell draws a new frame' }).not.toBe(a);
+    const before = await frame(page, selector);
+    await expect.poll(() => frame(page, selector), { message: 'a running tell draws a new frame' }).not.toBe(before);
     await page.$eval(selector, el => (el.paused = true));
     expect(await holds(), 'a paused tell draws the same frame twice').toBe(true);
     await page.$eval(selector, el => (el.paused = false));
