@@ -267,7 +267,7 @@
                 state="working"
                 label=""
               ></tiny-tell>
-              <span>Syncing 3 files…</span>
+              <span role="status">Syncing 3 files…</span>
             </p>
           </div>
           <pre data-copy><code
@@ -499,8 +499,8 @@ words.textContent = 'Synced 3 files.';</code></pre>
           ></wa-icon>
           <strong>Use <code>label</code>, not <code>aria-label</code>.</strong>
           <span
-            >An <code>aria-label</code> or <code>aria-labelledby</code> on the tag also wins over a non-empty
-            <code>label</code>, but Firefox only honors it from version 119.</span
+            ><code>aria-label</code> and <code>aria-labelledby</code> work too, and override <code>label</code>. Firefox
+            ignores them before version 119, though, so <code>label</code> is the safe one.</span
           >
         </wa-callout>
         <figure class="example wa-not-prose">
@@ -509,7 +509,7 @@ words.textContent = 'Synced 3 files.';</code></pre>
               <thead>
                 <tr>
                   <th scope="col"><span class="wa-visually-hidden">Tell</span></th>
-                  <th scope="col">Markup</th>
+                  <th scope="col">Attribute</th>
                   <th scope="col">Screen Readers Hear</th>
                 </tr>
               </thead>
@@ -549,9 +549,9 @@ words.textContent = 'Synced 3 files.';</code></pre>
               </tbody>
             </table>
           </div>
-          <pre data-copy><code class="language-html">&lt;tiny-tell state="working"&gt;&lt;/tiny-tell&gt;
-&lt;tiny-tell state="working" label="Uploading photos"&gt;&lt;/tiny-tell&gt;
-&lt;tiny-tell state="working" label=""&gt;&lt;/tiny-tell&gt;</code></pre>
+          <pre data-copy><code class="language-html">&lt;tiny-tell&gt;&lt;/tiny-tell&gt;
+&lt;tiny-tell label="Uploading photos"&gt;&lt;/tiny-tell&gt;
+&lt;tiny-tell label=""&gt;&lt;/tiny-tell&gt;</code></pre>
         </figure>
         <h3 id="pausing">Pausing</h3>
         <p><code>paused</code> freezes a tell on its current frame. Remove it and the tell rejoins the shared beat.</p>
@@ -1053,7 +1053,7 @@ words.textContent = 'Synced 3 files.';</code></pre>
               id="dance"
               size="s"
               appearance="outlined"
-              >Or Press This</wa-button
+              >Dance</wa-button
             >
           </div>
         </figure>
@@ -1344,11 +1344,11 @@ button.addEventListener('click', async () => {
             </tbody>
           </table></wa-scroller
         >
-        <h3 id="agent-show">Shared Helper</h3>
+        <h3 id="agent-show">Set State and Words Together</h3>
         <p>The LangGraph, OpenAI, and Claude examples share this:</p>
         <pre data-copy><code class="language-javascript">const tell = document.querySelector('tiny-tell');
 const words = document.querySelector('[role="status"]');
-const TEXT = { working: 'Thinking…', done: 'Done', error: 'Something broke', warning: 'Needs your OK', idle: '' };
+const TEXT = { working: 'Thinking…', done: 'Done', error: 'Something broke', warning: 'Needs your OK', idle: 'Ready' };
 
 const show = state =&gt; {
   tell.state = state;
@@ -1381,7 +1381,7 @@ const show = state =&gt; {
         <pre data-copy><code class="language-jsx">import { useChat } from '@ai-sdk/react';
 import { lastAssistantMessageIsCompleteWithApprovalResponses } from 'ai';
 
-const TEXT = { working: 'Thinking…', done: 'Done', error: 'Something broke', warning: 'Needs your OK', idle: '' };
+const TEXT = { working: 'Thinking…', done: 'Done', error: 'Something broke', warning: 'Needs your OK', idle: 'Ready' };
 
 const stateOf = (status, messages) =&gt; {
   const parts = messages.at(-1)?.parts ?? [];
@@ -1640,9 +1640,9 @@ tiny-tell:not(:defined)[state="warning"]::before { content: "!"; }</code></pre>
         >
         <h3 id="events">Events</h3>
         <p>
-          The core fires none. It only shows the state you set, so you already know. The play bundle fires two around a
-          dance. Doze fires none. The state never leaves idle. Both bubble and cross shadow roots, so listen on the tell
-          or anywhere above it.
+          The core fires no events. It only shows the state you set, so you already know it. The play bundle fires two
+          around a dance (dozing fires none, since the state stays idle). Both bubble and cross shadow roots, so listen
+          on the tell or anywhere above it.
         </p>
         <wa-scroller orientation="horizontal"
           ><table>
@@ -1677,14 +1677,14 @@ tiny-tell:not(:defined)[state="warning"]::before { content: "!"; }</code></pre>
             <p
               class="wa-caption-s"
               id="events-status"
-              aria-live="polite"
+              role="status"
             >
               Tap it five times, or press Dance.
             </p>
           </div>
           <div class="example-bar studio">
             <wa-switch
-              id="events-hold"
+              id="hold-still"
               size="s"
               >Hold Still</wa-switch
             >

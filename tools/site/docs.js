@@ -71,7 +71,7 @@ const restingNote = () =>
     ? 'Reduced motion is on, so tells don’t dance.'
     : 'Tap it five times, or press Dance.');
 eventsTell.addEventListener('tell-dance', event => {
-  if ($('events-hold').checked) {
+  if ($('hold-still').checked) {
     event.preventDefault();
     eventsStatus.textContent = 'Asked to dance, and held still.';
   } else {
