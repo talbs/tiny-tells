@@ -157,7 +157,7 @@ const manifest = () => {
 };
 
 /* A plain-text brief for coding assistants (llmstxt.org). The reference sections come from api.json; the rules are written by hand and mirror the docs' Your Part list. */
-const llmsTxt = sizeKb => {
+const llmsTxt = () => {
   const docs = `${HOMEPAGE}docs/`;
   const tells = Object.keys(ATTR.tell.values).length;
   const list = (items, line) => items.map(line).join('\n');
@@ -167,13 +167,15 @@ const llmsTxt = sizeKb => {
     (a.values ? '\n' + list(Object.entries(a.values), ([v, d]) => `  - \`${v}\`: ${d}`) : '');
   return `# Tiny Tells
 
-> \`<tiny-tell>\` is one custom element for app status: working, done, error, warning, or idle. Pick from ${tells} small animated characters. No dependencies, ${sizeKb} KB min+gzip. ${Object.entries(
+> \`<tiny-tell>\` is one custom element for app status: working, done, error, warning, or idle. Pick from ${tells} small animated characters. No dependencies. ${Object.entries(
     SUPPORT
   )
     .map(([browser, v]) => `${browser} ${v}+`)
     .join(', ')}.
 
 This file describes version ${VERSION}. Tiny Tells is pre-1.0, so pin the version.
+
+If \`node_modules/tiny-tells/package.json\` has a different version, trust \`node_modules/tiny-tells/dist/custom-elements.json\` over this file.
 
 ## Install
 
@@ -700,7 +702,7 @@ Object.entries({ light, dark }).forEach(([theme, ink]) =>
 );
 ICONS.forEach(name => copyFileSync(join(ROOT, 'tools', 'favicon', name), join(ROOT, 'site', name)));
 console.log('wrote site/og.png, the README strips and wordmarks, and the favicons');
-const llms = llmsTxt(SIZE_KB);
+const llms = llmsTxt();
 const builtDocs = read('site', 'docs', 'index.html');
 const deadAnchors = [...llms.matchAll(/docs\/#([\w-]+)\)/g)]
   .map(m => m[1])
