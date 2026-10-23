@@ -16,7 +16,7 @@ npm install
 npm test
 ```
 
-- Edit `src/`, then run `npm run build`. It builds `dist/` and the site in `site/` (the landing page, the docs, and the 404 page). Neither is committed: CI builds them, and the site deploys to GitHub Pages from `main`.
+- Edit `src/`, then run `npm run build`. It builds `dist/` and the site in `site/` (the landing page, the docs, and the 404 page). Neither is committed: CI builds them, and the site deploys to GitHub Pages from `main`. The one exception is `skills/tiny-tells/SKILL.md`: the skills installer reads it from GitHub, so commit it whenever `npm run build` changes it. `npm run check` fails if you forget.
 - `npm run serve` serves the built site at `http://127.0.0.1:4173/`, the root it has on tinytells.dev, so the 404 page's absolute links work locally.
 - `src/` is plain ES modules. `npm run lint` catches a missing import before it becomes a runtime error.
 - `npm test` runs Prettier, ESLint, the size budgets, the test-DOM and server checks, and the Playwright tests in Chromium, Firefox, and WebKit, including the canvas checks for live area, flashing, and loop seams.

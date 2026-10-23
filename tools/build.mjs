@@ -4,12 +4,12 @@
 //                                  landing page, the docs, and the 404)
 //   node tools/build.mjs --check   also fails if a minified bundle is over its min + gzip budget, play adds 2.5 KB or more, a
 //                                  page's inline CSS is over its gzip budget, or CHANGELOG.md has no section for
-//                                  package.json's version
+//                                  package.json's version, or skills/tiny-tells/SKILL.md is stale (it never writes that file)
 //   node tools/build.mjs --sizes   also prints each bundle's min + gzip size
 //
 // Web Awesome is only page chrome. The site bundles the components it uses from the npm package's dist build, and self-hosts its fonts.
 import { build, transform } from 'esbuild';
-import { copyFileSync, cpSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { copyFileSync, cpSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { gzipSync } from 'node:zlib';
@@ -155,6 +155,12 @@ const manifest = () => {
     modules: [module('dist/tiny-tells.js', [decl]), module('dist/tiny-tells-play.js', events)],
   };
 };
+
+/* The agent skill `npx skills add talbs/tiny-tells` installs from GitHub, so it's the one build output that's committed. */
+const SKILL_PATH = ['skills', 'tiny-tells', 'SKILL.md'];
+const SKILL_DESCRIPTION =
+  'Adds and configures the tiny-tell web component (npm: tiny-tells), small animated status indicators for working, done, error, warning (waiting on a person), and idle. Use when the project depends on tiny-tells or uses tiny-tell elements, when the user mentions Tiny Tells, or when replacing a spinner or status indicator in such a project.';
+const skillMd = llms => `---\nname: tiny-tells\ndescription: ${JSON.stringify(SKILL_DESCRIPTION)}\n---\n\n${llms}`;
 
 /* A plain-text brief for coding assistants (llmstxt.org). The reference sections come from api.json; the rules are written by hand and mirror the docs' Your Part list. */
 const llmsTxt = () => {
@@ -711,6 +717,11 @@ if (deadAnchors.length) throw new Error(`llms.txt links to docs anchors that don
 console.log('wrote', write(llms, 'site', 'llms.txt'));
 
 const args = process.argv.slice(2);
+const skill = skillMd(llms);
+let isSkillStale = false;
+if (args.includes('--check'))
+  isSkillStale = (existsSync(join(ROOT, ...SKILL_PATH)) ? read(...SKILL_PATH) : '') !== skill;
+else console.log('wrote', write(skill, ...SKILL_PATH));
 if (args.includes('--sizes') || args.includes('--check')) {
   let isOver = false;
   for (const { name, budgetKb } of BUNDLES) {
@@ -738,5 +749,8 @@ if (args.includes('--sizes') || args.includes('--check')) {
   console.log(
     `breakpoints: ${strays.length ? `NOT in BREAKPOINTS: ${[...new Set(strays)].join(', ')}` : 'all in BREAKPOINTS'}`
   );
-  if (args.includes('--check') && (isOver || !hasChangelog || strays.length)) process.exit(1);
+  console.log(
+    `skill: ${SKILL_PATH.join('/')} is ${isSkillStale ? 'STALE. Run npm run build and commit it.' : 'current'}`
+  );
+  if (args.includes('--check') && (isOver || !hasChangelog || strays.length || isSkillStale)) process.exit(1);
 }
