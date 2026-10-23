@@ -337,6 +337,13 @@ words.textContent = 'Synced 3 files.';</code></pre>
           class="is-paste-in"
           data-copy
         ><code class="language-markdown">{{rules}}</code></pre>
+        <h3 id="agent-skill">Agent Skill</h3>
+        <p>For assistants that load skills. Install it in your project once:</p>
+        <pre data-copy><code class="language-bash">npx skills add talbs/tiny-tells</code></pre>
+        <p>
+          It’s the same text as llms.txt, so your assistant has it without fetching anything. Run
+          <code>npx skills update</code> after you upgrade Tiny Tells.
+        </p>
         <h3 id="agent-tooling">Manifest and Types</h3>
         <p>
           Installed from npm, the package carries its own description. <code>custom-elements.json</code> lists every
