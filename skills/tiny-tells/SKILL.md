@@ -44,7 +44,7 @@ document.querySelector('[role="status"]').textContent = 'Synced 3 files.';
 
 Rules:
 
-- Put words next to every tell. If the status can change while someone's on the page, put them in a `role="status"` region. A state change doesn't announce on its own.
+- Put words next to every tell. If the status can change while someone's on the page, put them in a `role="status"` region. A state change doesn't announce on its own. Keep the region in the page from the start, and hide what's inside it, not the region.
 - When the words beside it already say the state, set `label=""`. Otherwise give it a more specific `label`, like `label="Uploading photos"`.
 - `warning` means stuck until a person acts. Not for soft errors.
 - Size follows the text. Set `--tell-size` to pin it.
