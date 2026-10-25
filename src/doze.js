@@ -186,16 +186,24 @@ BLOT.states.wake = t => {
   };
 };
 
-/* At 20px only the glow's position reads, so asleep sits at the bottom. A tailU of 1 / 0.6 fades the trail to nothing, so it's always passed. */
-const sink = t => 0.5 * E.out(seg(t, 0.15, 0.55)) + 4.5 * E.in(seg(t, 0.8, 1.35)) + 0.3 * bell(seg(t, 1.35, LEN.nod));
+/* At 20px only the glow's position reads, so asleep keeps to the lower left, clear of error at the bottom and working's still at 3. A tailU of 1 / 0.6 fades the trail to nothing, so it's always passed. */
+const fall = t => -3.8 * (0.12 * E.out(seg(t, 0.15, 0.55)) + 0.88 * E.in(seg(t, 0.8, 1.35)));
 DEKATRON.states.nod = t => ({
-  tail: [sink(t - 0.05), sink(t - 0.1)],
+  tail: [fall(t - 0.05), fall(t - 0.1)],
   tailU: (1 - bell(seg(t, 1, 1.6))) / 0.6,
-  ents: [{ k: sink(t), g: lerp(0.25, 0.38, seg(t, 0, LEN.nod)) }],
+  ents: [{ k: mod(fall(t), DK), g: lerp(0.25, 0.2, seg(t, 0, LEN.nod)) }],
 });
-DEKATRON.states.doze = t => ({
-  ents: [{ k: 5 + 0.08 * Math.sin(TAU * seg(phase(t), 0, 0.1)), g: 0.38 + 0.22 * breathe(t) }],
-});
+DEKATRON.states.doze = t => {
+  const p = mod(t, PERIOD.doze) / PERIOD.doze;
+  return {
+    ents: [
+      {
+        k: 6.5 + 0.3 * (-1 + 2 * E.inOut(seg(p, 0, 0.5)) - 2 * E.inOut(seg(p, 0.6, 1))),
+        g: 0.2 + 0.1 * (0.5 - 0.5 * Math.cos((TAU * t) / PERIOD.doze)),
+      },
+    ],
+  };
+};
 DEKATRON.states.wake = t => {
   const flash = bell(seg(t, 0.3, 0.65));
   return {
