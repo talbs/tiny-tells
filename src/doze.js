@@ -187,7 +187,7 @@ BLOT.states.wake = t => {
 };
 
 /* At 20px only the glow's position reads, so asleep keeps to the lower left, clear of error at the bottom and working's still at 3. A tailU of 1 / 0.6 fades the trail to nothing, so it's always passed. */
-const fall = t => -3.8 * (0.12 * E.out(seg(t, 0.15, 0.55)) + 0.88 * E.in(seg(t, 0.8, 1.35)));
+const fall = t => -0.46 * E.out(seg(t, 0.15, 0.55)) - 3.34 * E.in(seg(t, 0.8, 1.35));
 DEKATRON.states.nod = t => ({
   tail: [fall(t - 0.05), fall(t - 0.1)],
   tailU: (1 - bell(seg(t, 1, 1.6))) / 0.6,
@@ -198,8 +198,8 @@ DEKATRON.states.doze = t => {
   return {
     ents: [
       {
-        k: 6.5 + 0.3 * (-1 + 2 * E.inOut(seg(p, 0, 0.5)) - 2 * E.inOut(seg(p, 0.6, 1))),
-        g: 0.2 + 0.1 * (0.5 - 0.5 * Math.cos((TAU * t) / PERIOD.doze)),
+        k: 6.2 + 0.6 * (E.inOut(seg(p, 0, 0.5)) - E.inOut(seg(p, 0.6, 1))),
+        g: 0.25 - 0.05 * Math.cos((TAU * t) / PERIOD.doze),
       },
     ],
   };
