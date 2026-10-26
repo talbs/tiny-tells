@@ -431,6 +431,36 @@ words.textContent = 'Synced 3 files.';</code></pre>
   &lt;span role="status"&gt;Deploy queued.&lt;/span&gt;
 &lt;/p&gt;</code></pre>
         </figure>
+        <p id="lists">
+          In a list or table, each row’s tell keeps its state name. A region per row announces each row as it changes,
+          so put the summary in one region:
+        </p>
+        <figure class="example wa-not-prose">
+          <div class="example-preview studio wa-stack wa-gap-xs">
+            <ul class="wa-list-plain wa-stack wa-gap-2xs">
+              <li>
+                <tiny-tell
+                  data-follow
+                  state="done"
+                ></tiny-tell>
+                report.pdf
+              </li>
+              <li>
+                <tiny-tell
+                  data-follow
+                  state="working"
+                ></tiny-tell>
+                photo.jpg
+              </li>
+            </ul>
+            <p role="status">1 of 2 uploaded.</p>
+          </div>
+          <pre data-copy><code class="language-html">&lt;ul&gt;
+  &lt;li&gt;&lt;tiny-tell state="done"&gt;&lt;/tiny-tell&gt; report.pdf&lt;/li&gt;
+  &lt;li&gt;&lt;tiny-tell state="working"&gt;&lt;/tiny-tell&gt; photo.jpg&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p role="status"&gt;1 of 2 uploaded.&lt;/p&gt;</code></pre>
+        </figure>
       </section>
       <section
         id="accessibility"
@@ -444,7 +474,10 @@ words.textContent = 'Synced 3 files.';</code></pre>
         </p>
         <h3 id="your-part">Your Part</h3>
         <ol>
-          <li><strong>Put words beside it.</strong> A tell is never the only signal.</li>
+          <li>
+            <strong>Put words beside it.</strong> A tell is never the only signal. Keep them out of the tag: text in
+            there hides once the tell loads. <a href="#stand-in">See why</a>.
+          </li>
           <li>
             <strong>Hide its name when the words already say it</strong> with <code>label=""</code>. It works like
             <code>alt=""</code> on a decorative image. <a href="#labels">Try it</a>.
@@ -452,7 +485,9 @@ words.textContent = 'Synced 3 files.';</code></pre>
           <li>
             <strong>If the status changes while someone’s on the page,</strong> put the words in a
             <code>role="status"</code> region so screen readers announce it. Keep the region in the page from the start,
-            and hide what’s inside it, not the region. <a href="#states">See how</a>.
+            and hide what’s inside it, not the region. If the tell sits inside the region, give it
+            <code>label=""</code>, or its name gets read with every update. Lists and tables get
+            <a href="#lists">one region for the summary</a>, not one per row. <a href="#states">See how</a>.
           </li>
           <li>
             <strong>If you change the colors,</strong> keep 3:1 against the surface (<a

@@ -44,7 +44,8 @@ document.querySelector('[role="status"]').textContent = 'Synced 3 files.';
 
 Rules:
 
-- Put words next to every tell. If the status can change while someone's on the page, put them in a `role="status"` region. A state change doesn't announce on its own. Keep the region in the page from the start, and hide what's inside it, not the region.
+- Put words next to every tell. Keep them out of the tag: text in there hides once the tell loads.
+- If the status can change while someone's on the page, put the words in a `role="status"` region. A state change doesn't announce on its own. Keep the region in the page from the start, and hide what's inside it, not the region. If the tell sits inside the region, give it `label=""`, or its name gets read with every update. Lists and tables get one region for the summary, not one per row.
 - When the words beside it already say the state, set `label=""`. Otherwise give it a more specific `label`, like `label="Uploading photos"`.
 - `warning` means stuck until a person acts. Not for soft errors.
 - Size follows the text. Set `--tell-size` to pin it.
@@ -54,6 +55,18 @@ Rules:
 - If you override `--tell-color-*`, keep 3:1 contrast against the surface behind it.
 - Reduced motion and forced colors are handled for you.
 - Custom tells aren't supported.
+
+In a list, each row's tell keeps its state name, and one region holds the summary. A tell inside its region gets `label=""`:
+
+```html
+<ul>
+  <li><tiny-tell state="done"></tiny-tell> report.pdf</li>
+  <li><tiny-tell state="working"></tiny-tell> photo.jpg</li>
+</ul>
+<p role="status">1 of 2 uploaded.</p>
+
+<p role="status"><tiny-tell state="working" label=""></tiny-tell> Saving…</p>
+```
 
 ## Attributes
 
