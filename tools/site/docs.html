@@ -475,8 +475,8 @@ words.textContent = 'Synced 3 files.';</code></pre>
         <h3 id="your-part">Your Part</h3>
         <ol>
           <li>
-            <strong>Put words beside it.</strong> A tell is never the only signal. Keep them out of the tag: text in
-            there hides once the tell loads. <a href="#stand-in">See why</a>.
+            <strong>Put words beside it, not inside the tag.</strong> A tell is never the only signal. Text inside the
+            tag hides once the tell loads. <a href="#add">See it</a>.
           </li>
           <li>
             <strong>Hide its name when the words already say it</strong> with <code>label=""</code>. It works like
@@ -485,9 +485,8 @@ words.textContent = 'Synced 3 files.';</code></pre>
           <li>
             <strong>If the status changes while someone’s on the page,</strong> put the words in a
             <code>role="status"</code> region so screen readers announce it. Keep the region in the page from the start,
-            and hide what’s inside it, not the region. If the tell sits inside the region, give it
-            <code>label=""</code>, or its name gets read with every update. Lists and tables get
-            <a href="#lists">one region for the summary</a>, not one per row. <a href="#states">See how</a>.
+            and hide what’s inside it, not the region. A list gets <a href="#lists">one region for the summary</a>.
+            <a href="#change">Run it</a>.
           </li>
           <li>
             <strong>If you change the colors,</strong> keep 3:1 against the surface (<a
@@ -503,7 +502,7 @@ words.textContent = 'Synced 3 files.';</code></pre>
           </li>
           <li>
             <strong>If you load play,</strong> put <code>noplay</code> on busy lists, so only the tells you want playing
-            do. <a href="#play">See play</a>.
+            do. <a href="#noplay">See how</a>.
           </li>
         </ol>
         <h3 id="handled-for-you">Handled for You</h3>
@@ -589,12 +588,23 @@ words.textContent = 'Synced 3 files.';</code></pre>
                   <th scope="row"><code>label=""</code></th>
                   <td>Nothing. The tell is hidden.</td>
                 </tr>
+                <tr>
+                  <td>
+                    <tiny-tell
+                      tell="drones"
+                      data-follow
+                    ></tiny-tell>
+                  </td>
+                  <th scope="row">no <code>label</code>, inside a <code>role="status"</code> region</th>
+                  <td>“Working”, an image, then the words, on every change</td>
+                </tr>
               </tbody>
             </table>
           </div>
           <pre data-copy><code class="language-html">&lt;tiny-tell&gt;&lt;/tiny-tell&gt;
 &lt;tiny-tell label="Uploading photos"&gt;&lt;/tiny-tell&gt;
-&lt;tiny-tell label=""&gt;&lt;/tiny-tell&gt;</code></pre>
+&lt;tiny-tell label=""&gt;&lt;/tiny-tell&gt;
+&lt;p role="status"&gt;&lt;tiny-tell&gt;&lt;/tiny-tell&gt; Saving…&lt;/p&gt;</code></pre>
         </figure>
         <h3 id="pausing">Pausing</h3>
         <p><code>paused</code> freezes a tell on its current frame. Remove it and the tell rejoins the shared beat.</p>
@@ -1069,7 +1079,7 @@ tiny-tell[state="error"] + .message { color: var(--danger); }</code></pre>
           </tbody>
         </table>
         <ul>
-          <li>
+          <li id="noplay">
             <strong>Skip it</strong> with <code>noplay</code>. The tell keeps its state animation, with no glance, tap
             dance, or doze. Use it where many tells sit together, like a dense table. <code>tell.dance()</code> still
             works.
