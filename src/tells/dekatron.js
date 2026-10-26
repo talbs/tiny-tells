@@ -9,7 +9,7 @@ export const DEKATRON = {
   pos: [],
   wrap: { k: DK },
   still: { done: 0.75, error: 1.8, warning: 1.9 },
-  maxOvershoot: 0.5,
+  maxOvershoot: { k: 0.5 },
   states: {
     working: t => {
       const per = (4 * BEAT) / DK,

@@ -4,9 +4,9 @@ import { TELLS } from './registry.js';
 
 /* A wrapped key (dekatron's k) crosses its wrap point as a small step, not a jump back around the ring. The nudge makes an exact half-ring trip always go clockwise, so rounding noise can't pick the way. */
 const unwrap = (sk, k, d, w = sk.wrap?.[k]) => (w ? mod(d + w / 2 + 1e-3, w) - w / 2 - 1e-3 : d);
-/* A long trip on a wrapped key gets just enough extra damping to overshoot no more than the tell's maxOvershoot. */
+/* A long trip gets just enough extra damping to overshoot no more than the tell's maxOvershoot for that key. */
 const damping = (sk, key, z, d) => {
-  const l = sk.wrap?.[key] && Math.log(sk.maxOvershoot / Math.abs(d));
+  const l = Math.log(sk.maxOvershoot?.[key] / Math.abs(d));
   return l < 0 ? Math.max(z, -l / Math.hypot(Math.PI, l)) : z;
 };
 
