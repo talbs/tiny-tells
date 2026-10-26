@@ -309,6 +309,7 @@ test.describe('docs without JavaScript', () => {
       `“${LABEL.working}”, an image`,
       '“Uploading photos”, an image',
       'Nothing. The tell is hidden.',
+      `“${LABEL.working}”, an image, then the words, on every change`,
     ]);
     const anchors = await page.evaluate(() =>
       [...document.querySelectorAll('main section[id] > h2')].map(h => [
