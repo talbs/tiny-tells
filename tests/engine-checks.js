@@ -17,7 +17,9 @@ const INSET = 0.08,
   EDGE_PX = 3,
   SOLID = 200 / 255,
   REACH = 0.05,
-  SAME_SHAPE_LIMIT = 0.5;
+  SAME_SHAPE_LIMIT = 0.5,
+  CUT_OUT_REACH = 1,
+  CUT_OUT_MIN = 12;
 // Their error still draws the idle shape in one ink. Each waits on its own fix, and then comes off this list.
 const SAME_SHAPE = ['eyes', 'lens'];
 // Every pair of their stills must differ in one ink. Tells drawn as filled shapes over-report here, so it's opt-in.
@@ -58,9 +60,8 @@ const solidInk = d => {
   return Uint8Array.from({ length: d.length / 4 }, (_, i) => d[i * 4 + 3] > peak * SOLID);
 };
 // Ink counts as shared within a small reach, so a camera change that moves the same pose a pixel or two still reads as the same shape.
-const spread = (ink, W) => {
-  const reach = Math.max(1, Math.round(W * REACH));
-  return ink.map((_, i) => {
+const spread = (ink, W, reach = Math.max(1, Math.round(W * REACH))) =>
+  ink.map((_, i) => {
     const x = i % W,
       y = Math.floor(i / W);
     for (let dy = -reach; dy <= reach; dy++)
@@ -68,8 +69,45 @@ const spread = (ink, W) => {
         if (x + dx >= 0 && x + dx < W && y + dy >= 0 && y + dy < W && ink[(y + dy) * W + x + dx]) return 1;
     return 0;
   });
-};
 const shared = (mine, theirs) => mine.filter((on, i) => on && theirs[i]).length;
+const floodFrom = (starts, isOpen, W) => {
+  const isReached = new Uint8Array(isOpen.length),
+    reached = [],
+    stack = [...starts];
+  while (stack.length) {
+    const i = stack.pop();
+    if (isReached[i] || !isOpen[i]) continue;
+    isReached[i] = 1;
+    reached.push(i);
+    const x = i % W;
+    if (x > 0) stack.push(i - 1);
+    if (x < W - 1) stack.push(i + 1);
+    if (i >= W) stack.push(i - W);
+    if (i < isOpen.length - W) stack.push(i + W);
+  }
+  return reached;
+};
+// Cut-outs are blank pixels the border can't reach. One under CUT_OUT_MIN is a stray gap: lens leaves 1 and 7px ones, and the smallest real eye is 17px.
+const cutOutsOf = (ink, W) => {
+  const border = [];
+  for (let i = 0; i < W; i++) border.push(i, (W - 1) * W + i, i * W, i * W + W - 1);
+  const unclaimed = ink.map(on => !on),
+    cutOuts = new Uint8Array(ink.length);
+  for (const i of floodFrom(border, unclaimed, W)) unclaimed[i] = 0;
+  for (let i = 0; i < ink.length; i++) {
+    if (!unclaimed[i]) continue;
+    const hole = floodFrom([i], unclaimed, W);
+    for (const j of hole) unclaimed[j] = 0;
+    if (hole.length >= CUT_OUT_MIN) for (const j of hole) cutOuts[j] = 1;
+  }
+  return cutOuts;
+};
+// Two stills with no cut-outs match on cut-outs, so their ink alone decides.
+const overlapOf = (a, b, W, reach) => {
+  const count = [a, b].map(m => m.filter(Boolean).length);
+  if (!count[0] && !count[1]) return 1;
+  return (shared(a, spread(b, W, reach)) + shared(b, spread(a, W, reach))) / (count[0] + count[1]);
+};
 const frames = (seconds, f) => Array.from({ length: Math.round(seconds * FPS) }, (_, i) => f(i / FPS));
 export const runEngineChecks = () => {
   const failures = [],
@@ -186,18 +224,21 @@ export const runEngineChecks = () => {
   shape.width = shape.height = 40;
   shape._css = 20;
   const stillInk = (tell, id) => solidInk(draw(shape, tell, id, stillAt(tell, id), ONE_INK));
+  // Same shape means the ink and the cut-outs both match, so a filled body can't hide eyes that changed (#126).
   const compare = (a, b) => {
-    const ink = [a, b].map(m => m.filter(Boolean).length),
-      overlap = (shared(a, spread(b, shape.width)) + shared(b, spread(a, shape.width))) / (ink[0] + ink[1] || 1);
-    return { ink, overlap, isSame: !ink[0] || !ink[1] || overlap >= SAME_SHAPE_LIMIT };
+    const W = shape.width,
+      ink = overlapOf(a, b, W),
+      cutOuts = overlapOf(cutOutsOf(a, W), cutOutsOf(b, W), W, CUT_OUT_REACH),
+      overlap = Math.min(ink, cutOuts);
+    return { ink, cutOuts, overlap, isSame: !a.some(Boolean) || !b.some(Boolean) || overlap >= SAME_SHAPE_LIMIT };
   };
   for (const tell of Object.keys(TELLS)) {
     if (EVERY_PAIR.includes(tell)) continue;
-    const { ink, overlap, isSame } = compare(stillInk(tell, 'error'), stillInk(tell, 'idle'));
+    const { ink, cutOuts, overlap, isSame } = compare(stillInk(tell, 'error'), stillInk(tell, 'idle'));
     if (isSame !== SAME_SHAPE.includes(tell))
       failures.push(
         isSame
-          ? `shape: ${tell} error and idle share ${overlap.toFixed(2)} of their ink (${ink[0]} and ${ink[1]} px) in one ink`
+          ? `shape: ${tell} error and idle match ${overlap.toFixed(2)} in one ink (ink ${ink.toFixed(2)}, cut-outs ${cutOuts.toFixed(2)})`
           : `shape: ${tell} error is now its own shape in one ink, so take it off SAME_SHAPE`
       );
   }
@@ -206,7 +247,7 @@ export const runEngineChecks = () => {
     STATES.forEach((a, i) =>
       STATES.slice(i + 1).forEach(b => {
         const { overlap, isSame } = compare(stills[a], stills[b]);
-        if (isSame) failures.push(`shape: ${tell} ${a} and ${b} share ${overlap.toFixed(2)} of their ink in one ink`);
+        if (isSame) failures.push(`shape: ${tell} ${a} and ${b} match ${overlap.toFixed(2)} in one ink`);
       })
     );
   }
