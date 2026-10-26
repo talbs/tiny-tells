@@ -44,7 +44,7 @@ document.querySelector('tiny-tell').state = 'done';
 
 The six tells are `drones`, `flipdot`, `eyes`, `blot`, `dekatron`, and `lens`. The five states are `working`, `done`, `error`, `warning` (waiting on a person), and `idle`. The [docs](https://tinytells.dev/docs/) cover sizing, color, accessibility, frameworks, agent status, testing, the play bundle, and the full API.
 
-Building with an AI assistant? Point it at [llms.txt](https://tinytells.dev/llms.txt), or see [Build with AI](https://tinytells.dev/docs/#build-with-ai).
+Building with an AI assistant? Point it at [llms.txt](https://tinytells.dev/llms.txt), add the skill with `npx skills add talbs/tiny-tells`, or see [Build with AI](https://tinytells.dev/docs/#build-with-ai).
 
 ## Develop
 
