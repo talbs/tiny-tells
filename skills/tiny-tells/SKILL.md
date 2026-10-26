@@ -56,6 +56,18 @@ Rules:
 - Reduced motion and forced colors are handled for you.
 - Custom tells aren't supported.
 
+In a list, each row's tell keeps its state name, and one region holds the summary. A tell inside its region gets `label=""`:
+
+```html
+<ul>
+  <li><tiny-tell state="done"></tiny-tell> report.pdf</li>
+  <li><tiny-tell state="working"></tiny-tell> photo.jpg</li>
+</ul>
+<p role="status">1 of 2 uploaded.</p>
+
+<p role="status"><tiny-tell state="working" label=""></tiny-tell> Saving…</p>
+```
+
 ## Attributes
 
 - `tell` (default `drones`): Which tell to draw.
