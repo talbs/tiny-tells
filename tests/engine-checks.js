@@ -21,7 +21,7 @@ const INSET = 0.08,
   CUT_OUT_REACH = 1,
   CUT_OUT_MIN = 12;
 // Their error still draws the idle shape in one ink. Each waits on its own fix, and then comes off this list.
-const SAME_SHAPE = ['eyes', 'lens'];
+const SAME_SHAPE = ['lens'];
 // Every pair of their stills must differ in one ink. Tells drawn as filled shapes over-report here, so it's opt-in.
 const EVERY_PAIR = ['dekatron'];
 const ONE_INK = { isDark: false, palette: null, gaze: null, ink: CURRENT_INK };

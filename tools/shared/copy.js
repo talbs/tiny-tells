@@ -32,7 +32,7 @@ export const MODEL = {
     made: 'A rounded visor of dark glass with two glowing eyes clipped to it. The glow drops out at 32px and under.',
     notice: 'The eyes look at your pointer, and the visor turns a moment after them.',
     handoff:
-      'Twelve shape springs morph one mood into the next, and the visor springs too: it squashes and stretches into each new state.',
+      'Thirteen shape springs morph one mood into the next, and the visor springs too: it squashes and stretches into each new state.',
     fits: 'Chat and assistant UIs, where a face is welcome.',
     dance:
       'A head-bob groove. The visor dips on every beat and tilts across the bar; the eyes ride each dip and hop on alternate offbeats.',
@@ -109,7 +109,7 @@ export const NOTES = {
     working:
       'While it thinks, it glances up and over with one eye squinting, blinks, and comes back, and the head follows.',
     done: 'It pops into proud crescents and hops, then rocks a little side to side.',
-    error: 'Squeezes shut twice with a shake, then droops and sinks.',
+    error: 'Squeezes shut twice with a shake, then stays pinched and worried as its head sinks, flinching once more.',
     warning: 'A double take. Then “hm?” twice: one eye wide, one squinting.',
     idle: 'Its lids get heavy and it nods off, then it snaps awake, blinks, and settles.',
   },
