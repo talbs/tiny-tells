@@ -73,6 +73,7 @@ export const EP = (o = {}) => ({
   sm: 0,
   lid: 0,
   lt: 0,
+  tilt: 0,
   ...o,
 });
 /* The head trails the eyes on a softer, underdamped spring, so it overshoots. Keyframes are fixed in time, so it peeks at the next gaze and leans away first. */
@@ -122,14 +123,16 @@ const DONE_KEYS = () => [
   [2 * BEAT, { ...PROUD, roll: 0.02 }, 9, 0.6],
   [3.5 * BEAT, EP({ sm: 0.4, ct: 0.5, gy: -0.02 }), 8, 0.8],
 ];
-const ERROR_KEYS = sd => [
+/* Error holds pinched, worried eyes with the inner ends tilted up, so its still isn't idle's half-lidded look in one ink (#126). Tilted down, they read as angry. */
+const WORRIED = EP({ h: 0.3, w: 1.05, ct: 0.1, cb: 0.1, tilt: 0.3 });
+const ERROR_KEYS = () => [
   [0, EP()],
   [0.1, EP({ h: 1.12, w: 0.95, gy: -0.02 }), 30, 0.6],
   [0.2, EP({ h: 0.14, w: 1.18, ct: 0, cb: 0 }), 34, 0.55],
   [0.38, EP({ h: 0.8 }), 24, 0.5],
   [0.5, EP({ h: 0.14, w: 1.18, ct: 0, cb: 0 }), 34, 0.55],
-  [0.72, EP({ lid: 0.36, lt: sd * 0.4, gy: 0.06, h: 0.9, cb: 0.15, roll: 0.05 }), 9, 0.6],
-  [2 * BEAT, EP({ lid: 0.46, lt: sd * 0.45, gy: 0.1, h: 0.86, cb: 0.15, roll: 0.08 }), 2.5, 1],
+  [0.72, WORRIED, 9, 0.6],
+  [2 * BEAT, { ...WORRIED, gy: 0.05, roll: 0.06 }, 2.5, 1],
 ];
 const WARNING_KEYS = sd => [
   [0, EP()],
@@ -151,8 +154,10 @@ const IDLE_KEYS = () => [
 
 export const EYES = {
   fit: px => (px <= 32 ? 0.82 : 0.88),
-  keys: ['gx', 'gy', 'hx', 'hy', 'roll', 'w', 'h', 'ct', 'cb', 'sm', 'lid', 'lt', 'vsx', 'vsy'],
+  keys: ['gx', 'gy', 'hx', 'hy', 'roll', 'w', 'h', 'ct', 'cb', 'sm', 'lid', 'lt', 'tilt', 'vsx', 'vsy'],
   pos: [],
+  /* Error's worried tilt springing past zero would flash an angry one on the way out. */
+  maxOvershoot: { tilt: 0.02 },
   states: {
     working: t => ({
       ents: pair(WORKING_KEYS, t, (p, tt) => blink(p, tt, 2 * BEAT - 0.03)),
@@ -177,7 +182,7 @@ export const EYES = {
     },
     error: t => ({
       shake: [0.025 * Math.sin(t * 90) * (bell(seg(t, 0.2, 0.32)) + bell(seg(t, 0.5, 0.62))), 0],
-      ents: pair(ERROR_KEYS, t),
+      ents: pair(ERROR_KEYS, t, (p, tt) => blink(p, tt, 3 * BEAT - 0.03)),
     }),
     warning: t => ({
       ents: pair(WARNING_KEYS, t),
@@ -257,6 +262,7 @@ export const EYES = {
       }
       ctx.save();
       ctx.translate((sd * gap + e.gx - hx + 0.16 * (gaze?.x || 0)) * unit, (e.gy - hy + 0.12 * (gaze?.y || 0)) * unit);
+      ctx.rotate(sd * e.tilt);
       if (ink) ctx.globalCompositeOperation = 'destination-out';
       else if (!small) {
         ctx.shadowColor = css(ec, 0.7);
