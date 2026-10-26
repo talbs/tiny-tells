@@ -193,17 +193,14 @@ DEKATRON.states.nod = t => ({
   tailU: (1 - bell(seg(t, 1, 1.6))) / 0.6,
   ents: [{ k: mod(fall(t), DK), g: lerp(0.25, 0.2, seg(t, 0, LEN.nod)) }],
 });
-DEKATRON.states.doze = t => {
-  const p = mod(t, PERIOD.doze) / PERIOD.doze;
-  return {
-    ents: [
-      {
-        k: 6.2 + 0.6 * (E.inOut(seg(p, 0, 0.5)) - E.inOut(seg(p, 0.6, 1))),
-        g: 0.25 - 0.05 * Math.cos((TAU * t) / PERIOD.doze),
-      },
-    ],
-  };
-};
+DEKATRON.states.doze = t => ({
+  ents: [
+    {
+      k: 6.2 + 0.6 * (E.inOut(seg(phase(t / 2), 0, 0.5)) - E.inOut(seg(phase(t / 2), 0.6, 1))),
+      g: 0.2 + 0.1 * breathe(t / 2),
+    },
+  ],
+});
 DEKATRON.states.wake = t => {
   const flash = bell(seg(t, 0.3, 0.65));
   return {
