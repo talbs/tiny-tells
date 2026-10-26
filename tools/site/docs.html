@@ -444,7 +444,10 @@ words.textContent = 'Synced 3 files.';</code></pre>
         </p>
         <h3 id="your-part">Your Part</h3>
         <ol>
-          <li><strong>Put words beside it.</strong> A tell is never the only signal.</li>
+          <li>
+            <strong>Put words beside it.</strong> A tell is never the only signal. Keep them out of the tag: text in
+            there hides once the tell loads. <a href="#stand-in">See why</a>.
+          </li>
           <li>
             <strong>Hide its name when the words already say it</strong> with <code>label=""</code>. It works like
             <code>alt=""</code> on a decorative image. <a href="#labels">Try it</a>.
@@ -452,7 +455,8 @@ words.textContent = 'Synced 3 files.';</code></pre>
           <li>
             <strong>If the status changes while someone’s on the page,</strong> put the words in a
             <code>role="status"</code> region so screen readers announce it. Keep the region in the page from the start,
-            and hide what’s inside it, not the region. <a href="#states">See how</a>.
+            and hide what’s inside it, not the region. Keep the tell out of the region, or its name gets read with every
+            update. Lists and tables get one region for the summary, not one per row. <a href="#states">See how</a>.
           </li>
           <li>
             <strong>If you change the colors,</strong> keep 3:1 against the surface (<a
