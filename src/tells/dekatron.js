@@ -8,6 +8,8 @@ export const DEKATRON = {
   hasVel: true,
   pos: [],
   wrap: { k: DK },
+  still: { done: 0.75, error: 1.8, warning: 1.9 },
+  maxOvershoot: { k: 0.5 },
   states: {
     working: t => {
       const per = (4 * BEAT) / DK,
@@ -19,14 +21,16 @@ export const DEKATRON = {
       const spin = t < 0.55,
         k = spin ? 10 * E.in(seg(t, 0, 0.55)) : 10,
         flash = bell(seg(t, 0.5, 1)),
+        ring = t < 0.75 ? flash : lerp(1, 0.5, E.inOut(seg(t, 0.75, 1.1))),
         out = seg(t, 2.8, 3.2);
       return {
         tail: spin && t > 0.15 ? [k - 0.7, k - 1.4] : [],
-        flash: flash * (1 - out),
+        flash: ring * (1 - out),
         ents: [{ k: mod(k, DK), g: 1 + 0.5 * flash }],
       };
     },
-    error: t => {
+    error: tau => {
+      const t = tau - 0.4;
       const lunge = t0 => {
         const tt = t - t0;
         return tt < 0 ? 0 : tt < 0.08 ? 0.8 * E.out(tt / 0.08) : springOff(0.8, 0, tt - 0.08, 28, 0.3);
@@ -36,7 +40,7 @@ export const DEKATRON = {
         strain = t > 0.9 ? 0.38 * bell(seg(u, 0.1, 0.5)) : 0;
       return {
         shake: [0.025 * hit * Math.sin(t * 90), 0.015 * hit * Math.cos(t * 70)],
-        ents: [{ k: mod(lunge(0.2) + lunge(0.5) + strain, DK), g: 0.85 + 0.35 * hit - 0.25 * strain }],
+        ents: [{ k: mod(5 + lunge(0.2) + lunge(0.5) + strain, DK), g: 0.85 + 0.35 * hit - 0.25 * strain }],
       };
     },
     warning: t => {
@@ -44,7 +48,7 @@ export const DEKATRON = {
       return {
         ents: [
           {
-            k: mod(0.9 * nudge, DK),
+            k: mod(9 + 0.45 * nudge, DK),
             g: 0.9 + 0.35 * Math.abs(nudge) + (t > 1.7 ? 0.25 * bell(seg((t % BEAT) / BEAT, 0, 0.6)) : 0),
           },
         ],

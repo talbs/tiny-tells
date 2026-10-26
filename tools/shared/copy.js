@@ -99,9 +99,10 @@ export const NOTES = {
   },
   dekatron: {
     working: 'Counts around the ring with a fading trail. One lap per loop.',
-    done: 'Races a full lap, lands on zero, and every cathode flashes.',
-    error: 'It jams, lunges at the next count twice, and gets knocked back. Then it keeps creeping, dimmer each beat.',
-    warning: 'Rocks one count each way and comes home. Then it pulses on the beat.',
+    done: 'Races a full lap and lands on zero. Every cathode flashes, and the ring stays lit.',
+    error:
+      'Drops to the bottom and jams. Lunges at the next count twice and gets knocked back. Then it keeps creeping, dimmer each beat.',
+    warning: 'Stops one count short of zero. Leans for it, falls back, and pulses on the beat.',
     idle: 'Parked on zero, breathing slowly.',
   },
   eyes: {

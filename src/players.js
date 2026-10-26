@@ -2,8 +2,13 @@
 import { BEAT, E, PERIOD, PHYS, bell, ink, labMix, mod, seg, springOff, tone } from './core.js';
 import { TELLS } from './registry.js';
 
-/* A wrapped key (dekatron's k) crosses its wrap point as a small step, not a jump back around the ring. */
-const unwrap = (sk, k, d) => (sk.wrap?.[k] ? mod(d + sk.wrap[k] / 2, sk.wrap[k]) - sk.wrap[k] / 2 : d);
+/* A wrapped key (dekatron's k) crosses its wrap point as a small step, not a jump back around the ring. The nudge makes an exact half-ring trip always go clockwise, so rounding noise can't pick the way. */
+const unwrap = (sk, k, d, w = sk.wrap?.[k]) => (w ? mod(d + w / 2 + 1e-3, w) - w / 2 - 1e-3 : d);
+/* A long trip gets just enough extra damping to overshoot no more than the tell's maxOvershoot for that key. */
+const damping = (sk, key, z, d) => {
+  const l = Math.log(sk.maxOvershoot?.[key] / Math.abs(d));
+  return l < 0 ? Math.max(z, -l / Math.hypot(Math.PI, l)) : z;
+};
 
 export class EPlayer {
   constructor(tell, id = 'working') {
@@ -29,7 +34,10 @@ export class EPlayer {
         d = this.off.d[i],
         v = this.off.v[i];
       sk.keys.forEach(key => {
-        o[key] = tt < 0 ? this.off.tg0[i][key] + d[key] : e[key] + springOff(d[key], v[key], tt, P.w, P.z);
+        o[key] =
+          tt < 0
+            ? this.off.tg0[i][key] + d[key]
+            : e[key] + springOff(d[key], v[key], tt, P.w, damping(sk, key, P.z, d[key]));
       });
       if (sk.pos.length === 2) {
         const [ka, kb] = sk.pos,

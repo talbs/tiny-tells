@@ -19,7 +19,9 @@ const INSET = 0.08,
   REACH = 0.05,
   SAME_SHAPE_LIMIT = 0.5;
 // Their error still draws the idle shape in one ink. Each waits on its own fix, and then comes off this list.
-const SAME_SHAPE = ['eyes', 'lens', 'dekatron'];
+const SAME_SHAPE = ['eyes', 'lens'];
+// Every pair of their stills must differ in one ink. Tells drawn as filled shapes over-report here, so it's opt-in.
+const EVERY_PAIR = ['dekatron'];
 const ONE_INK = { isDark: false, palette: null, gaze: null, ink: CURRENT_INK };
 const draw = (cv, tell, id, t, scene) =>
   withScene(scene, () => {
@@ -183,18 +185,30 @@ export const runEngineChecks = () => {
   const shape = document.createElement('canvas');
   shape.width = shape.height = 40;
   shape._css = 20;
+  const stillInk = (tell, id) => solidInk(draw(shape, tell, id, stillAt(tell, id), ONE_INK));
+  const compare = (a, b) => {
+    const ink = [a, b].map(m => m.filter(Boolean).length),
+      overlap = (shared(a, spread(b, shape.width)) + shared(b, spread(a, shape.width))) / (ink[0] + ink[1] || 1);
+    return { ink, overlap, isSame: !ink[0] || !ink[1] || overlap >= SAME_SHAPE_LIMIT };
+  };
   for (const tell of Object.keys(TELLS)) {
-    const [error, idle] = ['error', 'idle'].map(id => solidInk(draw(shape, tell, id, stillAt(tell, id), ONE_INK))),
-      ink = [error, idle].map(m => m.filter(Boolean).length),
-      overlap =
-        (shared(error, spread(idle, shape.width)) + shared(idle, spread(error, shape.width))) / (ink[0] + ink[1] || 1),
-      isSame = !ink[0] || !ink[1] || overlap >= SAME_SHAPE_LIMIT;
+    if (EVERY_PAIR.includes(tell)) continue;
+    const { ink, overlap, isSame } = compare(stillInk(tell, 'error'), stillInk(tell, 'idle'));
     if (isSame !== SAME_SHAPE.includes(tell))
       failures.push(
         isSame
           ? `shape: ${tell} error and idle share ${overlap.toFixed(2)} of their ink (${ink[0]} and ${ink[1]} px) in one ink`
           : `shape: ${tell} error is now its own shape in one ink, so take it off SAME_SHAPE`
       );
+  }
+  for (const tell of EVERY_PAIR) {
+    const stills = Object.fromEntries(STATES.map(id => [id, stillInk(tell, id)]));
+    STATES.forEach((a, i) =>
+      STATES.slice(i + 1).forEach(b => {
+        const { overlap, isSame } = compare(stills[a], stills[b]);
+        if (isSame) failures.push(`shape: ${tell} ${a} and ${b} share ${overlap.toFixed(2)} of their ink in one ink`);
+      })
+    );
   }
   return { failures, flashes: rows };
 };
