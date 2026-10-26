@@ -462,7 +462,7 @@ test.describe('Chromium only', () => {
     ).toContain('aria-hidden-focus');
   });
 
-  test('every tell stays in its live area, loops without a seam, never flashes more than 3 times a second, draws error as a different shape from idle in one ink (#124), Lens keeps to its color="current" ink (#98), and Blot keeps a crisp edge drawn large (#92)', async ({
+  test('every tell stays in its live area, loops without a seam, never flashes more than 3 times a second, draws error as a different shape from idle in one ink (#124) and every Dekatron state as its own shape (#132), Lens keeps to its color="current" ink (#98), and Blot keeps a crisp edge drawn large (#92)', async ({
     page,
   }) => {
     test.setTimeout(120000);
