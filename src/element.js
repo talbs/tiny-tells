@@ -142,6 +142,7 @@ const setup = () => {
 };
 
 const hintMissingLabel = list => {
+  if (hasHinted) return;
   for (const el of list) {
     if (['label', 'aria-label', 'aria-labelledby', 'hidden'].some(name => el.hasAttribute(name))) continue;
     if (el.getAttribute('aria-hidden') === 'true') continue;
@@ -276,7 +277,7 @@ class TinyTell extends (typeof HTMLElement === 'undefined' ? class {} : HTMLElem
       queueMicrotask(() => {
         const list = [...fresh].filter(el => all.has(el));
         fresh.clear();
-        if (!hasHinted) hintMissingLabel(list);
+        hintMissingLabel(list);
         refresh(list);
       });
   }
