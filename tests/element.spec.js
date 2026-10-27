@@ -229,6 +229,7 @@ test.describe('in motion', () => {
       const hints = warnings.filter(text => text.includes(': no label, next to'));
       expect(hints.length, `${name}: ${hint ? 'hints once' : 'stays quiet'}`).toBe(hint ? 1 : 0);
       for (const fragment of hint ?? []) expect(hints[0], `${name}: the hint says ${fragment}`).toContain(fragment);
+      expect(page.problems, `${name}: no page errors`).toEqual([]);
     }
   });
 
