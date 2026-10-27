@@ -15,6 +15,9 @@ const all = new Set();
 const TICK = Symbol('tick');
 const HOOKS = {};
 const DOCS = 'https://tinytells.dev/docs/#';
+const LIVE = '[role=status], [role=alert], [role=log], output, [aria-live]:not([aria-live=off])';
+const describe = (node, names) =>
+  `<${node.localName}${names.map(n => (node.hasAttribute(n) ? ` ${n}="${node.getAttribute(n)}"` : '')).join('')}>`;
 const DANCE = Symbol('dance');
 const MOOD = Symbol('mood');
 let env = null,
@@ -22,7 +25,8 @@ let env = null,
   refreshSeen = null,
   recheckStill = null,
   pending = 0,
-  rechecks = 0;
+  rechecks = 0,
+  hasHinted = false;
 const fresh = new Set();
 const stale = new WeakSet();
 
@@ -135,6 +139,25 @@ const setup = () => {
   env.forced.addEventListener('change', () => refreshSoon());
   watchDensity();
   return env;
+};
+
+const hintMissingLabel = list => {
+  if (hasHinted) return;
+  for (const el of list) {
+    if (['label', 'aria-label', 'aria-labelledby', 'hidden'].some(name => el.hasAttribute(name))) continue;
+    if (el.getAttribute('aria-hidden') === 'true') continue;
+    const region =
+      [el.previousElementSibling, el.nextElementSibling].find(node => node?.matches(LIVE)) ??
+      el.parentElement?.closest(LIVE);
+    if (!region) continue;
+    hasHinted = true;
+    console.warn(
+      `${describe(el, ['id', 'tell'])}: no label, next to ${describe(region, ['id', 'role', 'aria-live'])}. Screen readers say "${LABEL[el.state]}", then its words, so the state may be heard twice. If the words say it, add label="". Shown once per page; check your other tells. ${DOCS}labels`,
+      el,
+      region
+    );
+    return;
+  }
 };
 
 class TinyTell extends (typeof HTMLElement === 'undefined' ? class {} : HTMLElement) {
@@ -254,6 +277,7 @@ class TinyTell extends (typeof HTMLElement === 'undefined' ? class {} : HTMLElem
       queueMicrotask(() => {
         const list = [...fresh].filter(el => all.has(el));
         fresh.clear();
+        hintMissingLabel(list);
         refresh(list);
       });
   }

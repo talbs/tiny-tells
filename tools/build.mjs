@@ -51,8 +51,8 @@ const FA_VERSION = readdirSync(join(WA_DIST, 'chunks'))
   .find(Boolean);
 if (!FA_VERSION) throw new Error('Could not find the Font Awesome version inside @awesome.me/webawesome');
 const BUNDLES = [
-  { name: 'tiny-tells', title: 'Tiny Tells', budgetKb: 14.75 },
-  { name: 'tiny-tells-play', title: 'Tiny Tells Play', budgetKb: 17.25 },
+  { name: 'tiny-tells', title: 'Tiny Tells', budgetKb: 15.1 },
+  { name: 'tiny-tells-play', title: 'Tiny Tells Play', budgetKb: 17.6 },
 ];
 
 const ESM = {

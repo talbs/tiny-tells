@@ -526,6 +526,7 @@ words.textContent = 'Synced 3 files.';</code></pre>
         <p>
           Screen readers read a tell as an image named after its state, like “Working”. Set <code>label</code> to be
           more specific. Set <code>label=""</code> to hide the tell when the words beside it already say the state.
+          Forget it beside a live region, and the console reminds you.
         </p>
         <wa-callout
           class="note"
@@ -1746,6 +1747,7 @@ tiny-tell:not(:defined)[state="warning"]::before { content: "!"; }</code></pre>
               id="events-tell"
               tell="eyes"
               data-follow
+              label=""
             ></tiny-tell>
             <p
               class="wa-caption-s"
