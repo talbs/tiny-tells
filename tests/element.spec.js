@@ -159,6 +159,79 @@ test.describe('in motion', () => {
     expect((await pixels(page, '#typo')).alpha, 'an unknown tell still draws the fallback').toBeGreaterThan(0);
   });
 
+  test('a tell with no label beside or inside a live region hints once per page, and correct pages stay quiet', async ({
+    page,
+  }) => {
+    const span = '<span role="status">Syncing</span>';
+    const ROWS = [
+      {
+        name: 'bare tell, status span after',
+        html: `<p><tiny-tell id="a" tell="dekatron" state="done"></tiny-tell>${span}</p>`,
+        hint: [
+          '<tiny-tell id="a" tell="dekatron">',
+          'next to <span role="status">',
+          '"Done"',
+          'label=""',
+          'tinytells.dev/docs/#labels',
+        ],
+      },
+      {
+        name: 'two such tells',
+        html: `<p><tiny-tell id="a"></tiny-tell>${span}</p><p><tiny-tell id="b"></tiny-tell>${span}</p>`,
+        hint: ['<tiny-tell id="a">'],
+      },
+      {
+        name: 'inside a status paragraph',
+        html: '<p id="r" role="status"><tiny-tell id="a"></tiny-tell> Syncing</p>',
+        hint: ['<p id="r" role="status">'],
+      },
+      {
+        name: 'after an <output>',
+        html: '<p><output>3 files</output><tiny-tell id="a"></tiny-tell></p>',
+        hint: ['next to <output>'],
+      },
+      {
+        name: 'beside aria-live="polite"',
+        html: '<div><tiny-tell id="a"></tiny-tell><div aria-live="polite">Syncing</div></div>',
+        hint: ['<div aria-live="polite">'],
+      },
+      {
+        name: 'aria-live="off" neighbor',
+        html: '<div><tiny-tell id="a"></tiny-tell><div aria-live="off">Syncing</div></div>',
+        hint: null,
+      },
+      { name: 'label=""', html: `<p><tiny-tell id="a" label=""></tiny-tell>${span}</p>`, hint: null },
+      { name: 'label="Uploading"', html: `<p><tiny-tell id="a" label="Uploading"></tiny-tell>${span}</p>`, hint: null },
+      {
+        name: 'aria-label on the tag',
+        html: `<p><tiny-tell id="a" aria-label="Sync"></tiny-tell>${span}</p>`,
+        hint: null,
+      },
+      { name: 'hidden tell', html: `<p><tiny-tell id="a" hidden></tiny-tell>${span}</p>`, hint: null },
+      {
+        name: 'status span not an immediate neighbor',
+        html: `<p><tiny-tell id="a"></tiny-tell><span>3 files</span>${span}</p>`,
+        hint: null,
+      },
+    ];
+    let warnings = [];
+    page.on('console', msg => msg.type() === 'warning' && warnings.push(msg.text()));
+    for (const { name, html, hint } of ROWS) {
+      // The hint is once per page, so every row gets a fresh one.
+      await open(page);
+      warnings = [];
+      await page.evaluate(async html => {
+        document.body.insertAdjacentHTML('beforeend', html);
+        await new Promise(requestAnimationFrame);
+        console.warn('row done');
+      }, html);
+      await expect.poll(() => warnings.includes('row done'), { message: `${name}: the row ran` }).toBe(true);
+      const hints = warnings.filter(text => text.includes(': no label, next to'));
+      expect(hints.length, `${name}: ${hint ? 'hints once' : 'stays quiet'}`).toBe(hint ? 1 : 0);
+      for (const fragment of hint ?? []) expect(hints[0], `${name}: the hint says ${fragment}`).toContain(fragment);
+    }
+  });
+
   test('moving a tell keeps its animation going instead of restarting it', async ({ page }) => {
     // Run the clock a while first, so a restart would visibly jump back to the first pose.
     for (let i = 0; i < 20; i++) await twoFrames(page);
