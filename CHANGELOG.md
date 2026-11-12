@@ -2,6 +2,26 @@
 
 Each release groups its changes under Added, Changed, Deprecated, Removed, Fixed, and Security. A breaking change is marked **Breaking** and listed first.
 
+## 0.6.0 · 2026-11-12
+
+### Added
+
+- An agent skill. `npx skills add talbs/tiny-tells` installs the same rules and API as `/llms.txt`, so a coding assistant doesn't have to fetch them.
+- A console hint when a tell sits beside a live region with no `label`. Screen readers say the state twice in that setup, and nothing on screen shows it. It warns once per page, so CI that fails on console warnings may trip.
+
+### Changed
+
+- Every tell's error now reads differently from idle with one ink (forced colors or `color="current"`) and reduced motion. Drones regroup into a flat bar. Dekatron's done, warning, and error each rest on their own cathode. Eyes hold a worried look while the head sinks. Lens's iris sinks to the bottom of the glass and stops following the pointer.
+- Lens keeps its glass, metal, and iris in `color="current"` and forced colors, each a different strength of the text color. It used to flatten into a solid puck.
+- Lens's glass glint shows in every mode, not just with state colors.
+- The `/llms.txt` rules now cover three more mistakes: words inside the tag (they hide once the tell loads), a status region that starts hidden (it never announces), and one region per tell in a list (use one summary region instead).
+- The core bundle is under 15.2 KB min + gzip, up from 14.25 KB. The play bundle is under 17.7 KB, up from 17 KB.
+
+### Fixed
+
+- Lens's success burst out of the glass and lit up the metal ring. Every state's glow now stays inside the glass.
+- Lens's iris glow no longer shows a square corner when done opens wide.
+
 ## 0.5.0 · 2026-10-16
 
 ### Changed
