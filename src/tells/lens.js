@@ -43,7 +43,7 @@ export const LENS = {
       };
     },
     done: t => {
-      const open = t < 0.12 ? 0.4 - 0.12 * bell(t / 0.12) : 0.8 + springOff(-0.52, 0, t - 0.12, 9, 0.32),
+      const open = t < 0.12 ? 0.4 - 0.12 * bell(t / 0.12) : 0.62 + springOff(-0.34, 0, t - 0.12, 9, 0.45),
         out = E.inOut(seg(t, 2.8, 3.2));
       return {
         rip: seg(t, 0.14, 0.8),
@@ -148,9 +148,22 @@ export const LENS = {
       ctx.strokeStyle = spill ? css(spill, 0.9 * (1 - s.rip)) : css(color, 0.85 * (1 - s.rip), 0.15);
       ctx.lineWidth = Math.max(dpr, 0.05 * unit * (1 - s.rip));
       ctx.beginPath();
-      ctx.arc(o, o, lerp(ap, Rb * 1.02, E.out(s.rip)), 0, TAU);
+      ctx.arc(o, o, lerp(ap, Rg, E.out(s.rip)), 0, TAU);
       ctx.stroke();
     }
+    ctx.globalCompositeOperation = 'source-over';
+    if (e.bloom > 0.02) {
+      const hb = ctx.createRadialGradient(o, o, Rg * 0.4, o, o, Rg);
+      hb.addColorStop(0, css(color, 0));
+      hb.addColorStop(0.7, spill ? css(spill, 0.4 * clamp(e.bloom)) : css(color, 0.35 * clamp(e.bloom), 0.1));
+      hb.addColorStop(1, css(color, 0));
+      ctx.fillStyle = hb;
+      ctx.beginPath();
+      ctx.arc(o, o, Rg, 0, TAU);
+      ctx.fill();
+    }
+    /* The glint is a reflection on the glass, so it sits on top of everything behind it. */
+    if (ink && !isDark) ctx.globalCompositeOperation = 'destination-out';
     const glintInk = ink || [0.96, 0.005, 277],
       near = o - 0.14 * Rg,
       far = o - 0.75 * Rg,
@@ -164,16 +177,6 @@ export const LENS = {
     ctx.arc(o, o, Rg * 0.76, PI * 1.06, PI * 1.44);
     ctx.stroke();
     ctx.globalCompositeOperation = 'source-over';
-    if (e.bloom > 0.02) {
-      const hb = ctx.createRadialGradient(o, o, Rg * 0.6, o, o, Rb * 1.12);
-      hb.addColorStop(0, css(color, 0));
-      hb.addColorStop(0.55, spill ? css(spill, 0.4 * clamp(e.bloom)) : css(color, 0.35 * clamp(e.bloom), 0.1));
-      hb.addColorStop(1, css(color, 0));
-      ctx.fillStyle = hb;
-      ctx.beginPath();
-      ctx.arc(o, o, Rb * 1.12, 0, TAU);
-      ctx.fill();
-    }
     ctx.restore();
   },
 };
