@@ -14,7 +14,7 @@ Set the number before writing the first test for a feature. Judging each test on
 - **The number goes in the PR.** The PR description names each test it adds and the contract that test protects. No count, no tests.
 - **Gate 1 beats the number.** If a real contract would go unprotected, the budget is wrong, not the test.
 
-For the current count, run `npx playwright test --list --project=chromium` (each browser test runs in up to three engines). `npm test` also runs the node scripts and test file in the table below.
+For the current count, run `npx playwright test --list --project=chromium` (groups tagged `@engines` also run in Firefox and WebKit). `npm test` also runs the node scripts and test file in the table below.
 
 ## Gate 1: should this test exist?
 
@@ -36,7 +36,8 @@ If the answer doesn't depend on a real browser, it doesn't go in one. A browser 
 |---|---|
 | Canvas geometry (live area, centering, crisp edges), flashing, loop seams (no jump when a state's loop restarts), and error drawing a different shape from idle in one ink (every pair of states for Dekatron) | Playwright, `tests/engine.html` (Chromium, every tell × state × scheme, imports `src/` directly) |
 | The public surface matches `custom-elements.json` (names, defaults, reflection) | `node --test tests/public-surface.test.mjs` (happy-dom) |
-| Element behavior that needs pixels, layout, or input | Playwright, `tests/element.spec.js` (Chromium, Firefox, WebKit) |
+| Element behavior that needs pixels, layout, or input | Playwright, `tests/element.spec.js` (tagged `@engines`: Chromium, Firefox, WebKit) |
+| Element behavior that's only DOM (events, warnings, upgrade) | Playwright, `tests/element.spec.js` (untagged: Chromium) |
 | Bundle size (min + gzip ≤ `budgetKb` in `tools/build.mjs`) | `node tools/build.mjs --check` |
 | Importing on a server (both bundles) | `node tests/server-import.mjs` |
 | Rendering in test DOMs (jsdom, happy-dom) without throwing or logging | `node tests/fake-dom.mjs jsdom` and `… happy-dom` |
@@ -45,9 +46,9 @@ If the answer doesn't depend on a real browser, it doesn't go in one. A browser 
 
 | Concern | Where |
 |---|---|
-| The landing, docs, and 404 load and switch theme without errors, builder links restore their tag, `?stats=` opts out, and Tap Tempo hands the speed back | Playwright, `tests/site.spec.js` (Chromium, Font Awesome's icons and the Umami script stubbed so it runs offline on any port) |
+| The landing, docs, and 404 load, define every `wa-*` element, and switch theme without errors, builder links restore their tag, `?stats=` opts out, and Tap Tempo hands the speed back | Playwright, `tests/site.spec.js` (Chromium, Font Awesome's icons and the Umami script stubbed so it runs offline on any port) |
 | Docs `#links` land below the header, and the mobile drawer opens and closes without moving the page | Playwright, `tests/site.spec.js` (every engine, because Firefox and WebKit each broke one) |
-| The reference tables and heading anchors ship in the HTML | Playwright, `tests/site.spec.js` (JavaScript off) |
+| The reference tables, heading anchors, and label cases ship in the HTML | `node tools/build.mjs --check` |
 | Inline CSS size (gzip ≤ `CSS_BUDGET_KB` in `tools/build.mjs`) | `node tools/build.mjs --check` |
 
 Both: `eslint .` catches a missing import or unused name. Don't repeat a layer's job in another layer.
@@ -61,7 +62,7 @@ Site tests protect public URLs (builder links, `?stats=`), privacy, accessibilit
 ## How to write one
 
 - **Public surface only:** attributes and properties, the accessible role and name, CSS custom properties, and the rendered pixels of `::part(tell)`. Never private fields or internal markup.
-- **Group with `describe`.** No loose top-level tests. Skip unsupported browsers at the group level (`test.skip(({ browserName }) => …)`), so hooks don't run against a page that was never opened.
+- **Group with `describe`.** No loose top-level tests. A group runs in Chromium only unless it's tagged `@engines` (`test.describe('…', { tag: '@engines' }, …)`). Tag it only when Firefox or WebKit could fail differently: pixels, real layout, or pointer input.
 - **Every assertion says its claim.** `expect(x, 'paused holds the frame')`, not a bare diff. The message is what you read when it fails in CI.
 - **Node tests use `node:test` and `node:assert/strict`.** Loose `assert.equal` is `==`, so `'1' == 1` passes.
 - **No sleeps.** No `waitForTimeout`, no `setTimeout`. Wait on a condition (`waitForFunction`, `expect.poll`) or a frame (`requestAnimationFrame`). If there's honestly no signal to wait on, a timer is allowed with a comment saying why.
@@ -70,7 +71,7 @@ Site tests protect public URLs (builder links, `?stats=`), privacy, accessibilit
 - **Freeze time when reading pixels.** Use reduced motion (`still: true` in the spec) so every frame is deterministic.
 - **Assert big differences, not exact values.** "Red beats green by 60," not "pixel 12 is #dc0000." No screenshot comparisons until the visuals stop changing.
 - **Test what motion does, not its curve.** The motion is the product here, so the engine checks do test it: stays in the live area, no seam at the loop, no flashing over 3 a second. They never pin a spring constant or a keyframe value. Those change every time a tell gets tuned.
-- **Fixtures are shared and small.** Add a tag to `tests/fixture.html` before writing a new page. Look tells up by id or `data-tell`, never by position. `tests/helpers.js` holds only what both spec files use (`open`, `noProblems`, the tells and states) and what those need (`drawn`, `API`); a helper one file uses stays in that file.
+- **Fixtures are shared and small.** Add a tag to `tests/fixture.html` before writing a new page. Look tells up by id or `data-tell`, never by position. `tests/helpers.js` holds only what both spec files use (`open`, `noProblems`) and what those need (`drawn`); a helper one file uses stays in that file.
 - **The public-surface test is a tripwire.** If adding API breaks it, update it on purpose.
 - **Run the harder condition once instead of both.** For example, canvas sizing runs at 2× density only, because 1× is the easy case.
 

@@ -1,10 +1,4 @@
-import { readFileSync } from 'node:fs';
 import { expect } from '@playwright/test';
-
-export const API = JSON.parse(readFileSync(new URL('../src/api.json', import.meta.url)));
-const valuesOf = name => Object.keys(API.attributes.find(a => a.name === name).values);
-export const TELLS = valuesOf('tell');
-export const STATES = valuesOf('state');
 
 export const drawn = page =>
   page.waitForFunction(() =>
