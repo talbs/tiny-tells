@@ -124,18 +124,6 @@ export const LENS = {
     ctx.arc(o, o, Rg, 0, TAU);
     ctx.fill();
     if (ink && !isDark) ctx.globalCompositeOperation = 'destination-out';
-    const glintInk = ink || [0.96, 0.005, 277],
-      near = o - 0.14 * Rg,
-      far = o - 0.75 * Rg,
-      glint = ctx.createLinearGradient(far, near, near, far);
-    glint.addColorStop(0, css(glintInk, 0));
-    glint.addColorStop(0.5, css(glintInk, ink && !isDark ? 0.32 : 0.24));
-    glint.addColorStop(1, css(glintInk, 0));
-    ctx.strokeStyle = glint;
-    ctx.lineWidth = 0.07 * unit;
-    ctx.beginPath();
-    ctx.arc(o, o, Rg * 0.76, PI * 1.06, PI * 1.44);
-    ctx.stroke();
     const glow = clamp(e.glow, 0, 1.6),
       ap = clamp(e.ap, 0.12, 0.96) * Rg,
       rc = Math.max(1.5 * dpr, e.size * Rg);
@@ -163,6 +151,18 @@ export const LENS = {
       ctx.arc(o, o, lerp(ap, Rb * 1.02, E.out(s.rip)), 0, TAU);
       ctx.stroke();
     }
+    const glintInk = ink || [0.96, 0.005, 277],
+      near = o - 0.14 * Rg,
+      far = o - 0.75 * Rg,
+      glint = ctx.createLinearGradient(far, near, near, far);
+    glint.addColorStop(0, css(glintInk, 0));
+    glint.addColorStop(0.5, css(glintInk, ink && !isDark ? 0.32 : 0.24));
+    glint.addColorStop(1, css(glintInk, 0));
+    ctx.strokeStyle = glint;
+    ctx.lineWidth = 0.07 * unit;
+    ctx.beginPath();
+    ctx.arc(o, o, Rg * 0.76, PI * 1.06, PI * 1.44);
+    ctx.stroke();
     ctx.globalCompositeOperation = 'source-over';
     if (e.bloom > 0.02) {
       const hb = ctx.createRadialGradient(o, o, Rg * 0.6, o, o, Rb * 1.12);
