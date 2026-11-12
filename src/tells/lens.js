@@ -143,17 +143,14 @@ export const LENS = {
     const look = 0.16 * (1 - clamp((e.oy || 0) / SUNK)),
       cx = o + ((gaze ? gaze.x * look : 0) + (e.ox || 0)) * Rg,
       cy = o + ((gaze ? gaze.y * look : 0) + (e.oy || 0)) * Rg;
-    ctx.save();
-    ctx.beginPath();
-    ctx.arc(cx, cy, ap, 0, TAU);
-    ctx.clip();
     const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, rc);
     g.addColorStop(0, css(color, glow, 0.34 * Math.min(1, glow)));
     g.addColorStop(0.6, css(color, glow * 0.7));
     g.addColorStop(1, css(color, 0.1 * glow));
     ctx.fillStyle = g;
-    ctx.fillRect(cx - rc, cy - rc, rc * 2, rc * 2);
-    ctx.restore();
+    ctx.beginPath();
+    ctx.arc(cx, cy, ap, 0, TAU);
+    ctx.fill();
     ctx.strokeStyle = css(color, 0.3 + 0.5 * glow, 0.12);
     ctx.lineWidth = Math.max(dpr * (small ? 0.9 : 1), 0.028 * unit);
     ctx.beginPath();
