@@ -14,6 +14,7 @@ import { dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { gzipSync } from 'node:zlib';
 import { BOX } from '../src/box.js';
+import { LABEL } from '../src/core.js';
 import { AGENT_RULES, ASSISTANT_PROMPT, V1 } from './shared/copy.js';
 import { setScheme } from './site/scheme.js';
 
@@ -727,6 +728,8 @@ const deadAnchors = [...llms.matchAll(/docs\/#([\w-]+)\)/g)]
   .map(m => m[1])
   .filter(id => !builtDocs.includes(`id="${id}"`));
 if (deadAnchors.length) throw new Error(`llms.txt links to docs anchors that don't exist: ${deadAnchors.join(', ')}`);
+if (!builtDocs.includes(`<td>“${LABEL.working}”, an image</td>`))
+  throw new Error(`the docs' label cases no longer say what screen readers hear: “${LABEL.working}”`);
 console.log('wrote', write(llms, 'site', 'llms.txt'));
 
 const args = process.argv.slice(2);

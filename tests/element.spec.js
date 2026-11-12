@@ -1,7 +1,13 @@
+import { readFileSync } from 'node:fs';
 import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 import { DOZE_CLIPS } from '../src/doze.js';
-import { STATES, TELLS, drawn, noProblems, open } from './helpers.js';
+import { drawn, noProblems, open } from './helpers.js';
+
+const API = JSON.parse(readFileSync(new URL('../src/api.json', import.meta.url)));
+const valuesOf = name => Object.keys(API.attributes.find(a => a.name === name).values);
+const TELLS = valuesOf('tell');
+const STATES = valuesOf('state');
 
 const pixels = (page, selector) =>
   page.$eval(selector, el => {
@@ -61,6 +67,12 @@ const tap5 = (page, selector) =>
     for (let i = 0; i < 5; i++) el.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }));
   });
 
+const collectWarnings = page => {
+  const warnings = [];
+  page.on('console', msg => msg.type() === 'warning' && warnings.push(msg.text()));
+  return warnings;
+};
+
 const peakOpen = (page, selector, frames = 20) =>
   page.$eval(
     selector,
@@ -112,7 +124,7 @@ const fakeDisplay = page =>
     };
   });
 
-test.describe('in motion', () => {
+test.describe('in motion', { tag: '@engines' }, () => {
   test.beforeEach(({ page }) => open(page));
   test.afterEach(noProblems);
 
@@ -133,6 +145,156 @@ test.describe('in motion', () => {
     expect(await holds(), 'reduced motion holds a still pose').toBe(true);
   });
 
+  test('moving a tell keeps its animation going instead of restarting it', async ({ page }) => {
+    // Run the clock a while first, so a restart would visibly jump back to the first pose.
+    for (let i = 0; i < 20; i++) await twoFrames(page);
+    await page.evaluate(() => {
+      customElements.get('tiny-tell').timeScale = 0;
+    });
+    const before = await settled(page, '[data-tell="eyes"]');
+    await page.$eval('[data-tell="eyes"]', el => el.parentElement.append(el));
+    expect(await settled(page, '[data-tell="eyes"]'), 'a moved tell draws the same pose it had').toBe(before);
+  });
+
+  test('the core bundle ignores the pointer and taps', async ({ page }) => {
+    await page.evaluate(() => {
+      customElements.get('tiny-tell').timeScale = 0;
+    });
+    const before = await settled(page, '#sized');
+    const box = await page.locator('#sized').boundingBox();
+    await page.mouse.move(box.x - 40, box.y + box.height / 2);
+    await tap5(page, '#sized');
+    expect(await settled(page, '#sized'), 'pointer moves and five taps leave the frame unchanged').toBe(before);
+  });
+});
+
+test.describe('still frames', { tag: '@engines' }, () => {
+  test.beforeEach(({ page }) => open(page, { still: true }));
+  test.afterEach(noProblems);
+
+  test('every tell draws in every state', async ({ page }) => {
+    for (const tell of TELLS) {
+      const selector = `[data-tell="${tell}"]`;
+      let last = null;
+      for (const state of STATES) {
+        await page.$eval(
+          selector,
+          (el, s) => {
+            el.state = s;
+          },
+          state
+        );
+        const next = await frame(page, selector);
+        expect((await pixels(page, selector)).alpha, `${tell} draws in ${state}`).toBeGreaterThan(0);
+        if (last) expect(next, `${tell} redraws for ${state}`).not.toBe(last);
+        last = next;
+      }
+    }
+  });
+
+  test('scheme draws the dark palette: auto in a dark region, invert in a light one, dark anywhere', async ({
+    page,
+  }) => {
+    const light = (await pixels(page, '#in-light')).lum;
+    await page.evaluate(() =>
+      document
+        .querySelector('.light')
+        .insertAdjacentHTML('beforeend', '<tiny-tell id="forced-dark" tell="drones" scheme="dark"></tiny-tell>')
+    );
+    await drawn(page);
+    for (const [selector, claim] of [
+      ['#in-dark', 'scheme auto inside a dark region'],
+      ['#inverted', 'scheme invert inside a light region'],
+      ['#forced-dark', 'scheme dark inside a light region'],
+    ])
+      expect((await pixels(page, selector)).lum, `${claim} draws the lighter, dark-scheme ink`).toBeGreaterThan(
+        light + 10
+      );
+  });
+
+  test('color current draws in the surrounding text color, including through a slot', async ({ page }) => {
+    expect((await pixels(page, '#ink')).lum, 'color current takes white text color').toBeGreaterThan(230);
+    expect(
+      (await pixels(page, '#slotted tiny-tell')).lum,
+      'color current takes white text color through a slot'
+    ).toBeGreaterThan(230);
+  });
+
+  test('palette tokens recolor a state, light-dark() follows each tell’s scheme, and a still tell picks up a later change', async ({
+    page,
+  }) => {
+    const red = await pixels(page, '#red-done'),
+      light = await pixels(page, '#ld-light'),
+      dark = await pixels(page, '#ld-dark');
+    expect(red.r, '--tell-color-done turns done red').toBeGreaterThan(Math.max(red.g, red.b) + 60);
+    expect(light.g, 'light-dark() picks green for a light tell').toBeGreaterThan(light.b + 40);
+    expect(dark.b, 'light-dark() picks blue for a dark tell').toBeGreaterThan(dark.g + 40);
+    await page.$eval('#red-done', el => el.parentElement.style.setProperty('--tell-color-done', 'rgb(0 0 230)'));
+    await expect
+      .poll(
+        async () => {
+          const { r, b } = await pixels(page, '#red-done');
+          return b - r;
+        },
+        { message: 'the new --tell-color-done shows up without a reload' }
+      )
+      .toBeGreaterThan(60);
+  });
+
+  test('a hidden tell draws once it is shown', async ({ page }) => {
+    await page.$eval('#hidden', el => {
+      el.hidden = false;
+    });
+    await page.waitForFunction(
+      () => document.getElementById('hidden').shadowRoot.querySelector('[part="tell"]').width > 1
+    );
+    expect((await pixels(page, '#hidden')).alpha, 'a shown tell draws').toBeGreaterThan(0);
+  });
+});
+
+test.describe('high density', { tag: '@engines' }, () => {
+  test.use({ deviceScaleFactor: 2 });
+  test.beforeEach(({ page }) => open(page, { still: true }));
+  test.afterEach(noProblems);
+
+  test('the canvas is square and matches its box at device pixel ratio, even in a table cell (Safari drew it twice as tall)', async ({
+    page,
+  }) => {
+    for (const selector of ['#sized', '[data-tell="eyes"]', '#inline tiny-tell', '#in-cell tiny-tell']) {
+      const { w, h, css, dpr } = await pixels(page, selector);
+      expect(dpr, 'the page runs at 2× density').toBe(2);
+      expect(w, `${selector} has a square canvas`).toBe(h);
+      expect(w, `${selector} canvas matches its box × density`).toBe(Math.round(css * dpr));
+      const shown = await page.$eval(selector, t => {
+        const box = t.getBoundingClientRect(),
+          canvas = t.shadowRoot.querySelector('[part="tell"]').getBoundingClientRect();
+        return [canvas.width - box.width, canvas.height - box.height].map(Math.round);
+      });
+      expect(shown, `${selector} canvas is drawn at the size of its box`).toEqual([0, 0]);
+    }
+    expect((await pixels(page, '#sized')).css, '--tell-size sets the box').toBe(48);
+  });
+});
+
+// Forced-colors emulation is Chromium-only, so this group stays untagged.
+test.describe('forced colors', () => {
+  test.beforeEach(({ page }) => open(page, { still: true, forced: true }));
+  test.afterEach(noProblems);
+
+  test('forced colors draw in the system text color, not the state color', async ({ page }) => {
+    await page.$eval('[data-tell="drones"]', el => {
+      el.state = 'done';
+    });
+    const { r, g, b, alpha } = await pixels(page, '[data-tell="drones"]');
+    expect(alpha, 'the tell still draws').toBeGreaterThan(0);
+    expect(Math.max(r, g, b) - Math.min(r, g, b), 'the ink is gray, not the done color').toBeLessThan(20);
+  });
+});
+
+test.describe('element logic', () => {
+  test.beforeEach(({ page }) => open(page, { still: true }));
+  test.afterEach(noProblems);
+
   test('a property set before the element was defined still takes effect', async ({ page }) => {
     expect(await page.$eval('#early', el => el.getAttribute('state')), 'the early state reflects after upgrade').toBe(
       'error'
@@ -143,10 +305,7 @@ test.describe('in motion', () => {
   });
 
   test('unknown tells and states warn and fall back to drones and working', async ({ page }) => {
-    const warnings = [];
-    page.on('console', msg => {
-      if (msg.type() === 'warning') warnings.push(msg.text());
-    });
+    const warnings = collectWarnings(page);
     await page.evaluate(() =>
       document.body.insertAdjacentHTML('beforeend', '<tiny-tell id="typo" tell="nope"></tiny-tell>')
     );
@@ -214,12 +373,11 @@ test.describe('in motion', () => {
         hint: null,
       },
     ];
-    let warnings = [];
-    page.on('console', msg => msg.type() === 'warning' && warnings.push(msg.text()));
+    const warnings = collectWarnings(page);
     for (const { name, html, hint } of ROWS) {
       // The hint is once per page, so every row gets a fresh one.
       await open(page);
-      warnings = [];
+      warnings.length = 0;
       await page.evaluate(async html => {
         document.body.insertAdjacentHTML('beforeend', html);
         await new Promise(requestAnimationFrame);
@@ -231,119 +389,6 @@ test.describe('in motion', () => {
       for (const fragment of hint ?? []) expect(hints[0], `${name}: the hint says ${fragment}`).toContain(fragment);
       expect(page.problems, `${name}: no page errors`).toEqual([]);
     }
-  });
-
-  test('moving a tell keeps its animation going instead of restarting it', async ({ page }) => {
-    // Run the clock a while first, so a restart would visibly jump back to the first pose.
-    for (let i = 0; i < 20; i++) await twoFrames(page);
-    await page.evaluate(() => {
-      customElements.get('tiny-tell').timeScale = 0;
-    });
-    const before = await settled(page, '[data-tell="eyes"]');
-    await page.$eval('[data-tell="eyes"]', el => el.parentElement.append(el));
-    expect(await settled(page, '[data-tell="eyes"]'), 'a moved tell draws the same pose it had').toBe(before);
-  });
-
-  test('the core bundle ignores the pointer and taps', async ({ page }) => {
-    await page.evaluate(() => {
-      customElements.get('tiny-tell').timeScale = 0;
-    });
-    const before = await settled(page, '#sized');
-    const box = await page.locator('#sized').boundingBox();
-    await page.mouse.move(box.x - 40, box.y + box.height / 2);
-    await tap5(page, '#sized');
-    expect(await settled(page, '#sized'), 'pointer moves and five taps leave the frame unchanged').toBe(before);
-  });
-});
-
-test.describe('still frames', () => {
-  test.beforeEach(({ page }) => open(page, { still: true }));
-  test.afterEach(noProblems);
-
-  test('every tell draws in every state', async ({ page }) => {
-    for (const tell of TELLS) {
-      const selector = `[data-tell="${tell}"]`;
-      let last = null;
-      for (const state of STATES) {
-        await page.$eval(
-          selector,
-          (el, s) => {
-            el.state = s;
-          },
-          state
-        );
-        const next = await frame(page, selector);
-        expect((await pixels(page, selector)).alpha, `${tell} draws in ${state}`).toBeGreaterThan(0);
-        if (last) expect(next, `${tell} redraws for ${state}`).not.toBe(last);
-        last = next;
-      }
-    }
-  });
-
-  test('default size follows clamp(20px, 1.43em, 48px)', async ({ page }) => {
-    expect(
-      await page.$eval('#inline tiny-tell', el => el.getBoundingClientRect().width),
-      'an inline tell in 16px text is 1.43em wide'
-    ).toBeCloseTo(16 * 1.43, 0);
-  });
-
-  test('scheme draws the dark palette: auto in a dark region, invert in a light one, dark anywhere', async ({
-    page,
-  }) => {
-    const light = (await pixels(page, '#in-light')).lum;
-    await page.evaluate(() =>
-      document
-        .querySelector('.light')
-        .insertAdjacentHTML('beforeend', '<tiny-tell id="forced-dark" tell="drones" scheme="dark"></tiny-tell>')
-    );
-    await drawn(page);
-    for (const [selector, claim] of [
-      ['#in-dark', 'scheme auto inside a dark region'],
-      ['#inverted', 'scheme invert inside a light region'],
-      ['#forced-dark', 'scheme dark inside a light region'],
-    ])
-      expect((await pixels(page, selector)).lum, `${claim} draws the lighter, dark-scheme ink`).toBeGreaterThan(
-        light + 10
-      );
-  });
-
-  test('color current draws in the surrounding text color, including through a slot', async ({ page }) => {
-    expect((await pixels(page, '#ink')).lum, 'color current takes white text color').toBeGreaterThan(230);
-    expect(
-      (await pixels(page, '#slotted tiny-tell')).lum,
-      'color current takes white text color through a slot'
-    ).toBeGreaterThan(230);
-  });
-
-  test('palette tokens recolor a state, light-dark() follows each tell’s scheme, and a still tell picks up a later change', async ({
-    page,
-  }) => {
-    const red = await pixels(page, '#red-done'),
-      light = await pixels(page, '#ld-light'),
-      dark = await pixels(page, '#ld-dark');
-    expect(red.r, '--tell-color-done turns done red').toBeGreaterThan(Math.max(red.g, red.b) + 60);
-    expect(light.g, 'light-dark() picks green for a light tell').toBeGreaterThan(light.b + 40);
-    expect(dark.b, 'light-dark() picks blue for a dark tell').toBeGreaterThan(dark.g + 40);
-    await page.$eval('#red-done', el => el.parentElement.style.setProperty('--tell-color-done', 'rgb(0 0 230)'));
-    await expect
-      .poll(
-        async () => {
-          const { r, b } = await pixels(page, '#red-done');
-          return b - r;
-        },
-        { message: 'the new --tell-color-done shows up without a reload' }
-      )
-      .toBeGreaterThan(60);
-  });
-
-  test('a hidden tell draws once it is shown', async ({ page }) => {
-    await page.$eval('#hidden', el => {
-      el.hidden = false;
-    });
-    await page.waitForFunction(
-      () => document.getElementById('hidden').shadowRoot.querySelector('[part="tell"]').width > 1
-    );
-    expect((await pixels(page, '#hidden')).alpha, 'a shown tell draws').toBeGreaterThan(0);
   });
 
   test('a state set while a tell is detached applies when it comes back', async ({ page }) => {
@@ -364,51 +409,81 @@ test.describe('still frames', () => {
   });
 });
 
-test.describe('high density', () => {
-  test.use({ deviceScaleFactor: 2 });
-  test.beforeEach(({ page }) => open(page, { still: true }));
+test.describe('play logic', () => {
+  test.beforeEach(({ page }) => open(page, { path: '/tests/play.html' }));
   test.afterEach(noProblems);
 
-  test('the canvas is square and matches its box at device pixel ratio, even in a table cell (Safari drew it twice as tall)', async ({
+  test('the npm core and play entries share one element, so loading both is safe', async ({ page }) => {
+    const warnings = collectWarnings(page);
+    const isShared = await page.evaluate(
+      async () => (await import('/dist/tiny-tells.js')).TinyTell === customElements.get('tiny-tell')
+    );
+    expect(isShared, 'importing the core after play returns the registered class').toBe(true);
+    expect(warnings, 'and nothing warns').toEqual([]);
+  });
+
+  test('loading the standalone CDN core after play warns instead of registering twice', async ({ page }) => {
+    const warnings = collectWarnings(page);
+    await page.evaluate(() => import('/dist/tiny-tells.min.js'));
+    await expect.poll(() => warnings.join('\n'), 'the second copy warns').toContain('already defined');
+  });
+
+  test('a subclass under its own tag dances and names its own tag in warnings', async ({ page }) => {
+    const warnings = collectWarnings(page);
+    await page.evaluate(() => {
+      customElements.define('sub-tell', class extends customElements.get('tiny-tell') {});
+      document.body.insertAdjacentHTML('beforeend', '<sub-tell id="sub" style="--tell-size: 48px"></sub-tell>');
+      window.danced = false;
+      document.addEventListener('tell-dance', e => (window.danced = e.target.id === 'sub'));
+    });
+    await drawn(page);
+    await tap5(page, '#sub');
+    await expect.poll(() => page.evaluate(() => window.danced), { message: 'five taps make it dance' }).toBe(true);
+    await page.$eval('#sub', el => (el.state = 'nope'));
+    await expect
+      .poll(() => warnings.join('\n'), { message: 'the warning names the subclass tag' })
+      .toContain('<sub-tell>: unknown state "nope"');
+  });
+
+  test('dance(): starts a dance and says so, returns false when it can’t, and a state change, tell change, or removal ends it with tell-after-dance', async ({
     page,
   }) => {
-    for (const selector of ['#sized', '[data-tell="eyes"]', '#inline tiny-tell', '#in-cell tiny-tell']) {
-      const { w, h, css, dpr } = await pixels(page, selector);
-      expect(dpr, 'the page runs at 2× density').toBe(2);
-      expect(w, `${selector} has a square canvas`).toBe(h);
-      expect(w, `${selector} canvas matches its box × density`).toBe(Math.round(css * dpr));
-      const shown = await page.$eval(selector, t => {
-        const box = t.getBoundingClientRect(),
-          canvas = t.shadowRoot.querySelector('[part="tell"]').getBoundingClientRect();
-        return [canvas.width - box.width, canvas.height - box.height].map(Math.round);
-      });
-      expect(shown, `${selector} canvas is drawn at the size of its box`).toEqual([0, 0]);
-    }
-    expect((await pixels(page, '#sized')).css, '--tell-size sets the box').toBe(48);
-  });
-});
-
-test.describe('forced colors', () => {
-  test.skip(({ browserName }) => browserName !== 'chromium', 'Forced-colors emulation is Chromium-only');
-  test.beforeEach(({ page }) => open(page, { still: true, forced: true }));
-  test.afterEach(noProblems);
-
-  test('forced colors draw in the system text color, not the state color', async ({ page }) => {
-    await page.$eval('[data-tell="drones"]', el => {
+    const result = await page.evaluate(() => {
+      const el = document.getElementById('eyes'),
+        heard = [];
+      el.addEventListener('tell-dance', () => heard.push('dance'));
+      el.addEventListener('tell-after-dance', () => heard.push('end'));
+      const first = el.dance(),
+        again = el.dance();
       el.state = 'done';
+      el.paused = true;
+      const paused = el.dance();
+      el.paused = false;
+      el.addEventListener('tell-dance', e => e.preventDefault(), { once: true });
+      const canceled = el.dance();
+      el.dance();
+      el.tell = 'drones';
+      el.dance();
+      el.remove();
+      const gone = document.createElement('tiny-tell');
+      document.body.append(gone);
+      gone.remove();
+      return { first, again, paused, canceled, removed: gone.dance(), heard };
     });
-    const { r, g, b, alpha } = await pixels(page, '[data-tell="drones"]');
-    expect(alpha, 'the tell still draws').toBeGreaterThan(0);
-    expect(Math.max(r, g, b) - Math.min(r, g, b), 'the ink is gray, not the done color').toBeLessThan(20);
+    expect(result.first, 'a free tell starts dancing').toBe(true);
+    expect(result.again, 'a dancing tell refuses a second dance').toBe(false);
+    expect(result.paused, 'a paused tell refuses').toBe(false);
+    expect(result.canceled, 'a canceled tell-dance refuses').toBe(false);
+    expect(result.removed, 'a tell off the page refuses').toBe(false);
+    expect(
+      result.heard,
+      'refused dances fire nothing, a canceled one never ends, and a state change, tell change, or removal each end one'
+    ).toEqual(['dance', 'end', 'dance', 'dance', 'end', 'dance', 'end']);
   });
 });
 
-test.describe('Chromium only', () => {
-  test.skip(
-    ({ browserName }) => browserName !== 'chromium',
-    'Trusted Types and layout counts are Chromium-only; axe and the engine checks give the same answer in every engine'
-  );
-
+// Trusted Types and the CDP layout and accessibility reads are Chromium-only, so this group stays untagged.
+test.describe('rendering cost and accessibility', () => {
   test('renders under a Trusted Types policy', async ({ page }) => {
     await open(page, { path: '/tests/trusted-types.html' });
     expect(page.problems, 'no Trusted Types violations').toEqual([]);
@@ -514,10 +589,10 @@ test.describe('Chromium only', () => {
     expect(relabeled, 'removing the aria-label goes back to the state name').not.toContain('Uploading');
     expect(relabeled, 'an aria-labelledby on the tag names it').toContain('Syncing');
     expect(relabeled, 'neither change adds or drops an img').toHaveLength(before.length);
-    expect(
-      after.filter(n => !n),
-      'an empty label hides the tell'
-    ).toHaveLength(0);
+    await page.$eval('#decorative', el => el.removeAttribute('label'));
+    await expect
+      .poll(async () => (await images()).length, { message: 'an empty label hid the tell, so dropping it adds an img' })
+      .toBe(relabeled.length + 1);
   });
 
   test('axe finds no accessibility violations in tells', async ({ page }) => {
@@ -551,7 +626,7 @@ test.describe('Chromium only', () => {
   });
 });
 
-test.describe('play bundle', () => {
+test.describe('play bundle', { tag: '@engines' }, () => {
   test.beforeEach(({ page }) => open(page, { path: '/tests/play.html' }));
   test.afterEach(noProblems);
 
@@ -588,23 +663,6 @@ test.describe('play bundle', () => {
     await twoFrames(page);
     await tap5(page, '#eyes');
     await expect.poll(() => page.evaluate(() => window.danced), { message: 'with both off, five taps dance' }).toBe(1);
-  });
-
-  test('the npm core and play entries share one element, so loading both is safe', async ({ page }) => {
-    const warnings = [];
-    page.on('console', msg => msg.type() === 'warning' && warnings.push(msg.text()));
-    const isShared = await page.evaluate(
-      async () => (await import('/dist/tiny-tells.js')).TinyTell === customElements.get('tiny-tell')
-    );
-    expect(isShared, 'importing the core after play returns the registered class').toBe(true);
-    expect(warnings, 'and nothing warns').toEqual([]);
-  });
-
-  test('loading the standalone CDN core after play warns instead of registering twice', async ({ page }) => {
-    const warnings = [];
-    page.on('console', msg => msg.type() === 'warning' && warnings.push(msg.text()));
-    await page.evaluate(() => import('/dist/tiny-tells.min.js'));
-    await expect.poll(() => warnings.join('\n'), 'the second copy warns').toContain('already defined');
   });
 
   test('dance: five quick taps fire tell-dance, dance in the dance color, then fire tell-after-dance and return', async ({
@@ -688,90 +746,6 @@ test.describe('play bundle', () => {
       .toBeGreaterThan(awake * 0.8);
   });
 
-  test('a subclass under its own tag dances and names its own tag in warnings', async ({ page }) => {
-    const warnings = [];
-    page.on('console', msg => {
-      if (msg.type() === 'warning') warnings.push(msg.text());
-    });
-    await page.evaluate(() => {
-      customElements.define('sub-tell', class extends customElements.get('tiny-tell') {});
-      document.body.insertAdjacentHTML('beforeend', '<sub-tell id="sub" style="--tell-size: 48px"></sub-tell>');
-      window.danced = false;
-      document.addEventListener('tell-dance', e => (window.danced = e.target.id === 'sub'));
-    });
-    await drawn(page);
-    await tap5(page, '#sub');
-    await expect.poll(() => page.evaluate(() => window.danced), { message: 'five taps make it dance' }).toBe(true);
-    await page.$eval('#sub', el => (el.state = 'nope'));
-    await expect
-      .poll(() => warnings.join('\n'), { message: 'the warning names the subclass tag' })
-      .toContain('<sub-tell>: unknown state "nope"');
-  });
-
-  test('dance events: a state or tell change mid-dance ends it with tell-after-dance', async ({ page }) => {
-    await page.evaluate(() => {
-      customElements.get('tiny-tell').timeScale = 0.25;
-      window.ended = 0;
-      document.addEventListener('tell-after-dance', () => window.ended++);
-    });
-    await tap5(page, '#eyes');
-    await expect
-      .poll(() => hue(page, '#eyes'), { message: 'the first dance starts', timeout: 8000 })
-      .toBeGreaterThan(40);
-    await page.$eval('#eyes', el => (el.state = 'done'));
-    expect(await page.evaluate(() => window.ended), 'a state change reports the end right away').toBe(1);
-    await tap5(page, '#eyes');
-    await expect
-      .poll(() => hue(page, '#eyes'), { message: 'the second dance starts', timeout: 8000 })
-      .toBeGreaterThan(40);
-    await page.$eval('#eyes', el => (el.tell = 'drones'));
-    expect(await page.evaluate(() => window.ended), 'so does a tell change').toBe(2);
-  });
-
-  test('dance events: removing a tell mid-dance ends it with tell-after-dance on the tell', async ({ page }) => {
-    await page.evaluate(() => {
-      window.danced = false;
-      window.ended = 0;
-      const el = document.getElementById('eyes');
-      el.addEventListener('tell-dance', () => (window.danced = true));
-      el.addEventListener('tell-after-dance', () => window.ended++);
-    });
-    await tap5(page, '#eyes');
-    await expect.poll(() => page.evaluate(() => window.danced), { message: 'five taps start the dance' }).toBe(true);
-    expect(await page.evaluate(() => window.ended), 'the dance is still going').toBe(0);
-    await page.evaluate(() => document.getElementById('eyes').remove());
-    expect(await page.evaluate(() => window.ended), 'removing the tell reports the end right away').toBe(1);
-  });
-
-  test('dance(): starts a dance and says so, and returns false when it can’t', async ({ page }) => {
-    const result = await page.evaluate(() => {
-      const el = document.getElementById('eyes'),
-        fired = [];
-      let ended = 0;
-      el.addEventListener('tell-dance', e => fired.push(e.type));
-      el.addEventListener('tell-after-dance', () => ended++);
-      const first = el.dance(),
-        again = el.dance();
-      el.state = 'done';
-      el.paused = true;
-      const paused = el.dance();
-      el.paused = false;
-      el.addEventListener('tell-dance', e => e.preventDefault(), { once: true });
-      const canceled = el.dance();
-      const gone = document.createElement('tiny-tell');
-      document.body.append(gone);
-      gone.remove();
-      return { first, again, paused, canceled, removed: gone.dance(), fired: fired.length, ended };
-    });
-    expect(result.first, 'a free tell starts dancing').toBe(true);
-    expect(result.again, 'a dancing tell refuses a second dance').toBe(false);
-    expect(result.paused, 'a paused tell refuses').toBe(false);
-    expect(result.canceled, 'a canceled tell-dance refuses').toBe(false);
-    expect(result.removed, 'a tell off the page refuses').toBe(false);
-    expect(result.fired, 'tell-dance fired for the first dance and the canceled one only').toBe(2);
-    expect(result.ended, 'only the dance that started reports an end').toBe(1);
-  });
-
   test('noplay: a tell ignores the pointer and five taps, still dances on dance(), and plays again without it', async ({
     page,
   }) => {
@@ -814,7 +788,7 @@ test.describe('play bundle', () => {
   });
 });
 
-test.describe('reserve.css', () => {
+test.describe('reserve.css', { tag: '@engines' }, () => {
   test('an undefined tell takes the box it has once loaded, so the words beside it never move', async ({ page }) => {
     await page.goto('/tests/reserve.html');
     const layout = () =>

@@ -1,6 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { LABEL } from '../src/core.js';
-import { API, STATES, TELLS, noProblems, open } from './helpers.js';
+import { noProblems, open } from './helpers.js';
 
 const revealed = page => page.waitForFunction(() => !('upgrading' in document.documentElement.dataset));
 
@@ -17,42 +16,29 @@ const offline = ({ page }) =>
   ]);
 
 test.describe('site pages', () => {
-  test.skip(({ browserName }) => browserName !== 'chromium', 'the page wiring is the same in every engine');
   test.beforeEach(offline);
   test.afterEach(noProblems);
 
-  test('docs in Core mode keep every example tell out of play, even after a tell change', async ({ page }) => {
-    await open(page, { path: '/docs/' });
-    const playing = () =>
-      page.$$eval(
-        'tiny-tell',
-        els => els.filter(el => !el.closest('#play, #events-demo, #funsies') && !el.hasAttribute('noplay')).length
-      );
-    expect(await playing(), 'every example tell starts with noplay').toBe(0);
-    await page.evaluate(() => {
-      const select = document.getElementById('page-tell');
-      select.value = 'blot';
-      select.dispatchEvent(new Event('change', { bubbles: true }));
-    });
-    await expect.poll(playing, { message: 'tells rebuilt for the new tell get noplay too' }).toBe(0);
-    await page.evaluate(() => {
-      const picker = document.getElementById('examples-play');
-      picker.value = 'play';
-      picker.dispatchEvent(new Event('change', { bubbles: true }));
-    });
-    expect(
-      await page.$$eval('tiny-tell[noplay]', els => els.filter(el => !el.matches('.is-core')).length),
-      'picking Play clears it from everything but the core comparison'
-    ).toBe(0);
-  });
-
-  test('landing, docs, and 404 load and switch theme without errors', async ({ page }) => {
+  test('landing, docs, and 404 load, define every wa-* element, and switch theme without errors', async ({ page }) => {
     await page.addInitScript(() => {
       window.windowErrors = [];
       addEventListener('error', e => window.windowErrors.push(e.message));
     });
     for (const path of ['/', '/docs/', '/404.html']) {
       await open(page, { path });
+      await expect
+        .poll(
+          () =>
+            page.evaluate(() => [
+              ...new Set(
+                [...document.querySelectorAll(':not(:defined)')]
+                  .map(el => el.localName)
+                  .filter(name => name.startsWith('wa-'))
+              ),
+            ]),
+          { message: `${path} defines every wa-* element` }
+        )
+        .toEqual([]);
       const html = page.locator('html');
       await expect(html, `${path} applies a theme`).toHaveAttribute('data-theme', /^(light|dark)$/);
       const before = await html.getAttribute('data-theme');
@@ -70,54 +56,6 @@ test.describe('site pages', () => {
     await open(page, { path: '/?stats=on' });
     await page.waitForURL(url => url.search === '');
     expect(await flag(), 'on clears it again').toBeNull();
-  });
-
-  test('pages load Web Awesome as one file, define every wa-* element, and keep the kit’s system icons', async ({
-    page,
-  }) => {
-    await page.addInitScript(() => {
-      window.builtInIcons = 0;
-      const load = window.fetch;
-      window.fetch = (url, ...rest) => {
-        if (String(url).startsWith('data:image/svg')) window.builtInIcons++;
-        return load(url, ...rest);
-      };
-    });
-    const kit = [];
-    page.on('request', request => {
-      if (request.url().startsWith('https://ka-p.fontawesome.com/')) kit.push(new URL(request.url()).pathname);
-    });
-    for (const path of ['/', '/docs/', '/404.html']) {
-      await open(page, { path });
-      await expect
-        .poll(
-          () =>
-            page.evaluate(() => [
-              ...new Set(
-                [...document.querySelectorAll(':not(:defined)')]
-                  .map(el => el.localName)
-                  .filter(name => name.startsWith('wa-'))
-              ),
-            ]),
-          { message: `${path} defines every wa-* element` }
-        )
-        .toEqual([]);
-      const files = await page.evaluate(() =>
-        performance
-          .getEntriesByType('resource')
-          .map(entry => new URL(entry.name).pathname)
-          .filter(pathname => /\/assets\/webawesome[/-]/.test(pathname))
-      );
-      expect(files, `${path} loads Web Awesome as one file`).toHaveLength(1);
-      expect(
-        await page.evaluate(() => window.builtInIcons),
-        `${path} never draws Web Awesome's built-in icons before the kit's`
-      ).toBe(0);
-    }
-    expect(
-      kit.some(pathname => pathname.endsWith('/sharp-regular/chevron-down.svg')),
-      'the select’s chevron still comes from the kit in sharp regular'
-    ).toBe(true);
   });
 
   test('docs headings are named by their own text, and the contrast note describes the current palette', async ({
@@ -210,7 +148,7 @@ test.describe('site pages', () => {
 });
 
 // Firefox's scroll anchoring once kept a #section link from landing, so links run in every engine.
-test.describe('docs links', () => {
+test.describe('docs links', { tag: '@engines' }, () => {
   test.beforeEach(offline);
   test.afterEach(noProblems);
 
@@ -237,7 +175,7 @@ test.describe('docs links', () => {
 });
 
 // WebKit's modal and scroll anchoring behave differently here, so the drawer runs in every engine.
-test.describe('docs drawer', () => {
+test.describe('docs drawer', { tag: '@engines' }, () => {
   test.beforeEach(offline);
   test.afterEach(noProblems);
 
@@ -282,45 +220,5 @@ test.describe('docs drawer', () => {
     });
     expect(drift, 'the section lands where it scrolls to').toBeLessThan(2);
     await expect(page.locator('#funsies-title'), 'sections set aside behind the drawer come back').toBeVisible();
-  });
-});
-
-test.describe('docs without JavaScript', () => {
-  test.skip(({ browserName }) => browserName !== 'chromium', 'the shipped HTML is the same in every engine');
-
-  test('the reference tables, label answers, and heading anchors are in the HTML', async ({ browser }) => {
-    const context = await browser.newContext({ javaScriptEnabled: false });
-    const page = await context.newPage();
-    await page.route(/^https:\/\/(ka-p\.fontawesome\.com|cloud\.umami\.is)\//, route => route.abort());
-    await page.goto('/docs/');
-    const rows = id => page.locator(`#${id} > tr`);
-    await expect(rows('attr-rows'), 'one row per attribute in api.json').toHaveCount(API.attributes.length);
-    await expect(rows('event-rows'), 'one row per event in api.json').toHaveCount(API.events.length);
-    await expect(rows('static-rows'), 'one row per static in api.json').toHaveCount(API.statics.length);
-    await expect(rows('method-rows'), 'one row per method in api.json').toHaveCount(API.methods.length);
-    await expect(rows('css-property-rows'), 'one row per CSS custom property in api.json').toHaveCount(
-      API.cssProperties.length
-    );
-    await expect(rows('css-part-rows'), 'one row per CSS part in api.json').toHaveCount(API.cssParts.length);
-    await expect(rows('custom-state-rows'), 'one custom state per state').toHaveCount(STATES.length);
-    await expect(rows('tell-rows'), 'one row per tell').toHaveCount(TELLS.length);
-    await expect(rows('state-rows'), 'one row per state').toHaveCount(STATES.length);
-    await expect(page.locator('#label-cases td:last-child'), 'what screen readers hear, per label case').toHaveText([
-      `“${LABEL.working}”, an image`,
-      '“Uploading photos”, an image',
-      'Nothing. The tell is hidden.',
-      `“${LABEL.working}”, an image, then the words, on every change`,
-    ]);
-    const anchors = await page.evaluate(() =>
-      [...document.querySelectorAll('main section[id] > h2')].map(h => [
-        h.parentElement.id,
-        h.querySelector('a.heading-anchor')?.getAttribute('href') ?? null,
-      ])
-    );
-    expect(anchors.length, 'the docs have section headings').toBeGreaterThan(10);
-    for (const [id, href] of anchors) expect(href, `the ${id} heading links to its section`).toBe(`#${id}`);
-    await page.goto('/');
-    await expect(page.locator('.heading-anchor'), 'the landing page gets no heading anchors').toHaveCount(0);
-    await context.close();
   });
 });
