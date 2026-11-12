@@ -53,7 +53,7 @@ export const MODEL = {
   },
   lens: {
     made: 'A metal bezel around smoky glass, with a glowing iris. The glass stays dark in both schemes, and a soft bloom spills past the bezel.',
-    notice: 'The iris turns toward your pointer while the bezel stays put.',
+    notice: 'The iris turns toward your pointer while the bezel stays put, except when error looks away.',
     handoff: 'The iris and its glow spring to the new state’s size and brightness.',
     fits: 'System monitors, background agents, and anything else that watches.',
     dance: 'The iris swings like a pendulum and pulses on the beat, with a ripple every other beat.',
@@ -93,7 +93,8 @@ export const NOTES = {
   lens: {
     working: 'The iris snaps open on every beat and eases back.',
     done: 'The iris pinches, springs wide, and wobbles while a ripple rolls out past the bezel.',
-    error: 'Flares twice, then dims to an ember. It comes back just before the loop does.',
+    error:
+      'Flares twice, then sinks to the bottom of the glass as a dim ember. It comes back just before the loop does.',
     warning: 'The iris squeezes to half and throbs twice.',
     idle: 'It sits nearly dark, taking one slow breath per loop.',
   },

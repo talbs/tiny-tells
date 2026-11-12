@@ -18,9 +18,12 @@ import {
   springOff,
 } from '../core.js';
 
+const SUNK = 0.52;
+
 export const LENS = {
   fit: () => 0.92,
-  keys: ['glow', 'size', 'ox', 'ap', 'bloom'],
+  keys: ['glow', 'size', 'ox', 'oy', 'ap', 'bloom'],
+  still: { error: 2.5 },
   pos: [],
   states: {
     working: t => {
@@ -32,6 +35,7 @@ export const LENS = {
             glow: 0.7 + 0.3 * pulse,
             size: 0.62,
             ox: 0.07 * Math.sin((TAU * t) / (4 * BEAT)),
+            oy: 0,
             ap: 0.4 + 0.16 * pulse,
             bloom: 0.2 * pulse,
           },
@@ -48,24 +52,27 @@ export const LENS = {
             glow: lerp(t < 0.12 ? 0.55 : 0.98, 0.7, out),
             size: 0.66,
             ox: 0,
+            oy: 0,
             ap: lerp(open, 0.4, out),
             bloom: 0.65 * bell(seg(t, 0.12, 0.7)),
           },
         ],
       };
     },
+    /* Error sinks to the bottom of the glass, so its still isn't idle's centered disc in one ink (#127). */
     error: t => {
       const fl = (t0, tt = t - t0) => (tt < 0 ? 0 : tt < 0.06 ? tt / 0.06 : Math.exp(-(tt - 0.06) * 7)),
         f = fl(0.2) + fl(0.5),
-        dim = E.inOut(seg(t, 0.85, 2.4)) * (1 - E.inOut(seg(t, 2.9, 3.2)));
+        dim = E.inOut(seg(t, 0.85, 2.4)) * (1 - E.inOut(seg(t, 2.6, 3.2)));
       return {
         shake: [0.03 * f * Math.sin(t * 95), 0.018 * f * Math.cos(t * 80)],
         ents: [
           {
-            glow: lerp(0.72, 0.2, dim) + 0.6 * f,
-            size: 0.62 + 0.25 * f,
+            glow: lerp(0.72, 0.32, dim) + 0.6 * f,
+            size: lerp(0.62, 0.5, dim) + 0.25 * f,
             ox: 0,
-            ap: lerp(0.5, 0.32, dim) + 0.22 * f,
+            oy: SUNK * dim,
+            ap: lerp(0.5, 0.26, dim) + 0.22 * f,
             bloom: 0.8 * clamp(f),
           },
         ],
@@ -75,12 +82,14 @@ export const LENS = {
       const th = bell(seg(t, 0.6, 1.1)) + bell(seg(t, 1.2, 1.7)),
         squeeze = E.back(seg(t, 0.1, 0.45), 2) * (1 - E.inOut(seg(t, 2.6, 3.1)));
       return {
-        ents: [{ glow: 0.75 + 0.35 * th, size: 0.6, ox: 0, ap: 0.44 - 0.2 * squeeze + 0.07 * th, bloom: 0.35 * th }],
+        ents: [
+          { glow: 0.75 + 0.35 * th, size: 0.6, ox: 0, oy: 0, ap: 0.44 - 0.2 * squeeze + 0.07 * th, bloom: 0.35 * th },
+        ],
       };
     },
     idle: t => {
       const b = 0.5 + 0.5 * Math.sin((TAU * t) / (6 * BEAT) - PI / 2);
-      return { ents: [{ glow: 0.1 + 0.45 * b, size: 0.55, ox: 0, ap: 0.36 + 0.08 * b, bloom: 0 }] };
+      return { ents: [{ glow: 0.1 + 0.45 * b, size: 0.55, ox: 0, oy: 0, ap: 0.36 + 0.08 * b, bloom: 0 }] };
     },
   },
   render: (cv, s, color) => {
@@ -126,8 +135,10 @@ export const LENS = {
     const glow = clamp(e.glow, 0, 1.6),
       ap = clamp(e.ap, 0.12, 0.96) * Rg,
       rc = Math.max(1.5 * dpr, e.size * Rg);
-    const cx = o + ((gaze ? gaze.x * 0.16 : 0) + (e.ox || 0)) * Rg,
-      cy = o + ((gaze ? gaze.y * 0.16 : 0) + (e.oy || 0)) * Rg;
+    /* A sunk iris is looking away, so it stops following the pointer. */
+    const look = 0.16 * (1 - clamp((e.oy || 0) / SUNK)),
+      cx = o + ((gaze ? gaze.x * look : 0) + (e.ox || 0)) * Rg,
+      cy = o + ((gaze ? gaze.y * look : 0) + (e.oy || 0)) * Rg;
     ctx.save();
     ctx.beginPath();
     ctx.arc(cx, cy, ap, 0, TAU);
