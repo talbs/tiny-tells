@@ -123,15 +123,7 @@ export const LENS = {
     ctx.beginPath();
     ctx.arc(o, o, Rg, 0, TAU);
     ctx.fill();
-    if (ink) {
-      if (!isDark) ctx.globalCompositeOperation = 'destination-out';
-      ctx.strokeStyle = css(ink, isDark ? 0.4 : 0.55);
-      ctx.lineWidth = 0.07 * unit;
-      ctx.lineCap = 'round';
-      ctx.beginPath();
-      ctx.arc(o, o, Rg * 0.76, PI * 1.15, PI * 1.35);
-      ctx.stroke();
-    }
+    if (ink && !isDark) ctx.globalCompositeOperation = 'destination-out';
     const glow = clamp(e.glow, 0, 1.6),
       ap = clamp(e.ap, 0.12, 0.96) * Rg,
       rc = Math.max(1.5 * dpr, e.size * Rg);
@@ -139,17 +131,14 @@ export const LENS = {
     const look = 0.16 * (1 - clamp((e.oy || 0) / SUNK)),
       cx = o + ((gaze ? gaze.x * look : 0) + (e.ox || 0)) * Rg,
       cy = o + ((gaze ? gaze.y * look : 0) + (e.oy || 0)) * Rg;
-    ctx.save();
-    ctx.beginPath();
-    ctx.arc(cx, cy, ap, 0, TAU);
-    ctx.clip();
     const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, rc);
     g.addColorStop(0, css(color, glow, 0.34 * Math.min(1, glow)));
     g.addColorStop(0.6, css(color, glow * 0.7));
     g.addColorStop(1, css(color, 0.1 * glow));
     ctx.fillStyle = g;
-    ctx.fillRect(cx - rc, cy - rc, rc * 2, rc * 2);
-    ctx.restore();
+    ctx.beginPath();
+    ctx.arc(cx, cy, ap, 0, TAU);
+    ctx.fill();
     ctx.strokeStyle = css(color, 0.3 + 0.5 * glow, 0.12);
     ctx.lineWidth = Math.max(dpr * (small ? 0.9 : 1), 0.028 * unit);
     ctx.beginPath();
@@ -162,6 +151,18 @@ export const LENS = {
       ctx.arc(o, o, lerp(ap, Rb * 1.02, E.out(s.rip)), 0, TAU);
       ctx.stroke();
     }
+    const glintInk = ink || [0.96, 0.005, 277],
+      near = o - 0.14 * Rg,
+      far = o - 0.75 * Rg,
+      glint = ctx.createLinearGradient(far, near, near, far);
+    glint.addColorStop(0, css(glintInk, 0));
+    glint.addColorStop(0.5, css(glintInk, ink && !isDark ? 0.32 : 0.24));
+    glint.addColorStop(1, css(glintInk, 0));
+    ctx.strokeStyle = glint;
+    ctx.lineWidth = 0.07 * unit;
+    ctx.beginPath();
+    ctx.arc(o, o, Rg * 0.76, PI * 1.06, PI * 1.44);
+    ctx.stroke();
     ctx.globalCompositeOperation = 'source-over';
     if (e.bloom > 0.02) {
       const hb = ctx.createRadialGradient(o, o, Rg * 0.6, o, o, Rb * 1.12);
