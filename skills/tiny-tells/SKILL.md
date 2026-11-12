@@ -7,7 +7,7 @@ description: "Adds and configures the tiny-tell web component (npm: tiny-tells),
 
 > `<tiny-tell>` is one custom element for app status: working, done, error, warning, or idle. Pick from 6 small animated characters. No dependencies. Chrome 111+, Firefox 113+, Safari 16.4+.
 
-This file describes version 0.5.0. Tiny Tells is pre-1.0, so pin the version.
+This file describes version 0.6.0. Tiny Tells is pre-1.0, so pin the version.
 
 If `node_modules/tiny-tells/package.json` has a different version, trust `node_modules/tiny-tells/dist/custom-elements.json` over this file.
 
@@ -26,7 +26,7 @@ import 'tiny-tells';
 Without one:
 
 ```html
-<script type="module" src="https://cdn.jsdelivr.net/npm/tiny-tells@0.5.0/dist/tiny-tells.min.js"></script>
+<script type="module" src="https://cdn.jsdelivr.net/npm/tiny-tells@0.6.0/dist/tiny-tells.min.js"></script>
 ```
 
 The play bundle adds a glance at a nearby pointer and a five-tap dance. Leave an idle tell alone for 30 seconds and it dozes off until the pointer comes back. Use it only if asked. Import `tiny-tells/play` instead of `tiny-tells`, or load `tiny-tells-play.min.js` from the same CDN path. Types ship with the package, and the element class is exported as `TinyTell`.
