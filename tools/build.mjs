@@ -202,6 +202,20 @@ Without one:
 <script type="module" src="https://cdn.jsdelivr.net/npm/tiny-tells@${VERSION}/dist/tiny-tells.min.js"></script>
 \`\`\`
 
+Hold each tell's space so the words beside it don't jump when it loads. Load this before the script.
+
+With a bundler:
+
+\`\`\`js
+import 'tiny-tells/reserve.css';
+\`\`\`
+
+Without one:
+
+\`\`\`html
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tiny-tells@${VERSION}/dist/reserve.css">
+\`\`\`
+
 The play bundle adds a glance at a nearby pointer and a five-tap dance. Leave an idle tell alone for 30 seconds and it dozes off until the pointer comes back. Use it only if asked. Import \`tiny-tells/play\` instead of \`tiny-tells\`, or load \`tiny-tells-play.min.js\` from the same CDN path. Types ship with the package, and the element class is exported as \`TinyTell\`.
 
 ## Use
@@ -239,6 +253,42 @@ In a list, each row's tell keeps its state name, and one region holds the summar
 <p role="status">1 of 2 uploaded.</p>
 
 <p role="status"><tiny-tell state="working" label=""></tiny-tell> Saving…</p>
+\`\`\`
+
+## Frameworks
+
+Svelte, Lit, and plain HTML need nothing else.
+
+- Vue: tell the compiler \`<tiny-tell>\` isn't a Vue component. Pass this to the Vue plugin in \`vite.config.js\`:
+
+\`\`\`js
+vue({
+  template: { compilerOptions: { isCustomElement: tag => tag === 'tiny-tell' } },
+})
+\`\`\`
+
+- Angular: add \`CUSTOM_ELEMENTS_SCHEMA\` to each component that uses a tell:
+
+\`\`\`ts
+@Component({
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
+})
+\`\`\`
+
+- React 19: works as is.
+- React 18: leave \`paused\` off to resume. \`paused={false}\` still pauses.
+- React with TypeScript: add this to any \`.d.ts\` file so \`<tiny-tell>\` type-checks in JSX:
+
+\`\`\`ts
+import type { DetailedHTMLProps, HTMLAttributes } from 'react';
+import type { TinyTell, TinyTellAttributes } from 'tiny-tells';
+declare module 'react' {
+  namespace JSX {
+    interface IntrinsicElements {
+      'tiny-tell': DetailedHTMLProps<HTMLAttributes<TinyTell>, TinyTell> & TinyTellAttributes;
+    }
+  }
+}
 \`\`\`
 
 ## Attributes
