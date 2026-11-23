@@ -52,7 +52,7 @@ export const MODEL = {
     dance: 'Two glows sweep opposite ways around the ring, then cross and flash at the top and bottom.',
   },
   lens: {
-    made: 'A metal bezel around smoky glass, with a glowing iris. The glass stays dark in both schemes, and a soft bloom spills past the bezel.',
+    made: 'A metal bezel around smoky glass, with a glowing iris. The glass stays dark in both schemes, and the iris’s soft bloom stays inside it.',
     notice: 'The iris turns toward your pointer while the bezel stays put, except when error looks away.',
     handoff: 'The iris and its glow spring to the new state’s size and brightness.',
     fits: 'System monitors, background agents, and anything else that watches.',
@@ -92,7 +92,7 @@ export const NOTES = {
   },
   lens: {
     working: 'The iris snaps open on every beat and eases back.',
-    done: 'The iris pinches, springs wide, and wobbles while a ripple rolls out past the bezel.',
+    done: 'The iris pinches, springs wide, and wobbles while a ripple rolls out to the edge of the glass.',
     error:
       'Flares twice, then sinks to the bottom of the glass as a dim ember. It comes back just before the loop does.',
     warning: 'The iris squeezes to half and throbs twice.',

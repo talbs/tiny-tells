@@ -124,7 +124,7 @@ declare module 'react' {
   - `drones`: A squad of four drones running drills, keen and prone to pile-ups. Their shadows are the floor.
   - `flipdot`: A 5×5 flip-disc board, like the ones on old bus signs. Every disc clacks over and wobbles before it settles. All business.
   - `eyes`: Two eyes on a dark visor, and the most human of the six. The eyes dart first, the head catches up, and every mood morphs into the next.
-  - `blot`: A drop of cartoon liquid that reaches, drips, splats, and pulls itself back together, with real gravity and generous squash and stretch.
+  - `blot`: A drop of cartoon liquid with real weight. It reaches, drips, splats, and pulls itself back together.
   - `dekatron`: A 1950s counting tube. One glow hops around a ring of ten. Precise and steady, right up until it jams.
   - `lens`: One calm, watchful eye behind smoky glass in a metal bezel. The iris does all the talking.
 - `state` (default `working`): What the tell is reporting. Changing it hands off into the new state.
